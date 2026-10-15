@@ -173,12 +173,15 @@ and the change appears in a change log with migration notes.
   media entities (Scene, Image), Performer, Tag and its six flagged types (Pluggable, Action,
   Role, Trait, Label, Mise-en-scène), Variation, the assignment instances (RoleInstance,
   ActionInstance, and the equivalents for Pluggable and Mise-en-scène), Archetype, and the
-  Label rule kinds (trait rule, field rule, label-dependency rule).
+  Label rule kinds (trait rule, field rule, label-dependency rule, and the Pluggable rule that
+  tests a Variation's Pluggables), and Pairing (a performer-to-performer link).
 - **FR-003**: The vocabulary MUST define each relationship and attribute the documents describe,
   each with a declared domain and range, including: performer assignment to media, role and
   action assignment, pluggable assignment, trait and label assignment, performer variations,
   tag categories, tag variations, parent tag, archetype parent, label threshold, rule weight,
-  rule target, rule variation, rule recursion, field-rule field, modifier, and values.
+  rule target, rule variation, rule recursion, field-rule field, modifier, and values, a
+  Variation's own Pluggables and Labels and its owning performer, common-variant links
+  between tags, and a pairing's endpoints and direction.
 - **FR-004**: Scene- and image-scoped facts (Role, Action, Pluggable, and Mise-en-scène
   assignments) MUST be represented as reified assignment nodes that tie one media entity, one
   performer (where applicable), and one tag together, so the scope is part of the data and a
@@ -246,12 +249,13 @@ and the change appears in a change log with migration notes.
 - **Performer**: a participant in a media entity; may be an Archetype.
 - **Tag types**: Pluggable, Action, Role, Trait, Label, Mise-en-scène; each a kind of Stash tag
   with its own scope, optional categories, and optional variations.
-- **Variation**: a real tag (`isVariation`) carrying its own facts, owned by a performer.
+- **Variation**: a real tag (`isVariation`) carrying its own facts, owned by a performer,
+  including the Pluggables and Labels it carries.
 - **Assignment instances** (Role, Action, Pluggable, Mise-en-scène): one performer's (or, for
   Mise-en-scène, one media entity's) assignment of one tag within one media entity, optionally
   with a chosen variation and a time position.
 - **Label formula and rules**: a Label's threshold and weighted rules (trait, field, label
-  dependency) that describe why a performer qualifies.
+  dependency, and Pluggable-on-Variation) that describe why a performer qualifies.
 - **Timeline, slot, and Stage**: a media entity's ordered sequence of entries; a slot places an
   Action or Role instance (or a pairing) at an optional time and may link to a Stash marker; a
   Stage is a heading carrying Mise-en-scène picks that governs the slots after it.
