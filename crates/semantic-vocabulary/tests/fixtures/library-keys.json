@@ -1,32 +1,110 @@
 {
-  "source": "Derived from the plugin source (FIELD_KEY constants and custom_fields reads) at 3c82c85 plus working copy, 2026-10-14. NOT captured from a live library; replace with a read-only capture when one is approved.",
+  "source": "keys[] is derived from the plugin source (FIELD_KEY constants and custom_fields reads) at 3c82c85 plus working copy, 2026-10-14. live_capture records key names actually present on a Stash v0.31.1 test instance on 2026-10-15 (read-only queries; key names and counts only, no values).",
   "keys": [
-    {"entity": "Tag", "field": "custom_fields.plugtag"},
-    {"entity": "Tag", "field": "custom_fields.isAction"},
-    {"entity": "Tag", "field": "custom_fields.isRole"},
-    {"entity": "Tag", "field": "custom_fields.isTrait"},
-    {"entity": "Tag", "field": "custom_fields.isLabel"},
-    {"entity": "Tag", "field": "custom_fields.isMiseEnScene"},
-    {"entity": "Tag", "field": "custom_fields.isVariation"},
-    {"entity": "Tag", "field": "custom_fields.variantOfTagId"},
-    {"entity": "Tag", "field": "custom_fields.categories"},
-    {"entity": "Tag", "field": "custom_fields.variations"},
-    {"entity": "Tag", "field": "custom_fields.labelFormula.threshold"},
-    {"entity": "Tag", "field": "custom_fields.labelFormula.traitRules"},
-    {"entity": "Tag", "field": "custom_fields.labelFormula.fieldRules"},
-    {"entity": "Tag", "field": "custom_fields.labelFormula.labelRules"},
-    {"entity": "Tag", "field": "custom_fields.labelFormula.pluggableRules"},
-    {"entity": "Tag", "field": "custom_fields.variationData"},
-    {"entity": "Performer", "field": "custom_fields.isArchetype"},
-    {"entity": "Performer", "field": "custom_fields.archetypeParents"},
-    {"entity": "Performer", "field": "custom_fields.isGeneric"},
-    {"entity": "Performer", "field": "custom_fields.looks"},
-    {"entity": "Scene", "field": "custom_fields.roleTagAssignments"},
-    {"entity": "Scene", "field": "custom_fields.actionAssignments"},
-    {"entity": "Scene", "field": "custom_fields.pluggableAssignments"},
-    {"entity": "Scene", "field": "custom_fields.actionPairings"},
-    {"entity": "Scene", "field": "custom_fields.roleTagPairings"},
-    {"entity": "Scene", "field": "custom_fields.timeline"}
+    {
+      "entity": "Tag",
+      "field": "custom_fields.plugtag"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.isAction"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.isRole"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.isTrait"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.isLabel"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.isMiseEnScene"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.isVariation"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.variantOfTagId"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.categories"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.variations"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.labelFormula.threshold"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.labelFormula.traitRules"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.labelFormula.fieldRules"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.labelFormula.labelRules"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.labelFormula.pluggableRules"
+    },
+    {
+      "entity": "Tag",
+      "field": "custom_fields.variationData"
+    },
+    {
+      "entity": "Performer",
+      "field": "custom_fields.isArchetype"
+    },
+    {
+      "entity": "Performer",
+      "field": "custom_fields.archetypeParents"
+    },
+    {
+      "entity": "Performer",
+      "field": "custom_fields.isGeneric"
+    },
+    {
+      "entity": "Performer",
+      "field": "custom_fields.looks"
+    },
+    {
+      "entity": "Scene",
+      "field": "custom_fields.roleTagAssignments"
+    },
+    {
+      "entity": "Scene",
+      "field": "custom_fields.actionAssignments"
+    },
+    {
+      "entity": "Scene",
+      "field": "custom_fields.pluggableAssignments"
+    },
+    {
+      "entity": "Scene",
+      "field": "custom_fields.actionPairings"
+    },
+    {
+      "entity": "Scene",
+      "field": "custom_fields.roleTagPairings"
+    },
+    {
+      "entity": "Scene",
+      "field": "custom_fields.timeline"
+    }
   ],
   "not_graph_data": [
     "custom_fields.archetypeRecipe",
@@ -34,5 +112,40 @@
     "custom_fields.directTraitVariations",
     "custom_fields.inheritedVariations",
     "custom_fields.inheritedTraitVariations"
-  ]
+  ],
+  "live_capture": {
+    "stash_version": "v0.31.1",
+    "date": "2026-10-15",
+    "note": "The test library holds only a few semantic flags; it has no assignments, pairings, timelines, or label formulas, so those keys remain derived from the plugin source.",
+    "entities": {
+      "Tag": {
+        "total": 8,
+        "keys": {
+          "isTrait": 2,
+          "plugtag": 1,
+          "variantOfTagId": 1,
+          "ssvTestFlag": 1
+        }
+      },
+      "Performer": {
+        "total": 2,
+        "keys": {}
+      },
+      "Scene": {
+        "total": 1021,
+        "keys": {
+          "ssvSceneFlag": 2
+        }
+      },
+      "Image": {
+        "total": 1327,
+        "keys": {}
+      }
+    },
+    "foreign_keys": [
+      "ssvTestFlag",
+      "ssvSceneFlag"
+    ],
+    "foreign_note": "ssv* keys are written by the Semantic Stash Viewer's own tests; they are not part of the semantic contract and are deliberately unmapped."
+  }
 }

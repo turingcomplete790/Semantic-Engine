@@ -47,3 +47,25 @@ fn retired_fields_are_never_mapped() {
         );
     }
 }
+
+#[test]
+fn live_capture_keys_are_mapped_or_declared_foreign() {
+    let v = load(&common::repo_vocab_dir()).unwrap();
+    let known = v.mapped_fields();
+    let fx = fixture();
+    let foreign: Vec<&str> = fx["live_capture"]["foreign_keys"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|x| x.as_str().unwrap())
+        .collect();
+    for (entity, data) in fx["live_capture"]["entities"].as_object().unwrap() {
+        for key in data["keys"].as_object().unwrap().keys() {
+            let field = format!("custom_fields.{key}");
+            assert!(
+                known.iter().any(|k| *k == field) || foreign.contains(&key.as_str()),
+                "live key {key} on {entity} is neither mapped nor declared foreign"
+            );
+        }
+    }
+}

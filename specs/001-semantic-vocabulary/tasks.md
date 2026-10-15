@@ -140,7 +140,7 @@ produced term; every key in the captured fixture library is mapped.
 
 ### Tests for US4
 
-- [ ] T037 [P] [US4] (derived key list in place; live capture pending) Capture a read-only fixture of a plugin-tagged library's `custom_fields` keys into `crates/semantic-vocabulary/tests/fixtures/library-keys.json` (flags, `variantOfTagId`, `labelFormula`, `archetypeParents`, assignments, pairings, timeline)
+- [X] T037 [P] [US4] (live keys captured from the test instance 2026-10-15; the remaining keys are derived from plugin source because the test library has no assignments, pairings, timelines, or formulas) Capture a read-only fixture of a plugin-tagged library's `custom_fields` keys into `crates/semantic-vocabulary/tests/fixtures/library-keys.json` (flags, `variantOfTagId`, `labelFormula`, `archetypeParents`, assignments, pairings, timeline)
 - [X] T038 [P] [US4] Write failing test `crates/semantic-vocabulary/tests/mapping.rs`: every key in the fixture has a mapping entry or is on the explicit not-mapped list (`isGeneric`, Looks JSON, legacy `mise-en-scene` refs); each mapping names a defined term and an allowed-value list (V010, SC-005, FR-016)
 
 ### Implementation for US4
