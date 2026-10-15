@@ -63,7 +63,10 @@ fn live_capture_keys_are_mapped_or_declared_foreign() {
         for key in data["keys"].as_object().unwrap().keys() {
             let field = format!("custom_fields.{key}");
             assert!(
-                known.iter().any(|k| *k == field) || foreign.contains(&key.as_str()),
+                known
+                    .iter()
+                    .any(|k| *k == field || k.starts_with(&format!("{field}.")))
+                    || foreign.contains(&key.as_str()),
                 "live key {key} on {entity} is neither mapped nor declared foreign"
             );
         }

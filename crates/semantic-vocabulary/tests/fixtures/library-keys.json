@@ -116,30 +116,51 @@
   "live_capture": {
     "stash_version": "v0.31.1",
     "date": "2026-10-15",
-    "note": "The test library holds only a few semantic flags; it has no assignments, pairings, timelines, or label formulas, so those keys remain derived from the plugin source.",
+    "note": "Key names and counts only (no values) from read-only queries on a Stash v0.31.1 test instance after creating SE-Test items covering every mapped key: tags with each flag, a label formula, a Variation with variationData, archetypes with parents, and a scene and image with assignments, pairings, and a timeline with Stages. Only keys that exist in the plugin's source were written.",
     "entities": {
       "Tag": {
-        "total": 8,
+        "total": 17,
         "keys": {
-          "isTrait": 2,
-          "plugtag": 1,
-          "variantOfTagId": 1,
-          "ssvTestFlag": 1
+          "categories": 4,
+          "isAction": 2,
+          "isLabel": 1,
+          "isMiseEnScene": 1,
+          "isRole": 2,
+          "isTrait": 3,
+          "isVariation": 1,
+          "labelFormula": 1,
+          "plugtag": 2,
+          "ssvTestFlag": 1,
+          "variantOfTagId": 2,
+          "variationData": 1,
+          "variations": 3
         }
       },
       "Performer": {
-        "total": 2,
-        "keys": {}
+        "total": 6,
+        "keys": {
+          "archetypeParents": 2,
+          "isArchetype": 2
+        }
       },
       "Scene": {
         "total": 1021,
         "keys": {
-          "ssvSceneFlag": 2
+          "actionAssignments": 1,
+          "actionPairings": 1,
+          "pluggableAssignments": 1,
+          "roleTagAssignments": 1,
+          "roleTagPairings": 1,
+          "ssvSceneFlag": 2,
+          "timeline": 1
         }
       },
       "Image": {
         "total": 1327,
-        "keys": {}
+        "keys": {
+          "roleTagAssignments": 1,
+          "timeline": 1
+        }
       }
     },
     "foreign_keys": [
