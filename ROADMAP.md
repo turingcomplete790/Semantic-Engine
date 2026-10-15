@@ -21,6 +21,9 @@ link the spec folder (`specs/NNN-name/`) next to the item.
 
 - [x] Constitution v1.0.0
 - [ ] Cargo workspace: engine library crate, Stash adapter crate, plugin executable crate
+- [ ] Server identity task: a plugin task that generates a UUID once and stores it in Stash, read
+      by every client as the server part of item identifiers
+      (`specs/001-semantic-vocabulary/` FR-014)
 - [ ] Plugin manifest and a no-op operation that Stash can invoke (`runPluginOperation`)
 - [ ] CI: format, clippy, tests; prebuilt binaries for Linux (Windows and macOS as toolchains allow)
 - [ ] Fixture tooling: capture read-only GraphQL responses from a plugin-tagged library

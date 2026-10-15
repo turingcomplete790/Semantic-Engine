@@ -58,11 +58,12 @@ Namespace `sem:` = `urn:semantic-stash:vocab:`. Every term below carries `rdfs:l
 | `hasRole` | `Performer` → `RoleInstance` | SceneScoped | sub-property of `hasAssignment` |
 | `hasAction` | `Performer` → `ActionInstance` | SceneScoped | sub-property of `hasAssignment` |
 | `hasPluggable` | `Performer` → `PluggableInstance` | SceneScoped | sub-property of `hasAssignment` |
-| `hasMiseEnScene` | `MediaEntity` → `MiseEnSceneInstance` | SceneScoped | No performer involved |
+| `hasMiseEnScene` | `MediaEntity` → `MiseEnSceneInstance` | SceneScoped | No performer involved; one per distinct tag per media entity, produced from Stage picks (FR-015) |
+| `fromPick` | `MiseEnSceneInstance` → `StagePick` | SceneScoped | The Stage pick(s) this media-level assignment came from |
 | `inMedia` | `TagAssignment` → `MediaEntity` | SceneScoped | Carries the scope into the data (FR-004); also used by `Pairing` and `Timeline` |
 | `forPerformer` | `TagAssignment` → `Performer` | SceneScoped | Absent on `MiseEnSceneInstance` |
 | `ofTag` | `TagReference` → `Tag` | Global | Which tag this node is about: assignments, rules, and stage picks |
-| `hasVariation` | `TagReference` → string | Global | The variation chosen for this occurrence (per-occurrence selection) |
+| `hasVariation` | `TagReference` → string | Global | The variation chosen for this occurrence (per-occurrence selection); may repeat, notably on `MiseEnSceneInstance` when a tag is picked with different variations in different Stages |
 | `atTime` | `TagAssignment` → decimal seconds | SceneScoped | Derived from the enclosing slot's `slotSeconds`; absent if never placed |
 | `pairs` | `Pairing` → `TagAssignment` | SceneScoped | Two endpoints per pairing |
 | `pairingDirection` | `Pairing` → string | Global | `bidirectional` or `directed` |
@@ -125,9 +126,9 @@ rules, and stage picks, so no union domain is needed. Which subclasses actually 
 
 | Node | IRI pattern |
 |---|---|
-| Scene, Image, Performer, Tag, Marker | `urn:semantic-stash:{server}:{type}:{id}` |
+| Scene, Image, Performer, Tag, Marker | `urn:semantic-stash:{server}:{type}:{id}`; `{server}` is the UUID stored in Stash (FR-014) |
 | Role, Action, Pluggable instance | `{media}/{kind}:{performerId}:{tagId}` |
-| Mise-en-scène instance | `{media}/mise:{tagId}` |
+| Mise-en-scène instance | `{media}/mise:{tagId}` (one per distinct tag, variations carried over) |
 | Pairing | `{media}/pairing:{pairingId}` |
 | Timeline | `{media}/timeline` |
 | Entry | `{media}/timeline/{entryId}` |
@@ -161,11 +162,12 @@ Each row is a `sem:Mapping` with `sem:fromField`, `sem:fromEntity`, `sem:allowed
 | `custom_fields.actionAssignments` | Scene, Image | map performer → entries | `ActionInstance` |
 | `custom_fields.pluggableAssignments` | Scene, Image | map performer → entries | `PluggableInstance` |
 | `custom_fields.actionPairings`, rolePairings | Scene, Image | list | `Pairing` |
-| `custom_fields.timeline` | Scene, Image | ordered list | `Timeline`, entries |
+| `custom_fields.timeline` | Scene, Image | ordered list | `Timeline`, entries, `StagePick`, and the media-level `MiseEnSceneInstance` (one per distinct picked tag) |
+| Stash plugin setting `serverId` of this plugin (**planned**: exact setting name fixed by the engine feature) | Stash server | lower-case hyphenated UUID | the `{server}` part of every item IRI (FR-014); not a graph term |
 | native performer tags | Performer | flagged tags | `hasTrait`, `hasLabel`, `hasPerformerVariation` |
 | native tag parents | Tag | tag IDs | `parentTag` |
 
-Not mapped (FR-016): `isGeneric`, Looks JSON, legacy `mise-en-scene` slot refs.
+Not mapped (FR-016): `isGeneric`, Looks JSON, legacy `mise-en-scene` slot refs. Stage picks are the only source of Mise-en-scène assignments.
 
 The exact field names above were read from the plugin source for the mapping only; where a
 document and the code differ, the document wins and the difference is listed in the change log.

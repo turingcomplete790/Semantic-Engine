@@ -12,6 +12,7 @@ Version of this contract: 1.0.0
 | `vocabulary/stash-mapping.ttl` | Mapping from Stash data to terms |
 | `vocabulary/CHANGELOG.md` | Version history and migration notes |
 | `vocabulary/TERMS.md` | Generated term list; never edited by hand |
+| `vocabulary/released/<version>.json` | Snapshot of each released version's terms with domain and range; only added at release, never edited |
 
 All `.ttl` files are Turtle 1.1, UTF-8, LF line endings, and declare the same prefixes:
 
@@ -44,6 +45,9 @@ Stash entities rather than redefining them (FR-009).
 Deprecated terms add `sem:replacedBy` naming the replacement term (or `sem:retiredNote`
 when there is none). Planned terms add `rdfs:comment` text beginning "Planned:".
 
+The vocabulary's own annotation and structural terms (`sem:source`, `sem:scope`, `sem:status`,
+`sem:Mapping`, and the rest) are defined in `core.ttl` under the same rules as semantic terms.
+
 ## Structure rules
 
 - RDFS only: `rdfs:Class`, `rdf:Property`, `rdfs:subClassOf`, `rdfs:subPropertyOf`,
@@ -66,6 +70,9 @@ sem:map_isRole a sem:Mapping ;
     sem:status sem:Active ;
     sem:since "1.0.0" .
 ```
+
+A mapping entry whose Stash location is not yet fixed uses `sem:status sem:Planned` and a
+`rdfs:comment` beginning "Planned:"; the server identifier entry is the first of these.
 
 ## Compatibility
 

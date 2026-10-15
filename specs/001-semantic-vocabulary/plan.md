@@ -10,7 +10,9 @@ Produce the semantic vocabulary as a small set of Turtle (`.ttl`) documents at R
 (constitution Principle II, spec FR-001, FR-013), with provenance, scope, and status on every
 term, a Stash-data mapping, one deterministic IRI scheme (FR-014), and a human-readable term
 list. A small Rust crate embeds the files, parses them, and provides an automated check
-(FR-010) so the same files can later be linked by the engine and the viewer. The design is
+(FR-010) that also compares against the last release snapshot (FR-008), so the same files can
+later be linked by the engine and the viewer. Item identifiers use a server UUID stored in
+Stash (FR-014); this feature defines it and its mapping entry, and the engine feature generates it. The design is
 derived from the plugin's design documents; the plugin's own `src/semantic/vocabulary.js` is
 used only as a cross-check, not as the source.
 
@@ -38,7 +40,7 @@ hundred triples); loading the vocabulary at engine start is negligible
 **Constraints**: RDFS only, no OWL axioms (FR-013); no new Stash fields (FR-012); the
 vocabulary must not redefine Stash entities (FR-009); no network access
 
-**Scale/Scope**: About 25 classes and 40 properties, 4 Turtle files, 1 mapping document
+**Scale/Scope**: About 35 classes and 45 properties, 4 Turtle files (mapping in one of them)
 
 ## Constitution Check
 
@@ -87,7 +89,10 @@ vocabulary/
 ├── timeline.ttl                 # Timeline, slots, Stages, stage picks
 ├── stash-mapping.ttl            # Stash fields and flags → terms
 ├── CHANGELOG.md                 # versions and migration notes (FR-008)
-└── TERMS.md                     # generated human-readable term list (FR-011)
+├── TERMS.md                     # generated human-readable term list (FR-011)
+└── released/<version>.json      # release snapshot: terms with domain and range (FR-008)
+scripts/
+└── validate-ttl.sh              # second-parser check with Raptor's rapper
 crates/
 └── semantic-vocabulary/
     ├── Cargo.toml
@@ -101,9 +106,16 @@ crates/
         ├── parse.rs
         ├── defined_terms.rs
         ├── domain_range.rs
+        ├── meta_terms.rs
         ├── provenance.rs
         ├── iri_scheme.rs
-        └── mapping.rs
+        ├── mapping.rs
+        ├── version.rs
+        ├── release_compat.rs
+        ├── check_exit_codes.rs
+        ├── embedded.rs
+        ├── second_parser.rs
+        └── fixtures/
 ```
 
 **Structure Decision**: One library crate with a thin binary. Vocabulary data lives outside the

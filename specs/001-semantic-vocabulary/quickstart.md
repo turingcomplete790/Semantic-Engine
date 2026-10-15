@@ -52,3 +52,22 @@ cargo test -p semantic-vocabulary mapping
 
 Expected: every flag and `custom_fields` key present in the captured fixture library has a
 mapping entry, and none is reported as unmapped.
+
+## 7. Release procedure (FR-008)
+
+```text
+# bump `sem:version` in vocabulary/core.ttl and add the entry to vocabulary/CHANGELOG.md
+cargo run -p semantic-vocabulary --bin vocab-check -- --write-snapshot
+cargo run -p semantic-vocabulary --bin vocab-check
+```
+
+Expected: the snapshot `vocabulary/released/<version>.json` is written and the check passes.
+On the first release there is no earlier snapshot, so the compatibility rule (V014) passes with
+a notice. Afterwards, removing or renaming a term without a higher MAJOR makes V014 fail.
+
+## 8. Server identifier
+
+The vocabulary tests use the fixed example UUID `00000000-0000-4000-8000-000000000001` for the
+`{server}` part of item IRIs. Generating and storing the real identifier is a task of the engine
+plugin (see `ROADMAP.md`, Phase 0); a client that cannot find it reports that it has not been
+generated.

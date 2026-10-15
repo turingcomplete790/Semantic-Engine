@@ -43,6 +43,30 @@ uncommitted working copy as of 2026-10-14.
   `isGeneric` performers and Looks stored as JSON)? → A: No: the mapping covers current data only;
   legacy fields are not mapped, and libraries not yet migrated lose those facts in the graph
   until they are.
+- Q: Where does a Mise-en-scène assignment come from now that per-slot Mise-en-scène refs are
+  retired? → A: Both: each Stage pick stays as the timeline-level node, and each distinct
+  Mise-en-scène tag picked by any Stage of a media entity also yields one media-level
+  Mise-en-scène assignment (one per tag per media entity), so "this scene has this location" is
+  a direct fact.
+- Q: How should independent clients agree on the server part of every item identifier? → A: A
+  server identifier (a UUID) generated once and stored in Stash, then read by every client. The
+  engine plugin provides a task that generates and stores it; the vocabulary defines only its
+  form and how it enters item identifiers.
+- Q: How should the check detect a breaking vocabulary change so it cannot ship without a major
+  version bump? → A: A committed snapshot of the last released vocabulary (each term with its
+  domain and range); the check compares against it and requires a MAJOR bump for removals,
+  renames, or incompatible changes, and a MINOR bump for additions.
+
+### Session 2026-10-15
+
+- Q: Should this feature only document the rules for building graph nodes from Stash data, or
+  also ship a working reference builder with tests? → A: Document only: the rules are stated on
+  the terms and in the mapping, the IRI builder functions stay (they define the scheme), and
+  building and testing the full graph belongs to the engine's graph-build feature.
+- Q: If the same Mise-en-scène tag is picked with different variations in different Stages,
+  should the media-level assignment hold several variations or become separate assignments? →
+  A: One media-level assignment per distinct tag; the chosen-variation property may repeat on
+  it, carrying every distinct variation picked for that tag.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -138,13 +162,15 @@ Client projects need to know when the vocabulary changes so they can adapt.
 
 **Why this priority**: Three independently released projects will drift without explicit versions.
 
-**Independent Test**: Make a breaking change (rename a property); the version identifier changes,
-and the change appears in a change log with migration notes.
+**Independent Test**: In a scratch copy, rename a property; the check fails until the version
+has a new MAJOR number and the change appears in the change log with migration notes.
 
 **Acceptance Scenarios**:
 
 1. **Given** the vocabulary documents, **When** a reader checks them, **Then** each carries a
    version identifier and a short change log.
+2. **Given** a released vocabulary, **When** a term is renamed or removed without a MAJOR
+   version bump, **Then** the automated check fails and names the term.
 
 ### Edge Cases
 
@@ -196,8 +222,10 @@ and the change appears in a change log with migration notes.
   (tag flags such as `plugtag`, `isAction`, `isRole`, `isTrait`, `isLabel`, `isMiseEnScene`,
   `isVariation`; `variantOfTagId`; Label formula fields; performer flags) to the terms they
   produce, including allowed values.
-- **FR-008**: The vocabulary MUST carry a version identifier and a change log; a breaking
-  change MUST change the major version.
+- **FR-008**: The vocabulary MUST carry a version identifier and a change log. The automated
+  check MUST compare the vocabulary with a committed snapshot of the last released version and
+  fail unless the declared version reflects the change: MAJOR for a removed or renamed term or
+  an incompatible domain or range, MINOR for added terms, with the change log updated.
 - **FR-009**: The vocabulary MUST NOT redefine Stash's own entities or native fields; it MUST
   reference them.
 - **FR-010**: The vocabulary MUST be validated by an automated check (syntax, defined terms,
@@ -206,15 +234,19 @@ and the change appears in a change log with migration notes.
 - **FR-011**: A human-readable summary (term list with definitions and scopes) MUST accompany the
   Turtle documents so the vocabulary can be reviewed without an RDF tool.
 - **FR-012**: The vocabulary MUST be usable by the viewer and the plugin without changes to
-  their stored Stash data: it describes the existing data contract and adds no new Stash fields.
+  their stored Stash data: it describes the existing data contract and adds no new Stash
+  fields, with one stated exception: the single server identifier (FR-014), a new value stored
+  in Stash once per server and never per item.
 - **FR-013**: The vocabulary MUST use RDFS-level structure only (class and property
   declarations, subclass and subproperty, domain and range, labels, comments, deprecation
   links). It MUST NOT include OWL axioms such as disjointness or cardinality, so no consumer
   needs a reasoner to use it.
 - **FR-014**: The vocabulary MUST define one deterministic IRI scheme for Stash items
   (scene, image, performer, tag, and the reified assignment nodes) built from the entity type
-  and its Stash ID under a per-server base IRI, so any client building the graph from the same
-  library produces identical identifiers. Assignment nodes MUST derive their IRI from the
+  and its Stash ID under a per-server base IRI built from the server identifier (a lower-case
+  hyphenated UUID stored in Stash, read identically by every client), so any client building the
+  graph from the same library produces identical identifiers. A client that finds no server
+  identifier MUST NOT invent one; it reports that the identifier has not been generated yet. Assignment nodes MUST derive their IRI from the
   identifiers they connect, so rebuilding the graph never changes them.
 - **FR-015**: The vocabulary MUST describe the Timeline as the plugin implements it
   (`README.md` "Timeline"; `semantic-query-engine-roadmap.md` Milestones 1B and 1D; the
@@ -231,6 +263,13 @@ and the change appears in a change log with migration notes.
     Mise-en-scène picks, each a tag with an optional declared variation, and applies to every
     slot after it until the next Stage or the end of the Timeline. A slot's Stage MUST be
     derivable from order alone (no separate stage field on slots), as the documents specify.
+  - The vocabulary MUST document, on the Mise-en-scène assignment term, the derivation rule:
+    each distinct Mise-en-scène tag picked by any Stage of a media entity yields one media-level
+    Mise-en-scène assignment (FR-004) for that media entity, with every distinct variation picked
+    for that tag carried over (the chosen-variation property may repeat on it) and a link to
+    the pick(s) it came from. Stage picks are the only source of these
+    assignments; retired per-slot Mise-en-scène refs are not read (FR-016). Building the graph
+    by this rule belongs to the engine's graph-build feature.
   - A **pairing** (a performer-to-performer Role or Action link with its own stable
     identifier) MUST be a defined term, since slots refer to it.
   - Entries saved before Stages existed carry no kind; they are slots. The vocabulary MUST state
@@ -242,6 +281,10 @@ and the change appears in a change log with migration notes.
   Retired terms stay in the vocabulary only as deprecated entries naming their replacement
   (FR-006), so readers of older documents can find them, and the change log MUST state which
   retired fields are no longer read.
+- **FR-017**: The vocabulary's own annotation and structural terms (source, source revision,
+  scope, status, version, replacement, mapping entries, and their values) MUST be defined in the
+  vocabulary and obey the same rules as the semantic terms, so a consumer needs nothing outside
+  the vocabulary to interpret it.
 
 ### Key Entities
 
@@ -291,8 +334,10 @@ and the change appears in a change log with migration notes.
   plus the read date, and the vocabulary is re-checked when they are committed.
 - The vocabulary's own namespace IRI is a stable, project-owned identifier chosen at planning
   time; it does not need to resolve on the web in this version. Item identifiers (FR-014) use a
-  separate per-server base IRI supplied by the client when it builds the graph.
-- Existing standard vocabularies (for example RDFS and OWL) MAY be reused for structure, but no
+  separate per-server base IRI built from the server identifier stored in Stash.
+- Generating and storing the server identifier is a task of the engine plugin, delivered by a
+  later feature; this feature defines its form and use, and tests use a fixed example UUID.
+- Only RDFS and XSD terms are reused from standard vocabularies (FR-013); no OWL term and no
   external domain vocabulary is required.
 - Data-validation shapes (for example SHACL) are a separate, later feature, taken up once the
   engine exists and there is real data to validate.

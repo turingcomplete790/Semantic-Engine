@@ -5,12 +5,13 @@ Version of this contract: 1.0.0
 ## Command
 
 ```text
-vocab-check [--dir <vocabulary-dir>] [--format text|json] [--write-terms]
+vocab-check [--dir <vocabulary-dir>] [--format text|json] [--write-terms] [--write-snapshot]
 ```
 
 - `--dir`: directory holding the `.ttl` files (default `vocabulary/`).
 - `--format`: `text` (default) or `json`.
 - `--write-terms`: regenerate `TERMS.md` instead of only checking it is current.
+- `--write-snapshot`: write `vocabulary/released/<version>.json` (terms with domain and range) at release time.
 
 ## Exit codes
 
@@ -37,6 +38,7 @@ vocab-check [--dir <vocabulary-dir>] [--format text|json] [--write-terms]
 | V011 | `TERMS.md` matches the generated output | FR-011 |
 | V012 | No term is defined in more than one file | contracts/vocabulary-files.md |
 | V013 | No class is defined that duplicates a Stash native entity (Scene, Image, Gallery, Performer, Tag, Studio, Group, Marker as Stash types); the semantic `Scene`, `Image`, `Performer`, and `Tag` classes carry `sem:references` naming the Stash entity instead of redefining it | FR-009 |
+| V014 | Compared with `vocabulary/released/<version>.json` (the last release snapshot): a removed or renamed term, or an incompatible domain or range, requires a higher MAJOR; added terms require a higher MINOR; the change log has an entry for the new version. If no snapshot exists yet (first release), the rule passes and the check prints a notice that the snapshot is to be written at release | FR-008, US5 |
 
 ## JSON output
 

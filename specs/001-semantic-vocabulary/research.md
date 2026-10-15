@@ -9,15 +9,16 @@ plugin's `src/semantic/vocabulary.js` and `src/ui/timeline.js`, read at plugin c
 ## R1. Namespace and item IRIs
 
 - **Decision**: Vocabulary namespace `urn:semantic-stash:vocab:` (prefix `sem:`). Item IRIs
-  `urn:semantic-stash:{server}:{type}:{id}` where `{server}` is an opaque identifier for the
-  Stash server (supplied by the client), `{type}` is one of `scene`, `image`, `performer`,
+  `urn:semantic-stash:{server}:{type}:{id}` where `{server}` is a UUID (lower-case, hyphenated)
+  generated once by an engine-plugin task and stored in Stash, read by every client, `{type}` is one of `scene`, `image`, `performer`,
   `tag`, `marker`, and `{id}` is Stash's numeric ID. Derived nodes: `.../{type}:{id}/{kind}:{key}`,
   for example `.../scene:12/role:{performerId}:{tagId}` and `.../scene:12/timeline:{entryId}`.
 - **Rationale**: URNs need no owned web domain (spec assumption) and cannot be mistaken for
   something that should resolve. Stash IDs are unique within one server only, which matches the
   constitution's rule that a store is never shared across servers. Deriving derived-node IRIs
   from the identifiers they connect makes rebuilds stable (FR-014, SC-006).
-- **Alternatives considered**: An `https://` namespace (needs a domain the project does not own
+- **Alternatives considered**: Normalised base URL as the server part (fragile: the same
+  server is reached by several URLs; rejected in the second clarification pass). An `https://` namespace (needs a domain the project does not own
   and invites dereferencing). Blank nodes for assignments (not stable across rebuilds, cannot be
   compared between clients). Hash-based IDs (rejected during clarification).
 
