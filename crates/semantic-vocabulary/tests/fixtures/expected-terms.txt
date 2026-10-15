@@ -86,6 +86,7 @@ prop produces core.ttl Global
 prop serverIdentifier core.ttl Global
 prop hasThreshold labels.ttl Global
 prop hasRule labels.ttl Global
+prop ruleId labels.ttl Global
 prop hasWeight labels.ttl Global
 prop isRecursive labels.ttl Global
 prop hasField labels.ttl Global

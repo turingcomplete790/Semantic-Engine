@@ -7,7 +7,7 @@
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
 
 # Vocabulary identity
-<urn:semantic-stash:vocab:> sem:version "1.0.0" .
+<urn:semantic-stash:vocab:> sem:version "1.1.0" .
 
 # ---- Vocabulary metadata (FR-017)
 

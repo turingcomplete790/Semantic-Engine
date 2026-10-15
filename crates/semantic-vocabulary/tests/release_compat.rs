@@ -3,17 +3,17 @@ use semantic_vocabulary::load;
 
 fn set_version(dir: &std::path::Path, ver: &str) {
     let core = common::read(dir, "core.ttl");
-    let core = core.replacen(
-        "sem:version \"1.0.0\"",
-        &format!("sem:version \"{ver}\""),
-        1,
-    );
+    let start = core.find("sem:version \"").unwrap() + "sem:version \"".len();
+    let end = core[start..].find('"').unwrap() + start;
+    let core = format!("{}{}{}", &core[..start], ver, &core[end..]);
     common::write(dir, "core.ttl", &core);
     let cl = common::read(dir, "CHANGELOG.md");
+    let h = cl.find("\n## ").unwrap() + 4;
+    let he = cl[h..].find(' ').unwrap() + h;
     common::write(
         dir,
         "CHANGELOG.md",
-        &cl.replacen("## 1.0.0", &format!("## {ver}"), 1),
+        &format!("{}{}{}", &cl[..h], ver, &cl[he..]),
     );
     // Keep TERMS.md out of the way: regenerate through the library.
     let v = load(dir).unwrap();
@@ -46,7 +46,7 @@ fn removed_term_without_major_bump_fails_naming_the_term() {
     let start = l.find("sem:hasValue2 a rdf:Property").unwrap();
     let end = l[start..].find(" .\n").unwrap() + start + 3;
     common::write(&dir, "labels.ttl", &format!("{}{}", &l[..start], &l[end..]));
-    set_version(&dir, "1.1.0");
+    set_version(&dir, "1.2.0");
     let v = load(&dir).unwrap();
     let viol = v.check();
     let hit = viol

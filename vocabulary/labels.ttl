@@ -74,6 +74,17 @@ sem:hasRule a rdf:Property ;
     sem:status sem:Active ;
     sem:since "1.0.0" .
 
+sem:ruleId a rdf:Property ;
+    rdfs:domain sem:LabelRule ;
+    rdfs:range xsd:string ;
+    rdfs:label "rule id"@en ;
+    rdfs:comment "The plugin's stable identifier of a rule within its Label's formula; used to build the rule's IRI so reordering a formula does not change it." ;
+    sem:source "src/ui/labels.js (formula rule ids; read as implementation evidence)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.1.0" .
+
 sem:hasWeight a rdf:Property ;
     rdfs:domain sem:LabelRule ;
     rdfs:range xsd:decimal ;

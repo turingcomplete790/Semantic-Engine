@@ -123,7 +123,8 @@ impl ItemIris {
     pub fn stage_pick(&self, entry: &str, tag: &str) -> String {
         format!("{entry}/pick:{}", check_id(tag).expect("valid"))
     }
-    pub fn label_rule(&self, label: &str, index: usize) -> String {
-        format!("{label}/rule:{index}")
+    /// `rule_id` is the rule's own stable id inside the Label formula, not its position.
+    pub fn label_rule(&self, label: &str, rule_id: &str) -> String {
+        format!("{label}/rule:{}", check_id(rule_id).expect("valid"))
     }
 }

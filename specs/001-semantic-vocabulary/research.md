@@ -12,7 +12,7 @@ plugin's `src/semantic/vocabulary.js` and `src/ui/timeline.js`, read at plugin c
   `urn:semantic-stash:{server}:{type}:{id}` where `{server}` is a UUID (lower-case, hyphenated)
   generated once by an engine-plugin task and stored in Stash, read by every client, `{type}` is one of `scene`, `image`, `performer`,
   `tag`, `marker`, and `{id}` is Stash's numeric ID. Derived nodes: `.../{type}:{id}/{kind}:{key}`,
-  for example `.../scene:12/role:{performerId}:{tagId}` and `.../scene:12/timeline:{entryId}`.
+  for example `.../scene:12/role:{performerId}:{tagId}` and `.../scene:12/timeline:{entryId}`. Label rule nodes use the rule's own stable id (`{label}/rule:{ruleId}`), not its position.
 - **Rationale**: URNs need no owned web domain (spec assumption) and cannot be mistaken for
   something that should resolve. Stash IDs are unique within one server only, which matches the
   constitution's rule that a store is never shared across servers. Deriving derived-node IRIs

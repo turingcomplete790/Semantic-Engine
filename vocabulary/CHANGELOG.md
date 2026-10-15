@@ -4,6 +4,15 @@ Release procedure: bump `sem:version` in `core.ttl`, add the entry here, run
 `vocab-check --write-terms --write-snapshot`, then `vocab-check`. A removed or renamed term, or an
 incompatible domain or range, needs a higher MAJOR; added terms need a higher MINOR (rule V014).
 
+## 1.1.0 (2026-10-15)
+
+- Added `ruleId` (Label rule to string): the plugin's stable identifier of a rule within its
+  Label's formula. Label rule IRIs are now `{label}/rule:{ruleId}` instead of position-based, so
+  reordering a formula no longer changes them. Found when the plugin's real data showed that
+  every rule carries its own `id`.
+- Mapping entries for the Label formula rule lists now name the `id` field.
+- No client had consumed 1.0.0 when the rule IRI pattern changed.
+
 ## 1.0.0 (2026-10-14)
 
 Initial release, derived from the semantic-tagging design documents (`README.md`,

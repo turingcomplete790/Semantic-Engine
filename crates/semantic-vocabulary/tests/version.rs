@@ -13,7 +13,13 @@ fn version_is_declared_once_and_matches_changelog() {
 fn mismatch_with_changelog_is_reported() {
     let dir = common::scratch_copy();
     let cl = common::read(&dir, "CHANGELOG.md");
-    common::write(&dir, "CHANGELOG.md", &cl.replace("## 1.0.0", "## 9.9.9"));
+    let h = cl.find("\n## ").unwrap() + 4;
+    let he = cl[h..].find(' ').unwrap() + h;
+    common::write(
+        &dir,
+        "CHANGELOG.md",
+        &format!("{}9.9.9{}", &cl[..h], &cl[he..]),
+    );
     let v = load(&dir).unwrap();
     assert!(common::rules(&v.check()).contains(&"V009".to_string()));
 }
@@ -25,7 +31,7 @@ fn two_declarations_are_reported() {
     common::write(
         &dir,
         "labels.ttl",
-        &format!("{l}\n<urn:semantic-stash:vocab:> sem:version \"1.0.0\" .\n"),
+        &format!("{l}\n<urn:semantic-stash:vocab:> sem:version \"1.1.0\" .\n"),
     );
     let v = load(&dir).unwrap();
     assert!(common::rules(&v.check()).contains(&"V009".to_string()));

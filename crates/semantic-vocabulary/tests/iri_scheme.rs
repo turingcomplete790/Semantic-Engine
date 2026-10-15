@@ -34,7 +34,7 @@ fn derived_iris_match_the_scheme() {
     assert_eq!(e, format!("{m}/timeline/entry-1"));
     assert_eq!(i.stage_pick(&e, "50"), format!("{e}/pick:50"));
     let l = i.tag("88");
-    assert_eq!(i.label_rule(&l, 2), format!("{l}/rule:2"));
+    assert_eq!(i.label_rule(&l, "r1"), format!("{l}/rule:r1"));
 }
 
 #[test]

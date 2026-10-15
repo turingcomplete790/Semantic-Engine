@@ -101,6 +101,7 @@ domains (RDFS, FR-013).
 |---|---|---|
 | `hasThreshold` | `Label` → decimal | Default 100 when unset (documented, not stored) |
 | `hasRule` | `Label` → `LabelRule` | One per formula entry |
+| `ruleId` | `LabelRule` → string | The plugin's stable id of a rule within its formula (since 1.1.0) |
 | `hasWeight` | `LabelRule` → decimal | |
 | `isRecursive` | `TraitRule` → boolean | Descendants count too |
 | `hasField`, `hasModifier`, `hasValue`, `hasValue2` | `FieldRule` → string | Values are Stash filter terms; not redefined |
@@ -135,7 +136,7 @@ rules, and stage picks, so no union domain is needed. Which subclasses actually 
 | Timeline | `{media}/timeline` |
 | Entry | `{media}/timeline/{entryId}` |
 | Stage pick | `{entry}/pick:{tagId}` |
-| Label rule | `{label}/rule:{index}` (index is position in the formula's own order) |
+| Label rule | `{label}/rule:{ruleId}` (the rule's own stable id in the formula, `sem:ruleId`; never its position) |
 
 Where the same tag can be assigned twice to one performer in one media entity (the
 documents allow one assignment per performer and tag), the IRI is unique by construction.
