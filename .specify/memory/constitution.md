@@ -133,14 +133,15 @@ index itself, and its answers are only trusted if they are checkable and reprodu
 - **Language and toolchain**: Rust (stable), a Cargo workspace, `rustfmt` and `clippy` clean.
 - **Engine**: Oxigraph (SPARQL 1.1 Query and Update) with an on-disk store in the plugin's
   cache location, one per Stash server profile.
-- **RocksDB**: the on-disk store's RocksDB MUST be an installed system package that the build
-  links to. The project MUST NOT build RocksDB from source and MUST NOT require CMake or a C++
-  build system in its own build; this keeps the build a plain Cargo build. RocksDB is a
-  documented prerequisite everywhere installation is described (README, install scripts, release
-  notes) with a per-platform install instruction. Packages are built against one pinned RocksDB
-  major version stated in the package; install scripts and the plugin MUST check the installed
-  version and report a missing or incompatible RocksDB by name, with the expected and found
-  versions. Reverting to a bundled RocksDB build is a MAJOR amendment.
+- **RocksDB**: the on-disk store uses the RocksDB that Oxigraph bundles and compiles from source
+  as part of the normal Cargo build (its default build). The project MUST NOT require owners to
+  install RocksDB, and MUST NOT link a system RocksDB, because the store's C++ API shim is written
+  for the bundled version and breaks against other versions (verified 2026-10-15: Oxigraph 0.4 with
+  an installed RocksDB 11.1 fails to compile). The build MUST stay a plain Cargo build with no
+  CMake. Building needs a C++17 compiler and clang (for generated bindings) on build machines and
+  CI only; released packages are self-contained and need nothing extra on the owner's machine.
+  RocksDB updates arrive with Oxigraph upgrades. Switching to a system RocksDB is a MAJOR
+  amendment.
 - **Stash interface**: GraphQL only, through a single typed adapter built with the
   [Cynic](https://cynic-rs.dev/) GraphQL client library. Queries and mutations MUST be Cynic
   typed operations generated against a copy of Stash's GraphQL schema kept in the repository and
@@ -184,4 +185,4 @@ principle changes meaning, a migration note for dependent specs and the two clie
   and the viewer's pending Phase 6 amendment wording is the reference for the shared-cache
   relationship.
 
-**Version**: 1.2.0 | **Ratified**: 2026-10-14 | **Last Amended**: 2026-10-15
+**Version**: 2.0.0 | **Ratified**: 2026-10-14 | **Last Amended**: 2026-10-15

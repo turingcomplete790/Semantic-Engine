@@ -31,13 +31,11 @@ is the base the spike (Phase 1) and the graph (Phase 2) stand on.
 - Q: What should an install script do when there is no prebuilt package for the owner's
   platform? → A: Stop before changing anything, naming the detected platform, where packages are
   published, and how to build from source; it never builds from source itself.
-- Q: How is RocksDB (the long-term cache store) provided? → A: As an installed system package
-  the owner installs first, because bundling and building it would require a C++ build system
-  (CMake) in the project's build. The project builds and links against the installed library.
-- Q: How do prebuilt packages cope with differing installed RocksDB versions? → A: One package
-  per platform, built against a single pinned RocksDB major version stated in the package and
-  README; the install script checks the installed version and refuses with the expected and found
-  versions. Revisit per-distribution packages later if that proves too narrow.
+- Q: How is RocksDB (the long-term cache store) provided? → A: Bundled: Oxigraph's default build
+  compiles RocksDB from source with a plain Cargo build (no CMake), so packages are
+  self-contained and owners install nothing. This replaces an earlier answer (an installed system
+  package with a pinned version) after a probe showed Oxigraph 0.4 does not build against an
+  installed RocksDB 11.1.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -173,8 +171,6 @@ confirm the server's data is unchanged and the files contain no credentials.
   refuses with a message that names what it found and how to build from source.
 - The install script is run without write access to the plugins folder, or the folder cannot be
   found: it stops before changing anything and says how to point it at the right folder.
-- RocksDB is not installed, or a version other than the pinned major version is installed: the install script and the
-  plugin both say so by name, and the plugin does not start a cache it cannot open.
 - The API document and the implemented operations disagree: a check fails the build.
 - The capture tool is pointed at a server it cannot reach or authenticate to: it fails with a
   clear message and writes nothing.
@@ -239,17 +235,12 @@ confirm the server's data is unchanged and the files contain no credentials.
   platform, where packages are published, and how to build from source, and MUST change nothing.
 - **FR-020**: The install scripts MUST NOT require the Rust toolchain on the owner's machine and
   MUST NOT send any data anywhere except to download the package from its published location.
-- **FR-021**: RocksDB MUST be a documented prerequisite provided as an installed system package.
-  The project's build MUST link the installed library and MUST NOT build RocksDB from source or
-  require CMake or a C++ build system. Every place that tells an owner how to install the plugin
-  MUST list RocksDB as a prerequisite with a per-platform install instruction.
-- **FR-022**: When the installed RocksDB is missing or incompatible, the install scripts and the
-  plugin itself MUST report that clearly (naming what was expected and what was found) instead of
-  failing with a loader error.
-- **FR-023**: Each package MUST state the single RocksDB major version it was built against, and
-  the install scripts MUST compare it with the installed version before changing anything,
-  refusing with the expected and found versions on a mismatch. The status operation MUST report
-  the RocksDB version the plugin is linked against and the one it found.
+- **FR-021**: The engine's on-disk store MUST use the RocksDB bundled with the storage library
+  and compiled as part of the normal build, with no CMake and no system RocksDB. Packages MUST be
+  self-contained: an owner installs nothing besides the plugin.
+- **FR-022**: Building from source MUST need only the Rust toolchain, a C++17 compiler, and clang,
+  and every build-from-source instruction MUST list them. The status operation MUST report the
+  bundled RocksDB version.
 
 ### Key Entities
 
@@ -283,9 +274,6 @@ confirm the server's data is unchanged and the files contain no credentials.
 - **SC-007**: The POSIX shell install script runs without modification on a BSD, a macOS, and a
   Linux system, verified by running it under a strict POSIX shell on each, and the PowerShell
   script is verified on Windows.
-- **SC-008**: On a machine with an incompatible or missing RocksDB, the install script refuses
-  without changing anything in 100% of attempts and the message names both the expected and the
-  found version (or "not found").
 
 ## Assumptions
 
@@ -295,15 +283,11 @@ confirm the server's data is unchanged and the files contain no credentials.
 - The server identifier is stored as a plugin setting of this plugin in Stash configuration; the
   exact setting name is fixed in this feature's plan and listed in the API document and the
   vocabulary mapping.
-- Packages are built against one pinned RocksDB major version, so a platform whose package manager
-  ships a different major version is not supported by a prebuilt package until a package for it is
-  added; owners there build from source.
 - Packages are produced for the platforms the toolchain can target in automated builds; a
   platform with no prebuilt package is reported by the install script, not silently skipped.
 - The API document is Markdown with JSON examples, kept in the repository and versioned with it.
-- The engine's long-term cache is stored with RocksDB; this feature only requires the library to
-  be present and linkable, and the status operation reports whether it is available. Using it as
-  the graph store is Phase 2.
+- The engine's long-term cache is stored with the bundled RocksDB; this feature only builds and
+  links it, and the status operation reports its version. Using it as the graph store is Phase 2.
 - Semantic behaviour (graph build, queries, hooks, incremental updates) is out of scope; those
   belong to Phases 1 to 3.
 - The viewer's and the plugin's own adoption of the engine is out of scope (Phase 4).

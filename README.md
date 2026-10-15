@@ -29,30 +29,14 @@ is built, indexed, and queried in one place with one set of answers.
 | Requirement | Why |
 |---|---|
 | Stash **v0.31.1** or newer | `custom_fields` on tags, scenes, images, and performers |
-| **RocksDB** installed as a system package | the engine's long-term on-disk cache (see below) |
 | A platform with a prebuilt package, or a Rust toolchain to build from source | see [Installing](#installing) |
 
-### RocksDB (required)
+### Long-term cache
 
 The engine keeps its derived index in an on-disk store so it is not rebuilt every time Stash
-starts the plugin. That store is built on RocksDB, which the engine **expects to find as an
-installed package**; it is not bundled with the plugin. Install it before installing or building
-the plugin.
-
-| Platform | Install |
-|---|---|
-| Debian, Ubuntu | `sudo apt install librocksdb-dev` |
-| Fedora | `sudo dnf install rocksdb rocksdb-devel` |
-| Arch Linux, Manjaro | `sudo pacman -S rocksdb` |
-| macOS (Homebrew) | `brew install rocksdb` |
-| FreeBSD | `sudo pkg install rocksdb` |
-| Windows (vcpkg) | `vcpkg install rocksdb:x64-windows` |
-
-Package names and versions differ between distributions; use your platform's package manager to
-find the RocksDB library and, if you build from source, its development files.
-
-The store is a cache: it lives in the plugin's cache folder, one per Stash server, and can be
-deleted at any time without losing data.
+starts the plugin. The store uses RocksDB, which is **bundled**: it is compiled into the plugin,
+so there is nothing extra to install. The store lives in the plugin's cache folder, one per Stash
+server, and can be deleted at any time without losing data.
 
 ## Installing
 
@@ -71,7 +55,8 @@ anything and tells you how to build from source.
 
 ## Building from source
 
-You need a stable Rust toolchain and the RocksDB package above.
+You need a stable Rust toolchain, a C++17 compiler, and clang. RocksDB is compiled from source
+as part of the build (no CMake); the first release build takes a few minutes.
 
 ```sh
 cargo build --release
