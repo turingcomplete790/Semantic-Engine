@@ -20,22 +20,23 @@ link the spec folder (`specs/NNN-name/`) next to the item.
 **Goal:** a project that builds, tests, and installs as an empty Stash plugin.
 
 - [x] Constitution v1.0.0
-- [ ] Cargo workspace: engine library crate, Stash adapter crate, plugin executable crate
+- [ ] Cargo workspace (started: `crates/semantic-vocabulary`; engine, adapter, and plugin crates follow): engine library crate, Stash adapter crate, plugin executable crate
 - [ ] Server identity task: a plugin task that generates a UUID once and stores it in Stash, read
       by every client as the server part of item identifiers
       (`specs/001-semantic-vocabulary/` FR-014)
 - [ ] Plugin manifest and a no-op operation that Stash can invoke (`runPluginOperation`)
-- [ ] CI: format, clippy, tests; prebuilt binaries for Linux (Windows and macOS as toolchains allow)
+- [ ] CI (started: `.github/workflows/vocabulary.yml`): format, clippy, tests; prebuilt binaries for Linux (Windows and macOS as toolchains allow)
 - [ ] Fixture tooling: capture read-only GraphQL responses from a plugin-tagged library
-- [ ] Semantic vocabulary as a set of RDF documents in Turtle (`.ttl`), derived from the
+- [x] Semantic vocabulary as a set of RDF documents in Turtle (`.ttl`), derived from the
       semantic-tagging design documents (`README.md`, `semantic-query-engine-roadmap.md`,
       `archetype-system-plan.md`): classes, properties, tag-type flags, scopes, Variations,
       Labels, and archetypes, each term citing the document section and plugin commit (or date)
       it was read at (constitution Principle II). The vocabulary is the contract the engine
-      builds its graph from (Phase 2)
+      builds its graph from (Phase 2). Done: `vocabulary/` and `specs/001-semantic-vocabulary/`
 - [ ] API document for clients (the viewer and the plugin): the operations, request and response
       shapes, errors, and versions (constitution Principle VI), kept in step with the plugin as
-      it is built and updated whenever an operation or the vocabulary changes
+      it is built and updated whenever an operation or the vocabulary changes. It refers to
+      terms in `vocabulary/` by IRI (`urn:semantic-stash:vocab:`), never by redefining them
 
 ## Phase 1: Spike (settle Principle IV's open questions)
 

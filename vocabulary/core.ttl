@@ -1,0 +1,835 @@
+# Semantic vocabulary: core (media, performers, tags, assignments, variations, archetypes)
+# Generated layout; edit terms directly in this file afterwards.
+
+@prefix sem:  <urn:semantic-stash:vocab:> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+# Vocabulary identity
+<urn:semantic-stash:vocab:> sem:version "1.0.0" .
+
+# ---- Vocabulary metadata (FR-017)
+
+sem:Scope a rdfs:Class ;
+    rdfs:label "Scope"@en ;
+    rdfs:comment "The kind of context in which a fact holds: scoped to one media entity, or global." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:Status a rdfs:Class ;
+    rdfs:label "Status"@en ;
+    rdfs:comment "The lifecycle state of a term or mapping entry." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:Mapping a rdfs:Class ;
+    rdfs:label "Mapping"@en ;
+    rdfs:comment "One entry mapping a Stash data field to the term it produces." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:RetiredField a rdfs:Class ;
+    rdfs:label "Retired field"@en ;
+    rdfs:comment "A Stash field the plugin retired; recorded so readers can find it, never mapped to a term (FR-016)." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:SceneScoped a sem:Scope ;
+    rdfs:label "Scene scoped"@en ;
+    rdfs:comment "The fact only holds within one scene or image." .
+
+sem:Global a sem:Scope ;
+    rdfs:label "Global"@en ;
+    rdfs:comment "The fact holds regardless of any scene or image." .
+
+sem:Active a sem:Status ;
+    rdfs:label "Active"@en ;
+    rdfs:comment "In use; part of the current contract." .
+
+sem:Deprecated a sem:Status ;
+    rdfs:label "Deprecated"@en ;
+    rdfs:comment "Superseded or retired; kept only so older documents can be read." .
+
+sem:Planned a sem:Status ;
+    rdfs:label "Planned"@en ;
+    rdfs:comment "Described by the documents but not yet defined for use." .
+
+sem:Derived a sem:Status ;
+    rdfs:label "Derived"@en ;
+    rdfs:comment "Defined as a rule over other facts; not stored." .
+
+sem:source a rdf:Property ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range xsd:string ;
+    rdfs:label "source"@en ;
+    rdfs:comment "Design document and section a term was read from; may repeat." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:sourceRevision a rdf:Property ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range xsd:string ;
+    rdfs:label "source revision"@en ;
+    rdfs:comment "Plugin commit or date the source was read at." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:scope a rdf:Property ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range sem:Scope ;
+    rdfs:label "scope"@en ;
+    rdfs:comment "Whether a term's facts hold within one media entity or globally." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:status a rdf:Property ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range sem:Status ;
+    rdfs:label "status"@en ;
+    rdfs:comment "Lifecycle state of a term or mapping entry." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:since a rdf:Property ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range xsd:string ;
+    rdfs:label "since"@en ;
+    rdfs:comment "Vocabulary version in which a term was introduced." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:replacedBy a rdf:Property ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range rdfs:Resource ;
+    rdfs:label "replaced by"@en ;
+    rdfs:comment "The term that replaces a deprecated term." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:retiredNote a rdf:Property ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range xsd:string ;
+    rdfs:label "retired note"@en ;
+    rdfs:comment "Why a deprecated term has no replacement." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:references a rdf:Property ;
+    rdfs:domain rdfs:Class ;
+    rdfs:range xsd:string ;
+    rdfs:label "references"@en ;
+    rdfs:comment "The Stash entity a class stands for; the vocabulary refers to it, never redefines it (FR-009)." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:version a rdf:Property ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range xsd:string ;
+    rdfs:label "version"@en ;
+    rdfs:comment "The vocabulary version, declared exactly once on the vocabulary identifier." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:fromEntity a rdf:Property ;
+    rdfs:domain sem:Mapping ;
+    rdfs:range xsd:string ;
+    rdfs:label "from entity"@en ;
+    rdfs:comment "The Stash entity type a mapping reads from." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:fromField a rdf:Property ;
+    rdfs:domain sem:Mapping ;
+    rdfs:range xsd:string ;
+    rdfs:label "from field"@en ;
+    rdfs:comment "The Stash field or custom field a mapping reads." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:allowedValues a rdf:Property ;
+    rdfs:domain sem:Mapping ;
+    rdfs:range xsd:string ;
+    rdfs:label "allowed values"@en ;
+    rdfs:comment "The values or shape the Stash field may hold." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:produces a rdf:Property ;
+    rdfs:domain sem:Mapping ;
+    rdfs:range rdfs:Resource ;
+    rdfs:label "produces"@en ;
+    rdfs:comment "The vocabulary term a mapping entry produces." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:serverIdentifier a rdf:Property ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range xsd:string ;
+    rdfs:label "server identifier"@en ;
+    rdfs:comment "Planned: the UUID stored in Stash once per server, used as the {server} part of every item IRI (FR-014). The engine plugin generates it; its exact setting name is fixed by that feature." ;
+    sem:source "specs/001-semantic-vocabulary/contracts/vocabulary-files.md" ;
+    sem:source "specs/001-semantic-vocabulary/spec.md § FR-014" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Planned ;
+    sem:since "1.0.0" .
+
+
+# ---- Stash entities referenced, not redefined (FR-009)
+
+sem:MediaEntity a rdfs:Class ;
+    rdfs:label "Media entity"@en ;
+    rdfs:comment "Abstract base for anything semantic tags and relationships attach to: a Scene or an Image." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:Scene a rdfs:Class ;
+    rdfs:subClassOf sem:MediaEntity ;
+    rdfs:label "Scene"@en ;
+    rdfs:comment "A Stash scene." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:references "Scene" ;
+    sem:since "1.0.0" .
+
+sem:Image a rdfs:Class ;
+    rdfs:subClassOf sem:MediaEntity ;
+    rdfs:label "Image"@en ;
+    rdfs:comment "A Stash image. Carries the same predicates as a Scene." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:references "Image" ;
+    sem:since "1.0.0" .
+
+sem:Performer a rdfs:Class ;
+    rdfs:label "Performer"@en ;
+    rdfs:comment "A Stash performer." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:references "Performer" ;
+    sem:since "1.0.0" .
+
+sem:Tag a rdfs:Class ;
+    rdfs:label "Tag"@en ;
+    rdfs:comment "Abstract base of the flagged tag types; all are the same underlying Stash tag, differentiated by which flag is set." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:references "Tag" ;
+    sem:since "1.0.0" .
+
+sem:Marker a rdfs:Class ;
+    rdfs:label "Marker"@en ;
+    rdfs:comment "A Stash scene marker, referenced when a Timeline slot has a generated marker." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:references "SceneMarker" ;
+    sem:since "1.0.0" .
+
+
+# ---- Tag types (flag per stash-mapping.ttl)
+
+sem:Pluggable a rdfs:Class ;
+    rdfs:subClassOf sem:Tag ;
+    rdfs:label "Pluggable"@en ;
+    rdfs:comment "A Pluggable trait tag (hair colour, build and the like); optional, assigned per scene and performer." ;
+    sem:source "README.md § Features" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:Action a rdfs:Class ;
+    rdfs:subClassOf sem:Tag ;
+    rdfs:label "Action"@en ;
+    rdfs:comment "An Action tag (for example Kissing); assignments may carry a chosen variation and a Timeline time. Has declared variations, own and inherited." ;
+    sem:source "README.md § Features" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:Role a rdfs:Class ;
+    rdfs:subClassOf sem:Tag ;
+    rdfs:label "Role"@en ;
+    rdfs:comment "A Role tag (for example Dom, Sub); assignments may carry a Timeline time. Has categories." ;
+    sem:source "README.md § Features" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:Trait a rdfs:Class ;
+    rdfs:subClassOf sem:Tag ;
+    rdfs:label "Trait"@en ;
+    rdfs:comment "A Trait tag: the bounded, curated performer-global tag set. Has categories and declared variations, own and inherited." ;
+    sem:source "README.md § Features" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:Label a rdfs:Class ;
+    rdfs:subClassOf sem:Tag ;
+    rdfs:label "Label"@en ;
+    rdfs:comment "A Label tag: computed or composite, defined by a weighted formula and applied automatically. Has no categories or variations." ;
+    sem:source "README.md § Features" ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:MiseEnScene a rdfs:Class ;
+    rdfs:subClassOf sem:Tag ;
+    rdfs:label "Mise-en-scène"@en ;
+    rdfs:comment "A Mise-en-scène tag (location, set dressing, directing style); describes the scene or image itself, never a performer. Has categories and declared variations." ;
+    sem:source "README.md § Features" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:Variation a rdfs:Class ;
+    rdfs:subClassOf sem:Tag ;
+    rdfs:label "Variation"@en ;
+    rdfs:comment "A real tag (flagged isVariation) naming one concrete combination a performer can carry, named '<Performer> (<Variant>)'; owned by one performer and carrying its own Pluggables and Labels." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:Archetype a rdfs:Class ;
+    rdfs:subClassOf sem:Performer ;
+    rdfs:label "Archetype"@en ;
+    rdfs:comment "A performer flagged isArchetype: a reusable, hierarchical shape forming a directed graph through parents-only adjacency, with configured attributes inherited from ancestors." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1B (Archetype System)" ;
+    sem:source "archetype-system-plan.md § Data model" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+
+# ---- Shared abstractions and assignments (scope inside the data, FR-004)
+
+sem:TagReference a rdfs:Class ;
+    rdfs:label "Tag reference"@en ;
+    rdfs:comment "Abstract: anything that points at one tag through ofTag: assignments, label rules, stage picks." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:Placeable a rdfs:Class ;
+    rdfs:label "Placeable"@en ;
+    rdfs:comment "Abstract: anything a Timeline slot can place: assignments and pairings." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:MediaScoped a rdfs:Class ;
+    rdfs:label "Media scoped"@en ;
+    rdfs:comment "Abstract: anything that belongs to exactly one media entity (inMedia): assignments, pairings, Timelines." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:TagAssignment a rdfs:Class ;
+    rdfs:subClassOf sem:TagReference, sem:Placeable, sem:MediaScoped ;
+    rdfs:label "Tag assignment"@en ;
+    rdfs:comment "Abstract base of reified assignments: one tag assigned within one media entity, so the scope is part of the data." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:RoleInstance a rdfs:Class ;
+    rdfs:subClassOf sem:TagAssignment ;
+    rdfs:label "Role instance"@en ;
+    rdfs:comment "One performer's assignment of one Role within one media entity; may carry a time when placed on the Timeline." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:ActionInstance a rdfs:Class ;
+    rdfs:subClassOf sem:TagAssignment ;
+    rdfs:label "Action instance"@en ;
+    rdfs:comment "One performer's assignment of one Action within one media entity; may carry the chosen variation and a time." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:PluggableInstance a rdfs:Class ;
+    rdfs:subClassOf sem:TagAssignment ;
+    rdfs:label "Pluggable instance"@en ;
+    rdfs:comment "One performer's assignment of one Pluggable within one media entity." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:source "specs/001-semantic-vocabulary/spec.md § Clarifications (scope as reified assignments)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:MiseEnSceneInstance a rdfs:Class ;
+    rdfs:subClassOf sem:TagAssignment ;
+    rdfs:label "Mise-en-scène instance"@en ;
+    rdfs:comment "One media entity's assignment of one Mise-en-scène tag. Derivation rule: each distinct Mise-en-scène tag picked by any Stage of the media entity yields exactly one such node, carrying every distinct variation picked and a link to the picks it came from. Stage picks are the only source; retired per-slot refs are not read." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "specs/001-semantic-vocabulary/spec.md § FR-015" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:Pairing a rdfs:Class ;
+    rdfs:subClassOf sem:Placeable, sem:MediaScoped ;
+    rdfs:label "Pairing"@en ;
+    rdfs:comment "A performer-to-performer link of two Role or two Action instances within one media entity, with its own stable identifier and a direction." ;
+    sem:source "README.md § Features" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:RolePairing a rdfs:Class ;
+    rdfs:subClassOf sem:Pairing ;
+    rdfs:label "Role pairing"@en ;
+    rdfs:comment "A pairing of two Role instances (for example Dom to Sub)." ;
+    sem:source "README.md § Features" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:ActionPairing a rdfs:Class ;
+    rdfs:subClassOf sem:Pairing ;
+    rdfs:label "Action pairing"@en ;
+    rdfs:comment "A pairing of two Action instances (for example two performers sharing an Action)." ;
+    sem:source "README.md § Features" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+
+# ---- Participation and assignment properties
+
+sem:hasPerformer a rdf:Property ;
+    rdfs:domain sem:MediaEntity ;
+    rdfs:range sem:Performer ;
+    rdfs:label "has performer"@en ;
+    rdfs:comment "This media entity involves this performer: the union of every performer referenced by an assignment or pairing." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasAssignment a rdf:Property ;
+    rdfs:domain sem:Performer ;
+    rdfs:range sem:TagAssignment ;
+    rdfs:label "has assignment"@en ;
+    rdfs:comment "Within one media entity, this performer has this tag assignment." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasRole a rdf:Property ;
+    rdfs:subPropertyOf sem:hasAssignment ;
+    rdfs:domain sem:Performer ;
+    rdfs:range sem:RoleInstance ;
+    rdfs:label "has role"@en ;
+    rdfs:comment "Within one media entity, this performer has this Role assignment." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasAction a rdf:Property ;
+    rdfs:subPropertyOf sem:hasAssignment ;
+    rdfs:domain sem:Performer ;
+    rdfs:range sem:ActionInstance ;
+    rdfs:label "has action"@en ;
+    rdfs:comment "Within one media entity, this performer has this Action assignment." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasPluggable a rdf:Property ;
+    rdfs:subPropertyOf sem:hasAssignment ;
+    rdfs:domain sem:Performer ;
+    rdfs:range sem:PluggableInstance ;
+    rdfs:label "has pluggable"@en ;
+    rdfs:comment "Within one media entity, this performer has this Pluggable assignment." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasMiseEnScene a rdf:Property ;
+    rdfs:domain sem:MediaEntity ;
+    rdfs:range sem:MiseEnSceneInstance ;
+    rdfs:label "has Mise-en-scène"@en ;
+    rdfs:comment "This media entity has this Mise-en-scène assignment; derived from Stage picks, no performer involved." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:fromPick a rdf:Property ;
+    rdfs:domain sem:MiseEnSceneInstance ;
+    rdfs:range sem:StagePick ;
+    rdfs:label "from pick"@en ;
+    rdfs:comment "The Stage pick a media-level Mise-en-scène assignment came from; may repeat." ;
+    sem:source "specs/001-semantic-vocabulary/spec.md § FR-015" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:inMedia a rdf:Property ;
+    rdfs:domain sem:MediaScoped ;
+    rdfs:range sem:MediaEntity ;
+    rdfs:label "in media"@en ;
+    rdfs:comment "The one media entity this assignment, pairing, or Timeline belongs to; carries the scope into the data." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:forPerformer a rdf:Property ;
+    rdfs:domain sem:TagAssignment ;
+    rdfs:range sem:Performer ;
+    rdfs:label "for performer"@en ;
+    rdfs:comment "The performer an assignment is for; absent on Mise-en-scène assignments." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:ofTag a rdf:Property ;
+    rdfs:domain sem:TagReference ;
+    rdfs:range sem:Tag ;
+    rdfs:label "of tag"@en ;
+    rdfs:comment "The single tag this node is about: the assigned tag, the required Trait, Label, or Pluggable of a rule, or a picked tag." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasVariation a rdf:Property ;
+    rdfs:domain sem:TagReference ;
+    rdfs:range xsd:string ;
+    rdfs:label "has variation"@en ;
+    rdfs:comment "A specific variation this node cares about: the one chosen for an Action occurrence, the one a Trait rule is narrowed to, or one picked on a Stage. May repeat. Distinct from a tag's own declared variations." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:atTime a rdf:Property ;
+    rdfs:domain sem:TagAssignment ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "at time"@en ;
+    rdfs:comment "Where in the media entity this assignment occurs, in seconds. Derived from the enclosing slot's seconds; absent if never placed on the Timeline." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:pairs a rdf:Property ;
+    rdfs:domain sem:Pairing ;
+    rdfs:range sem:TagAssignment ;
+    rdfs:label "pairs"@en ;
+    rdfs:comment "One endpoint of a pairing; each pairing has two." ;
+    sem:source "README.md § Features" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:pairingDirection a rdf:Property ;
+    rdfs:domain sem:Pairing ;
+    rdfs:range xsd:string ;
+    rdfs:label "pairing direction"@en ;
+    rdfs:comment "Either 'bidirectional' or 'directed'." ;
+    sem:source "README.md § Features" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:pairingId a rdf:Property ;
+    rdfs:domain sem:Pairing ;
+    rdfs:range xsd:string ;
+    rdfs:label "pairing id"@en ;
+    rdfs:comment "The plugin's stable identifier of a pairing, so a slot can reference it safely." ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+
+# ---- Performer-global facts
+
+sem:hasTrait a rdf:Property ;
+    rdfs:domain sem:Performer ;
+    rdfs:range sem:Trait ;
+    rdfs:label "has trait"@en ;
+    rdfs:comment "This performer has this Trait, regardless of scene." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasLabel a rdf:Property ;
+    rdfs:domain sem:Performer ;
+    rdfs:range sem:Label ;
+    rdfs:label "has label"@en ;
+    rdfs:comment "This performer has this Label, regardless of scene." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasPerformerVariation a rdf:Property ;
+    rdfs:domain sem:Performer ;
+    rdfs:range sem:Variation ;
+    rdfs:label "has performer variation"@en ;
+    rdfs:comment "This performer has this Variation. Replaces hasLook." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasVariationPluggable a rdf:Property ;
+    rdfs:domain sem:Variation ;
+    rdfs:range sem:Pluggable ;
+    rdfs:label "has variation pluggable"@en ;
+    rdfs:comment "This Variation carries this Pluggable; what a Pluggable rule tests against." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasVariationLabel a rdf:Property ;
+    rdfs:domain sem:Variation ;
+    rdfs:range sem:Label ;
+    rdfs:label "has variation label"@en ;
+    rdfs:comment "This Variation carries this Label." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:variationOf a rdf:Property ;
+    rdfs:domain sem:Variation ;
+    rdfs:range sem:Performer ;
+    rdfs:label "variation of"@en ;
+    rdfs:comment "The performer that owns this Variation." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:parentArchetype a rdf:Property ;
+    rdfs:domain sem:Archetype ;
+    rdfs:range sem:Archetype ;
+    rdfs:label "parent archetype"@en ;
+    rdfs:comment "This archetype's direct parent archetype; parents only, children are derived. A multi-parent archetype has several." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1B (Archetype System)" ;
+    sem:source "archetype-system-plan.md § Data model" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+
+# ---- Tag metadata
+
+sem:hasCategory a rdf:Property ;
+    rdfs:domain sem:Tag ;
+    rdfs:range xsd:string ;
+    rdfs:label "has category"@en ;
+    rdfs:comment "This tag is grouped under this category. Carried only by Role, Trait, and Mise-en-scène tags." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasTagVariation a rdf:Property ;
+    rdfs:domain sem:Tag ;
+    rdfs:range xsd:string ;
+    rdfs:label "has tag variation"@en ;
+    rdfs:comment "This tag's own declared alternate name, own or inherited. Carried only by Action, Trait, and Mise-en-scène tags; distinct from hasVariation." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:parentTag a rdf:Property ;
+    rdfs:domain sem:Tag ;
+    rdfs:range sem:Tag ;
+    rdfs:label "parent tag"@en ;
+    rdfs:comment "This tag's direct parent in Stash's native tag hierarchy." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:variantOfTag a rdf:Property ;
+    rdfs:domain sem:Tag ;
+    rdfs:range sem:Tag ;
+    rdfs:label "variant of tag"@en ;
+    rdfs:comment "This tag is a common variant of that canonical tag; at most one target." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1C (Tag Recommendations & Common Variants)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+
+# ---- Deprecated and planned terms
+
+sem:Generic a rdfs:Class ;
+    rdfs:subClassOf sem:Performer ;
+    rdfs:label "Generic"@en ;
+    rdfs:comment "A performer flagged isGeneric: the older, non-hierarchical placeholder performer." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Deprecated ;
+    sem:replacedBy sem:Archetype ;
+    sem:since "1.0.0" .
+
+sem:Look a rdfs:Class ;
+    rdfs:label "Look"@en ;
+    rdfs:comment "A saved Trait and Pluggable combination stored as JSON on a performer." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Deprecated ;
+    sem:replacedBy sem:Variation ;
+    sem:since "1.0.0" .
+
+sem:hasLook a rdf:Property ;
+    rdfs:domain sem:Performer ;
+    rdfs:range sem:Look ;
+    rdfs:label "has look"@en ;
+    rdfs:comment "This performer has this Look." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Deprecated ;
+    sem:replacedBy sem:hasPerformerVariation ;
+    sem:since "1.0.0" .
+
+sem:hasArchetype a rdf:Property ;
+    rdfs:domain sem:Performer ;
+    rdfs:range sem:Archetype ;
+    rdfs:label "has archetype"@en ;
+    rdfs:comment "A performer applies an archetype's recipe." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Deprecated ;
+    sem:retiredNote "Removed in Milestone 1D as a confusing performer-to-performer association; hasPerformerVariation replaces the use." ;
+    sem:since "1.0.0" .
+
+sem:hasTag a rdf:Property ;
+    rdfs:domain sem:MediaEntity ;
+    rdfs:range sem:Tag ;
+    rdfs:label "has tag"@en ;
+    rdfs:comment "Planned: a plain, newly derived Stash tag applied by a CONSTRUCT rule (Milestone 5); not one of the six typed tag predicates." ;
+    sem:source "semantic-query-engine-roadmap.md § Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Planned ;
+    sem:since "1.0.0" .

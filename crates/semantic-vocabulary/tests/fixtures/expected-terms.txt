@@ -1,0 +1,103 @@
+# kind  name  file  [scope]    (scope present only where the contract requires it)
+# The contract: every property and every assignment class has a scope.
+class MediaEntity core.ttl
+class Scene core.ttl
+class Image core.ttl
+class Performer core.ttl
+class Tag core.ttl
+class Marker core.ttl
+class Pluggable core.ttl
+class Action core.ttl
+class Role core.ttl
+class Trait core.ttl
+class Label core.ttl
+class MiseEnScene core.ttl
+class Variation core.ttl Global
+class Archetype core.ttl Global
+class TagReference core.ttl
+class Placeable core.ttl
+class MediaScoped core.ttl
+class TagAssignment core.ttl SceneScoped
+class RoleInstance core.ttl SceneScoped
+class ActionInstance core.ttl SceneScoped
+class PluggableInstance core.ttl SceneScoped
+class MiseEnSceneInstance core.ttl SceneScoped
+class Pairing core.ttl SceneScoped
+class RolePairing core.ttl SceneScoped
+class ActionPairing core.ttl SceneScoped
+class Generic core.ttl Global
+class Look core.ttl Global
+class Scope core.ttl
+class Status core.ttl
+class Mapping core.ttl
+class RetiredField core.ttl
+class LabelRule labels.ttl
+class TraitRule labels.ttl
+class FieldRule labels.ttl
+class LabelDependencyRule labels.ttl
+class PluggableRule labels.ttl
+class Timeline timeline.ttl SceneScoped
+class TimelineEntry timeline.ttl SceneScoped
+class Slot timeline.ttl SceneScoped
+class Stage timeline.ttl SceneScoped
+class StagePick timeline.ttl SceneScoped
+prop hasPerformer core.ttl SceneScoped
+prop hasAssignment core.ttl SceneScoped
+prop hasRole core.ttl SceneScoped
+prop hasAction core.ttl SceneScoped
+prop hasPluggable core.ttl SceneScoped
+prop hasMiseEnScene core.ttl SceneScoped
+prop fromPick core.ttl SceneScoped
+prop inMedia core.ttl SceneScoped
+prop forPerformer core.ttl SceneScoped
+prop ofTag core.ttl Global
+prop hasVariation core.ttl Global
+prop atTime core.ttl SceneScoped
+prop pairs core.ttl SceneScoped
+prop pairingDirection core.ttl Global
+prop pairingId core.ttl Global
+prop hasTrait core.ttl Global
+prop hasLabel core.ttl Global
+prop hasPerformerVariation core.ttl Global
+prop hasVariationPluggable core.ttl Global
+prop hasVariationLabel core.ttl Global
+prop variationOf core.ttl Global
+prop parentArchetype core.ttl Global
+prop hasCategory core.ttl Global
+prop hasTagVariation core.ttl Global
+prop parentTag core.ttl Global
+prop variantOfTag core.ttl Global
+prop hasLook core.ttl Global
+prop hasArchetype core.ttl Global
+prop hasTag core.ttl SceneScoped
+prop source core.ttl Global
+prop sourceRevision core.ttl Global
+prop scope core.ttl Global
+prop status core.ttl Global
+prop since core.ttl Global
+prop replacedBy core.ttl Global
+prop retiredNote core.ttl Global
+prop references core.ttl Global
+prop version core.ttl Global
+prop fromEntity core.ttl Global
+prop fromField core.ttl Global
+prop allowedValues core.ttl Global
+prop produces core.ttl Global
+prop serverIdentifier core.ttl Global
+prop hasThreshold labels.ttl Global
+prop hasRule labels.ttl Global
+prop hasWeight labels.ttl Global
+prop isRecursive labels.ttl Global
+prop hasField labels.ttl Global
+prop hasModifier labels.ttl Global
+prop hasValue labels.ttl Global
+prop hasValue2 labels.ttl Global
+prop hasTimeline timeline.ttl SceneScoped
+prop hasEntry timeline.ttl SceneScoped
+prop position timeline.ttl SceneScoped
+prop entryId timeline.ttl SceneScoped
+prop places timeline.ttl SceneScoped
+prop slotSeconds timeline.ttl SceneScoped
+prop linkedMarker timeline.ttl SceneScoped
+prop hasPick timeline.ttl SceneScoped
+prop inStage timeline.ttl SceneScoped

@@ -18,6 +18,8 @@ Namespace `sem:` = `urn:semantic-stash:vocab:`. Every term below carries `rdfs:l
 | `Pluggable`, `Action`, `Role`, `Trait`, `Label`, `MiseEnScene` | `Tag` | – | Flag per [stash-mapping.ttl](#stash-mapping) |
 | `Variation` | `Tag` | Global | A real tag (`isVariation`) owned by one performer |
 | `Archetype` | `Performer` | Global | Performer flagged `isArchetype`; parents-only adjacency |
+| `MediaScoped` | – | – | Abstract; anything that belongs to exactly one media entity (`inMedia`): assignments, pairings, Timelines |
+| `Marker` | – | – | References a Stash scene marker (`sem:references`) |
 | `TagReference` | – | – | Abstract; anything that points at one tag (`ofTag`): assignments, label rules, stage picks |
 | `Placeable` | – | – | Abstract; anything a Timeline slot can place: assignments and pairings |
 | `TagAssignment` | `TagReference`, `Placeable` | SceneScoped | Abstract base of the reified assignments |
@@ -60,7 +62,7 @@ Namespace `sem:` = `urn:semantic-stash:vocab:`. Every term below carries `rdfs:l
 | `hasPluggable` | `Performer` → `PluggableInstance` | SceneScoped | sub-property of `hasAssignment` |
 | `hasMiseEnScene` | `MediaEntity` → `MiseEnSceneInstance` | SceneScoped | No performer involved; one per distinct tag per media entity, produced from Stage picks (FR-015) |
 | `fromPick` | `MiseEnSceneInstance` → `StagePick` | SceneScoped | The Stage pick(s) this media-level assignment came from |
-| `inMedia` | `TagAssignment` → `MediaEntity` | SceneScoped | Carries the scope into the data (FR-004); also used by `Pairing` and `Timeline` |
+| `inMedia` | `MediaScoped` → `MediaEntity` | SceneScoped | Carries the scope into the data (FR-004); `TagAssignment`, `Pairing`, and `Timeline` are `MediaScoped` |
 | `forPerformer` | `TagAssignment` → `Performer` | SceneScoped | Absent on `MiseEnSceneInstance` |
 | `ofTag` | `TagReference` → `Tag` | Global | Which tag this node is about: assignments, rules, and stage picks |
 | `hasVariation` | `TagReference` → string | Global | The variation chosen for this occurrence (per-occurrence selection); may repeat, notably on `MiseEnSceneInstance` when a tag is picked with different variations in different Stages |
@@ -90,8 +92,8 @@ Namespace `sem:` = `urn:semantic-stash:vocab:`. Every term below carries `rdfs:l
 | `parentTag` | `Tag` → `Tag` | Stash's native hierarchy, direct parents only |
 | `variantOfTag` | `Tag` → `Tag` | Common variant link (`variantOfTagId`) |
 
-Domain restrictions to a subset of `Tag` types are expressed with `rdfs:comment` and
-`sem:appliesTo` annotations rather than union domains (RDFS, FR-013); the check enforces them.
+Domain restrictions to a subset of `Tag` types are stated in `rdfs:comment` rather than with union
+domains (RDFS, FR-013).
 
 ### Label formulas (labels.ttl)
 

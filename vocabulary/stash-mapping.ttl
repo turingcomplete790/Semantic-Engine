@@ -1,0 +1,314 @@
+# Semantic vocabulary: mapping from Stash data to terms
+# Generated layout; edit terms directly in this file afterwards.
+
+@prefix sem:  <urn:semantic-stash:vocab:> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+sem:map_plugtag a sem:Mapping ;
+    sem:fromEntity "Tag" ;
+    sem:fromField "custom_fields.plugtag" ;
+    sem:allowedValues "1 (stored as a 0/1 value; other values mean not set)" ;
+    sem:produces sem:Pluggable ;
+    sem:source "README.md § Features" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_isAction a sem:Mapping ;
+    sem:fromEntity "Tag" ;
+    sem:fromField "custom_fields.isAction" ;
+    sem:allowedValues "1 (stored as a 0/1 value; other values mean not set)" ;
+    sem:produces sem:Action ;
+    sem:source "README.md § Features" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_isRole a sem:Mapping ;
+    sem:fromEntity "Tag" ;
+    sem:fromField "custom_fields.isRole" ;
+    sem:allowedValues "1 (stored as a 0/1 value; other values mean not set)" ;
+    sem:produces sem:Role ;
+    sem:source "README.md § Features" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_isTrait a sem:Mapping ;
+    sem:fromEntity "Tag" ;
+    sem:fromField "custom_fields.isTrait" ;
+    sem:allowedValues "1 (stored as a 0/1 value; other values mean not set)" ;
+    sem:produces sem:Trait ;
+    sem:source "README.md § Features" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_isLabel a sem:Mapping ;
+    sem:fromEntity "Tag" ;
+    sem:fromField "custom_fields.isLabel" ;
+    sem:allowedValues "1 (stored as a 0/1 value; other values mean not set)" ;
+    sem:produces sem:Label ;
+    sem:source "README.md § Features" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_isMiseEnScene a sem:Mapping ;
+    sem:fromEntity "Tag" ;
+    sem:fromField "custom_fields.isMiseEnScene" ;
+    sem:allowedValues "1 (stored as a 0/1 value; other values mean not set)" ;
+    sem:produces sem:MiseEnScene ;
+    sem:source "README.md § Features" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_isVariation a sem:Mapping ;
+    sem:fromEntity "Tag" ;
+    sem:fromField "custom_fields.isVariation" ;
+    sem:allowedValues "1 (stored as a 0/1 value; other values mean not set)" ;
+    sem:produces sem:Variation ;
+    sem:source "README.md § Features; semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_variantOfTagId a sem:Mapping ;
+    sem:fromEntity "Tag" ;
+    sem:fromField "custom_fields.variantOfTagId" ;
+    sem:allowedValues "a Stash tag id" ;
+    sem:produces sem:variantOfTag ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1C (Tag Recommendations & Common Variants)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_categories a sem:Mapping ;
+    sem:fromEntity "Tag" ;
+    sem:fromField "custom_fields.categories" ;
+    sem:allowedValues "list of category names (Role, Trait, Mise-en-scène tags only)" ;
+    sem:produces sem:hasCategory ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_variations a sem:Mapping ;
+    sem:fromEntity "Tag" ;
+    sem:fromField "custom_fields.variations" ;
+    sem:allowedValues "list of declared variation names (Action, Trait, Mise-en-scène tags only)" ;
+    sem:produces sem:hasTagVariation ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_labelFormula_threshold a sem:Mapping ;
+    sem:fromEntity "Tag (Label)" ;
+    sem:fromField "custom_fields.labelFormula.threshold" ;
+    sem:allowedValues "number; 100 when unset" ;
+    sem:produces sem:hasThreshold ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_labelFormula_traitRules a sem:Mapping ;
+    sem:fromEntity "Tag (Label)" ;
+    sem:fromField "custom_fields.labelFormula.traitRules" ;
+    sem:allowedValues "list of {tagId, weight, variationMatch, recursive}" ;
+    sem:produces sem:TraitRule ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_labelFormula_fieldRules a sem:Mapping ;
+    sem:fromEntity "Tag (Label)" ;
+    sem:fromField "custom_fields.labelFormula.fieldRules" ;
+    sem:allowedValues "list of {field, modifier, value, value2, weight}" ;
+    sem:produces sem:FieldRule ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_labelFormula_labelRules a sem:Mapping ;
+    sem:fromEntity "Tag (Label)" ;
+    sem:fromField "custom_fields.labelFormula.labelRules" ;
+    sem:allowedValues "list of {labelTagId, weight}" ;
+    sem:produces sem:LabelDependencyRule ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_labelFormula_pluggableRules a sem:Mapping ;
+    sem:fromEntity "Tag (Label)" ;
+    sem:fromField "custom_fields.labelFormula.pluggableRules" ;
+    sem:allowedValues "list of {pluggableTagId, weight}" ;
+    sem:produces sem:PluggableRule ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_variationData a sem:Mapping ;
+    rdfs:comment "Also produces sem:hasVariationLabel and sem:variationOf from the same value." ;
+    sem:fromEntity "Tag (Variation)" ;
+    sem:fromField "custom_fields.variationData" ;
+    sem:allowedValues "JSON object {performerId, pluggableTagIds, traitTagIds, labelTagIds}; the vocabulary exposes performerId, pluggableTagIds, and labelTagIds" ;
+    sem:produces sem:hasVariationPluggable ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_isArchetype a sem:Mapping ;
+    sem:fromEntity "Performer" ;
+    sem:fromField "custom_fields.isArchetype" ;
+    sem:allowedValues "1 (stored as a 0/1 value; other values mean not set)" ;
+    sem:produces sem:Archetype ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1B (Archetype System); archetype-system-plan.md § Data model" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_archetypeParents a sem:Mapping ;
+    sem:fromEntity "Performer" ;
+    sem:fromField "custom_fields.archetypeParents" ;
+    sem:allowedValues "JSON array of parent performer ids; parents only" ;
+    sem:produces sem:parentArchetype ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1B (Archetype System); archetype-system-plan.md § Data model" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_roleTagAssignments a sem:Mapping ;
+    sem:fromEntity "Scene, Image" ;
+    sem:fromField "custom_fields.roleTagAssignments" ;
+    sem:allowedValues "map performer id to a list of Role assignment entries" ;
+    sem:produces sem:RoleInstance ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_actionAssignments a sem:Mapping ;
+    sem:fromEntity "Scene, Image" ;
+    sem:fromField "custom_fields.actionAssignments" ;
+    sem:allowedValues "map performer id to a list of Action assignment entries with optional variations" ;
+    sem:produces sem:ActionInstance ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_pluggableAssignments a sem:Mapping ;
+    sem:fromEntity "Scene, Image" ;
+    sem:fromField "custom_fields.pluggableAssignments" ;
+    sem:allowedValues "map performer id to a list of Pluggable tag ids" ;
+    sem:produces sem:PluggableInstance ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_actionPairings a sem:Mapping ;
+    sem:fromEntity "Scene, Image" ;
+    sem:fromField "custom_fields.actionPairings" ;
+    sem:allowedValues "list of {a, b, direction, pairingId}" ;
+    sem:produces sem:ActionPairing ;
+    sem:source "README.md § Features; src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_roleTagPairings a sem:Mapping ;
+    rdfs:comment "The documents call this rolePairings in places; the stored key is roleTagPairings." ;
+    sem:fromEntity "Scene, Image" ;
+    sem:fromField "custom_fields.roleTagPairings" ;
+    sem:allowedValues "list of {a, b, direction, pairingId}" ;
+    sem:produces sem:RolePairing ;
+    sem:source "README.md § Features; src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_timeline a sem:Mapping ;
+    rdfs:comment "Also produces sem:Slot, sem:Stage, sem:StagePick, and the media-level sem:MiseEnSceneInstance." ;
+    sem:fromEntity "Scene, Image" ;
+    sem:fromField "custom_fields.timeline" ;
+    sem:allowedValues "ordered JSON list of entries; an entry with type 'stage' is a Stage, any other entry is a slot" ;
+    sem:produces sem:Timeline ;
+    sem:source "README.md § Features (Timeline); src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_performerTags a sem:Mapping ;
+    rdfs:comment "Also produces sem:hasLabel and sem:hasPerformerVariation, by the tag's flag." ;
+    sem:fromEntity "Performer" ;
+    sem:fromField "tags" ;
+    sem:allowedValues "Stash tags flagged isTrait, isLabel, or isVariation" ;
+    sem:produces sem:hasTrait ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_tagParents a sem:Mapping ;
+    sem:fromEntity "Tag" ;
+    sem:fromField "parents" ;
+    sem:allowedValues "Stash tag ids; direct parents only" ;
+    sem:produces sem:parentTag ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:map_serverId a sem:Mapping ;
+    rdfs:comment "Planned: generated once by an engine-plugin task and stored in Stash." ;
+    sem:fromEntity "Stash server" ;
+    sem:fromField "plugin setting serverId of the engine plugin (exact name fixed by the engine feature)" ;
+    sem:allowedValues "lower-case hyphenated UUID" ;
+    sem:produces sem:serverIdentifier ;
+    sem:source "specs/001-semantic-vocabulary/spec.md § FR-014" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Planned ;
+    sem:since "1.0.0" .
+
+# ---- Retired fields: recorded, never mapped to a term (FR-016)
+
+sem:retired_isGeneric a sem:RetiredField ;
+    sem:fromEntity "Performer" ;
+    sem:fromField "custom_fields.isGeneric" ;
+    sem:retiredNote "Generics are replaced by Archetypes; existing data is left in place and not read." ;
+    sem:replacedBy sem:Archetype ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Deprecated ;
+    sem:since "1.0.0" .
+
+sem:retired_looks a sem:RetiredField ;
+    sem:fromEntity "Performer" ;
+    sem:fromField "custom_fields.looks" ;
+    sem:retiredNote "Looks stored as JSON are replaced by Variation tags; not read." ;
+    sem:replacedBy sem:Variation ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Deprecated ;
+    sem:since "1.0.0" .
+
+sem:retired_legacyMiseRef a sem:RetiredField ;
+    sem:fromEntity "Scene, Image" ;
+    sem:fromField "custom_fields.timeline[*].ref (kind 'mise-en-scene')" ;
+    sem:retiredNote "Per-slot Mise-en-scène refs are superseded by Stage picks; not read." ;
+    sem:replacedBy sem:StagePick ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Deprecated ;
+    sem:since "1.0.0" .

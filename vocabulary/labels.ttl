@@ -1,0 +1,141 @@
+# Semantic vocabulary: Label formulas and rules
+# Generated layout; edit terms directly in this file afterwards.
+
+@prefix sem:  <urn:semantic-stash:vocab:> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+sem:LabelRule a rdfs:Class ;
+    rdfs:subClassOf sem:TagReference ;
+    rdfs:label "Label rule"@en ;
+    rdfs:comment "Abstract base of the kinds of rule in a Label's scoring formula; every rule carries a weight." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:TraitRule a rdfs:Class ;
+    rdfs:subClassOf sem:LabelRule ;
+    rdfs:label "Trait rule"@en ;
+    rdfs:comment "Satisfied by a performer carrying a specific Trait, optionally narrowed to one declared variation and optionally counting descendants." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:FieldRule a rdfs:Class ;
+    rdfs:subClassOf sem:LabelRule ;
+    rdfs:label "Field rule"@en ;
+    rdfs:comment "Satisfied by a native Stash performer field (gender, ethnicity, and the like); references the field, does not redefine it." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:LabelDependencyRule a rdfs:Class ;
+    rdfs:subClassOf sem:LabelRule ;
+    rdfs:label "Label dependency rule"@en ;
+    rdfs:comment "Satisfied by a performer already carrying another Label." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:PluggableRule a rdfs:Class ;
+    rdfs:subClassOf sem:LabelRule ;
+    rdfs:label "Pluggable rule"@en ;
+    rdfs:comment "Satisfied by a Variation carrying a specific Pluggable." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Variation System & Label Overhaul)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasThreshold a rdf:Property ;
+    rdfs:domain sem:Label ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "has threshold"@en ;
+    rdfs:comment "The total rule weight a performer must meet or exceed for this Label's formula to match; 100 when unset." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasRule a rdf:Property ;
+    rdfs:domain sem:Label ;
+    rdfs:range sem:LabelRule ;
+    rdfs:label "has rule"@en ;
+    rdfs:comment "This Label's scoring formula includes this rule." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasWeight a rdf:Property ;
+    rdfs:domain sem:LabelRule ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "has weight"@en ;
+    rdfs:comment "How much this rule contributes to its Label's score when satisfied." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:isRecursive a rdf:Property ;
+    rdfs:domain sem:TraitRule ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is recursive"@en ;
+    rdfs:comment "Whether a performer carrying any descendant of the rule's Trait also satisfies it." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasField a rdf:Property ;
+    rdfs:domain sem:FieldRule ;
+    rdfs:range xsd:string ;
+    rdfs:label "has field"@en ;
+    rdfs:comment "The native Stash performer field this rule tests (for example gender)." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasModifier a rdf:Property ;
+    rdfs:domain sem:FieldRule ;
+    rdfs:range xsd:string ;
+    rdfs:label "has modifier"@en ;
+    rdfs:comment "How the value is compared with the field; one of Stash's own filter modifiers." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasValue a rdf:Property ;
+    rdfs:domain sem:FieldRule ;
+    rdfs:range xsd:string ;
+    rdfs:label "has value"@en ;
+    rdfs:comment "The value this rule compares the field against." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasValue2 a rdf:Property ;
+    rdfs:domain sem:FieldRule ;
+    rdfs:range xsd:string ;
+    rdfs:label "has second value"@en ;
+    rdfs:comment "The second comparison value, for range-style modifiers only." ;
+    sem:source "semantic-query-engine-roadmap.md § Core Design Decisions 2 (semantic graph) and Vocabulary corrections" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .

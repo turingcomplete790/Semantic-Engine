@@ -1,0 +1,20 @@
+[package]
+name = "semantic-vocabulary"
+version = "0.1.0"
+edition.workspace = true
+description = "Semantic vocabulary for the Stash semantic engine: Turtle files, loader, IRI scheme, and check"
+
+[lib]
+name = "semantic_vocabulary"
+
+[[bin]]
+name = "vocab-check"
+path = "src/bin/vocab-check.rs"
+
+[dependencies]
+oxttl = "0.1"
+oxrdf = "0.2"
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"

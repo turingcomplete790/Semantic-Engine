@@ -1,0 +1,168 @@
+# Semantic vocabulary: Timeline, slots, Stages, and picks
+# Generated layout; edit terms directly in this file afterwards.
+
+@prefix sem:  <urn:semantic-stash:vocab:> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+sem:Timeline a rdfs:Class ;
+    rdfs:subClassOf sem:MediaScoped ;
+    rdfs:label "Timeline"@en ;
+    rdfs:comment "One media entity's ordered sequence of entries; at most one per entity." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:TimelineEntry a rdfs:Class ;
+    rdfs:label "Timeline entry"@en ;
+    rdfs:comment "Abstract: one entry in a Timeline; ordered by position, identified by its own stable id." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:Slot a rdfs:Class ;
+    rdfs:subClassOf sem:TimelineEntry ;
+    rdfs:label "Slot"@en ;
+    rdfs:comment "An ordinary entry that places one assignment or pairing at an optional time. The default for entries saved before Stages existed (they carry no kind)." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:Stage a rdfs:Class ;
+    rdfs:subClassOf sem:TimelineEntry ;
+    rdfs:label "Stage"@en ;
+    rdfs:comment "A heading entry, not a moment; carries Mise-en-scène picks and applies to every slot after it until the next Stage or the end." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:StagePick a rdfs:Class ;
+    rdfs:subClassOf sem:TagReference ;
+    rdfs:label "Stage pick"@en ;
+    rdfs:comment "One Mise-en-scène tag picked on a Stage, with an optional declared variation." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasTimeline a rdf:Property ;
+    rdfs:domain sem:MediaEntity ;
+    rdfs:range sem:Timeline ;
+    rdfs:label "has timeline"@en ;
+    rdfs:comment "This media entity's Timeline." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasEntry a rdf:Property ;
+    rdfs:domain sem:Timeline ;
+    rdfs:range sem:TimelineEntry ;
+    rdfs:label "has entry"@en ;
+    rdfs:comment "This Timeline contains this entry; membership only, order is position." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:position a rdf:Property ;
+    rdfs:domain sem:TimelineEntry ;
+    rdfs:range xsd:nonNegativeInteger ;
+    rdfs:label "position"@en ;
+    rdfs:comment "Zero-based order of an entry within its Timeline; a slot's Stage is the nearest preceding Stage by position." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:entryId a rdf:Property ;
+    rdfs:domain sem:TimelineEntry ;
+    rdfs:range xsd:string ;
+    rdfs:label "entry id"@en ;
+    rdfs:comment "The plugin's stable identifier of an entry; used to build its IRI." ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:places a rdf:Property ;
+    rdfs:domain sem:Slot ;
+    rdfs:range sem:Placeable ;
+    rdfs:label "places"@en ;
+    rdfs:comment "The assignment or pairing this slot places on the Timeline." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:slotSeconds a rdf:Property ;
+    rdfs:domain sem:Slot ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "slot seconds"@en ;
+    rdfs:comment "The slot's time position in seconds; absent for sequence-only images." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:linkedMarker a rdf:Property ;
+    rdfs:domain sem:Slot ;
+    rdfs:range sem:Marker ;
+    rdfs:label "linked marker"@en ;
+    rdfs:comment "The Stash marker generated from this slot." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:hasPick a rdf:Property ;
+    rdfs:domain sem:Stage ;
+    rdfs:range sem:StagePick ;
+    rdfs:label "has pick"@en ;
+    rdfs:comment "This Stage carries this Mise-en-scène pick." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.0.0" .
+
+sem:inStage a rdf:Property ;
+    rdfs:domain sem:Slot ;
+    rdfs:range sem:Stage ;
+    rdfs:label "in stage"@en ;
+    rdfs:comment "The Stage governing this slot: the nearest preceding Stage by position. A rule over order, not stored." ;
+    sem:source "README.md § Features (Timeline)" ;
+    sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
+    sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Derived ;
+    sem:since "1.0.0" .
