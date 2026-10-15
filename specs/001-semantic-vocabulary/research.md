@@ -69,7 +69,7 @@ plugin's `src/semantic/vocabulary.js` and `src/ui/timeline.js`, read at plugin c
 - **Rationale**: Principle V (Rust, embedded) and the engine will use the same parser; embedding
   the files in the crate gives the engine a versioned vocabulary for free.
 - **Alternatives considered**: Python rdflib script (a second toolchain for a Rust project);
-  Apache Jena `riot` (JVM dependency).
+  Apache Jena `riot` (JVM dependency, not commonly packaged). Raptor's `rapper` is used as the independent second parser in tests and CI, since it is C, widely packaged, and already installed.
 
 ## R6. Items the spec lists that the documents extend
 
