@@ -58,6 +58,9 @@ link the spec folder (`specs/NNN-name/`) next to the item.
 
 **Goal:** the graph the design documents define, built from Stash, headless and testable.
 
+- [ ] Stash adapter crate: the one place that talks to Stash, using the Cynic GraphQL library
+      with typed operations generated against a pinned copy of Stash's schema (constitution
+      v1.1.0, Technology & Platform Constraints)
 - [ ] Oxigraph embedded behind an engine-owned interface
 - [ ] Vocabulary from the documents ("The semantic graph is the abstraction boundary" and its
       vocabulary corrections; Milestone 1D): Scene and Image media entities, performers, the six

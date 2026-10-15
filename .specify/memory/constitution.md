@@ -133,8 +133,13 @@ index itself, and its answers are only trusted if they are checkable and reprodu
 - **Language and toolchain**: Rust (stable), a Cargo workspace, `rustfmt` and `clippy` clean.
 - **Engine**: Oxigraph (SPARQL 1.1 Query and Update) with an on-disk store in the plugin's
   cache location, one per Stash server profile.
-- **Stash interface**: GraphQL via a single typed adapter; minimum supported Stash version
-  follows the viewer (v0.31.1 or newer) unless a spec states otherwise.
+- **Stash interface**: GraphQL only, through a single typed adapter built with the
+  [Cynic](https://cynic-rs.dev/) GraphQL client library. Queries and mutations MUST be Cynic
+  typed operations generated against a copy of Stash's GraphQL schema kept in the repository and
+  pinned to the minimum supported Stash version (v0.31.1 or newer unless a spec states
+  otherwise); hand-built query strings are not allowed. Each operation MUST select only the
+  fields its caller needs (Principle VII). Changing the GraphQL client library is a MAJOR
+  amendment.
 - **Plugin packaging**: a Stash plugin manifest and a prebuilt executable per supported
   platform; Linux is primary, Windows and macOS where the toolchain allows.
 - **Dependencies**: each new dependency MUST be justified in the plan; no network-calling
@@ -171,4 +176,4 @@ principle changes meaning, a migration note for dependent specs and the two clie
   and the viewer's pending Phase 6 amendment wording is the reference for the shared-cache
   relationship.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-14 | **Last Amended**: 2026-10-14
+**Version**: 1.1.0 | **Ratified**: 2026-10-14 | **Last Amended**: 2026-10-15
