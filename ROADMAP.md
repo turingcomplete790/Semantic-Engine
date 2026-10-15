@@ -25,7 +25,16 @@ link the spec folder (`specs/NNN-name/`) next to the item.
       by every client as the server part of item identifiers
       (`specs/001-semantic-vocabulary/` FR-014)
 - [ ] Plugin manifest and a no-op operation that Stash can invoke (`runPluginOperation`)
-- [ ] CI (started: `.github/workflows/vocabulary.yml`): format, clippy, tests; prebuilt binaries for Linux (Windows and macOS as toolchains allow)
+      (`specs/002-engine-plugin-foundation/`)
+- [ ] RocksDB as an installed system package (constitution v1.2.0): the build links the system
+      library with no CMake or bundled RocksDB; one pinned RocksDB major version per release,
+      stated in each package and the README; install scripts and the status operation report a
+      missing or incompatible RocksDB with the expected and found versions
+- [ ] Install scripts: POSIX shell for BSD, macOS, and Linux, and PowerShell for Windows; they
+      check the installed RocksDB version before changing anything
+- [ ] CI (started: `.github/workflows/vocabulary.yml`): format, clippy, tests; prebuilt packages
+      per platform the toolchain can target (Linux, macOS, Windows), built against the pinned
+      RocksDB major version with that RocksDB installed on the build machine
 - [ ] Fixture tooling: capture read-only GraphQL responses from a plugin-tagged library
 - [x] Semantic vocabulary as a set of RDF documents in Turtle (`.ttl`), derived from the
       semantic-tagging design documents (`README.md`, `semantic-query-engine-roadmap.md`,
@@ -61,7 +70,8 @@ link the spec folder (`specs/NNN-name/`) next to the item.
 - [ ] Stash adapter crate: the one place that talks to Stash, using the Cynic GraphQL library
       with typed operations generated against a pinned copy of Stash's schema (constitution
       v1.1.0, Technology & Platform Constraints)
-- [ ] Oxigraph embedded behind an engine-owned interface
+- [ ] Oxigraph embedded behind an engine-owned interface, its on-disk store on the installed
+      RocksDB (system-library build, never a bundled or CMake-built RocksDB)
 - [ ] Vocabulary from the documents ("The semantic graph is the abstraction boundary" and its
       vocabulary corrections; Milestone 1D): Scene and Image media entities, performers, the six
       flagged tag types plus Variations, reified Role and Action instances, tag categories and
