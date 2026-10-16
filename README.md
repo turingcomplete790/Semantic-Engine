@@ -8,9 +8,10 @@ The [Semantic Stash Viewer](../../Semantic-Stash-Viewer/) and the
 their own engine. This project is the one shared engine they can both use, so the semantic model
 is built, indexed, and queried in one place with one set of answers.
 
-> **Status: early.** The semantic vocabulary and its checker are done. The plugin itself (the
-> manifest, operations, install scripts) and the graph engine are not built yet. See the
-> [roadmap](ROADMAP.md) for what exists and what comes next.
+> **Status: early.** The plugin installs into Stash and answers `ping`, `status`, and
+> `getServerId`, and gives each server a permanent identifier. The semantic graph and queries are
+> not built yet. See the [roadmap](ROADMAP.md) for what exists and what comes next, and the
+> [API document](docs/api.md) for what clients can call today.
 
 ## How it fits
 
@@ -40,18 +41,46 @@ server, and can be deleted at any time without losing data.
 
 ## Installing
 
-> Planned. The install scripts below are specified
-> ([`specs/002-engine-plugin-foundation`](specs/002-engine-plugin-foundation/spec.md)) but not
-> written yet.
+Packages are self-contained (the RocksDB store is compiled in). Each release publishes one
+package per target and a `SHA256SUMS` file:
 
-Two scripts will install the plugin into Stash's plugins folder:
+| Platform | Target | Package |
+|---|---|---|
+| Linux x86_64 | `x86_64-unknown-linux-gnu` | `.tar.gz` |
+| Linux aarch64 | `aarch64-unknown-linux-gnu` | `.tar.gz` |
+| macOS Intel | `x86_64-apple-darwin` | `.tar.gz` |
+| macOS Apple silicon | `aarch64-apple-darwin` | `.tar.gz` |
+| Windows x86_64 | `x86_64-pc-windows-msvc` | `.zip` |
 
-- a **POSIX shell** script for BSD, macOS, and Linux, and
-- a **PowerShell** script for Windows.
+BSD and 32-bit ARM have no package yet; the install script says so and explains how to build
+from source.
 
-Each detects the platform and architecture, places the plugin files in the plugins folder, and is
-safe to run again. If there is no prebuilt package for your platform it stops without changing
-anything and tells you how to build from source.
+Two scripts install the plugin into Stash's plugins folder. They find the folder from Stash's
+`config.yml` (`plugins_path`), or take it as an argument; they **verify the package's SHA-256
+checksum** before changing anything; and they only ever touch `<plugins>/semantic-engine/`.
+
+```sh
+# BSD, macOS, Linux (POSIX sh: works with dash, busybox sh, and the BSD and macOS /bin/sh)
+sh install.sh --from-file semantic-engine-0.1.0-x86_64-unknown-linux-gnu.tar.gz
+sh install.sh --plugins-dir ~/.stash/plugins --version 0.1.0     # download a release
+```
+
+```powershell
+# Windows (Windows PowerShell 5.1 or PowerShell 7)
+.\install.ps1 -FromFile semantic-engine-0.1.0-x86_64-pc-windows-msvc.zip
+.\install.ps1 -PluginsDir $HOME\.stash\plugins -Version 0.1.0
+```
+
+With `--from-file`/`-FromFile`, the `.sha256` file from the release must sit next to the package.
+Downloads come from this project's
+[GitHub releases](https://github.com/turingcomplete790/Semantic-Engine/releases);
+`SEMANTIC_ENGINE_RELEASE_URL` overrides that, for example for a mirror.
+
+After installing, reload plugins in Stash (Settings > Plugins > Reload plugins), then run the
+**Generate server identifier** task once (Settings > Tasks > Plugin Tasks).
+
+Exit codes: 0 installed, 2 bad arguments, 3 no package for this platform, 4 plugins folder not
+found or not writable, 5 download or checksum failure, 6 unpack or copy failure.
 
 ## Building from source
 
@@ -60,8 +89,21 @@ as part of the build (no CMake); the first release build takes a few minutes.
 
 ```sh
 cargo build --release
-cargo test -p semantic-vocabulary
+cargo test --workspace
+sh scripts/package.sh            # dist/semantic-engine-<version>-<target>.tar.gz + .sha256
+pwsh -File scripts/package.ps1   # Windows: dist\semantic-engine-<version>-<target>.zip + .sha256
 ```
+
+On Windows, bindgen needs to find LLVM's `libclang` (set `LIBCLANG_PATH`, for example to
+`C:\Program Files\LLVM\bin`).
+
+## Continuous integration and releases
+
+- `.github/workflows/ci.yml` runs on every push and pull request: formatting, clippy, the full
+  test suite, the vocabulary checks, shellcheck, the POSIX install-script tests under `dash` and
+  `busybox sh`, and the PowerShell tests; it also builds and tests on macOS and Windows.
+- `.github/workflows/release.yml` runs on `v*` tags (the tag must equal the plugin version),
+  builds every package above, and publishes them with `SHA256SUMS` as a GitHub release.
 
 ## Checking the vocabulary
 
@@ -81,10 +123,17 @@ generated term list is [`vocabulary/TERMS.md`](vocabulary/TERMS.md).
 ## Repository layout
 
 ```text
+api/operations.json    machine-readable list of operations, tasks, and error codes
+docs/api.md            API document for clients
+plugin/                Stash plugin manifest (semantic-engine.yml)
+schemas/               pinned Stash GraphQL schema used by the adapter
 vocabulary/            Turtle vocabulary files, change log, generated terms, release snapshots
 crates/
-  semantic-vocabulary/ loader, item IRI scheme, and the vocabulary checker
-scripts/               helper scripts (second-parser check)
+  semantic-vocabulary/ vocabulary loader, item IRI scheme, and the vocabulary checker
+  stash-adapter/       the only code that talks to Stash (Cynic, pinned schema)
+  engine/              engine logic: versions, server identifier
+  plugin/              the `semantic-engine` executable Stash runs
+scripts/               install, package, schema, and check scripts
 specs/                 feature specifications, plans, and tasks (Spec Kit)
 ROADMAP.md             phases and what is done
 .specify/              Spec Kit scaffolding and the constitution

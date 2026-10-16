@@ -136,10 +136,10 @@ receive the versions (quickstart steps 2 and 3).
 **Independent Test**: a deliberately broken change in each checked area fails CI; a tag
 produces packages and `SHA256SUMS` that install per US1.
 
-- [ ] T034 [US4] Create `.github/workflows/ci.yml` replacing `vocabulary.yml`: `cargo fmt --all --check`, `cargo clippy --all-targets -- -D warnings`, `cargo test --workspace`, `vocab-check`, `scripts/validate-ttl.sh`, `shellcheck -s sh scripts/*.sh`, `dash scripts/tests/install_sh_test.sh`, `pwsh scripts/tests/install_ps1_test.ps1`; runners get a C++17 compiler and clang (bundled RocksDB); delete `.github/workflows/vocabulary.yml`
-- [ ] T035 [US4] Create `.github/workflows/release.yml` triggered on `v*` tags: matrix over `x86_64-unknown-linux-gnu` and `aarch64-unknown-linux-gnu` (oldest supported Ubuntu runner), `x86_64-apple-darwin`, `aarch64-apple-darwin`, `x86_64-pc-windows-msvc`; run `scripts/package.sh` (PowerShell equivalent on Windows); upload packages and a combined `SHA256SUMS` to the release
-- [ ] T036 [P] [US4] Add `scripts/package.ps1` mirroring `scripts/package.sh` for Windows (zip and `.sha256`)
-- [ ] T037 [US4] Document in `README.md` the release artifacts, the supported targets, and the SHA-256 verification the install scripts perform; replace the "Planned" install section with the real commands
+- [X] T034 [US4] Create `.github/workflows/ci.yml` replacing `vocabulary.yml`: `cargo fmt --all --check`, `cargo clippy --all-targets -- -D warnings`, `cargo test --workspace`, `vocab-check`, `scripts/validate-ttl.sh`, `shellcheck -s sh scripts/*.sh`, `dash scripts/tests/install_sh_test.sh`, `pwsh scripts/tests/install_ps1_test.ps1`; runners get a C++17 compiler and clang (bundled RocksDB); delete `.github/workflows/vocabulary.yml`
+- [X] T035 [US4] Create `.github/workflows/release.yml` triggered on `v*` tags: matrix over `x86_64-unknown-linux-gnu` and `aarch64-unknown-linux-gnu` (oldest supported Ubuntu runner), `x86_64-apple-darwin`, `aarch64-apple-darwin`, `x86_64-pc-windows-msvc`; run `scripts/package.sh` (PowerShell equivalent on Windows); upload packages and a combined `SHA256SUMS` to the release
+- [X] T036 [P] [US4] Add `scripts/package.ps1` mirroring `scripts/package.sh` for Windows (zip and `.sha256`)
+- [X] T037 [US4] Document in `README.md` the release artifacts, the supported targets, and the SHA-256 verification the install scripts perform; replace the "Planned" install section with the real commands
 
 ---
 

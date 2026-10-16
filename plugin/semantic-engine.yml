@@ -1,5 +1,6 @@
 name: Semantic Engine
 description: Shared semantic engine for the Semantic Stash Viewer and semantic-tagging.
+url: https://github.com/turingcomplete790/Semantic-Engine
 version: 0.1.0
 exec:
   - semantic-engine

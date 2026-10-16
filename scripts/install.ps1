@@ -19,9 +19,9 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $PluginDirName = 'semantic-engine'
-# Where release packages are published. Empty until the project publishes releases; until then
-# install a package you built or downloaded with -FromFile.
-$ReleaseUrl = $env:SEMANTIC_ENGINE_RELEASE_URL
+# The project's releases page (GitHub layout: <url>/download/vX.Y.Z/<file> and
+# <url>/latest/download/<file>). SEMANTIC_ENGINE_RELEASE_URL overrides it, for mirrors and tests.
+$ReleaseUrl = if ($env:SEMANTIC_ENGINE_RELEASE_URL) { $env:SEMANTIC_ENGINE_RELEASE_URL } else { 'https://github.com/turingcomplete790/Semantic-Engine/releases' }
 $BuildDocs = "Build from source: install Rust, a C++17 compiler (Visual Studio Build Tools), and clang (LLVM), then run scripts\package.ps1 in the source tree and install the result with -FromFile."
 
 function Show-Usage {
@@ -106,8 +106,9 @@ try {
         $package = (Resolve-Path -LiteralPath $FromFile).Path
         $expected = ((Get-Content -LiteralPath "$FromFile.sha256" -TotalCount 1) -split '\s+')[0].ToLowerInvariant()
     } else {
-        if (-not $ReleaseUrl) { Fail 5 "downloads are not configured yet; install a package with -FromFile" }
-        $base = "$ReleaseUrl/$Version"
+        $base = if ($Version -eq 'latest') { "$ReleaseUrl/latest/download" }
+                elseif ($Version -like 'v*') { "$ReleaseUrl/download/$Version" }
+                else { "$ReleaseUrl/download/v$Version" }
         $sums = Join-Path $work 'SHA256SUMS'
         try { Invoke-WebRequest -UseBasicParsing -Uri "$base/SHA256SUMS" -OutFile $sums } catch { Fail 5 "cannot download $base/SHA256SUMS" }
         $entry = Get-Content -LiteralPath $sums | Where-Object { $_ -match "semantic-engine-.*-$target\.zip$" } | Select-Object -First 1

@@ -10,9 +10,9 @@
 set -u
 
 PLUGIN_DIR_NAME="semantic-engine"
-# Where release packages are published. Empty until the project publishes releases; until then
-# install a package you built or downloaded with --from-file.
-RELEASE_URL="${SEMANTIC_ENGINE_RELEASE_URL:-}"
+# The project's releases page (GitHub layout: <url>/download/vX.Y.Z/<file> and
+# <url>/latest/download/<file>). SEMANTIC_ENGINE_RELEASE_URL overrides it, for mirrors and tests.
+RELEASE_URL="${SEMANTIC_ENGINE_RELEASE_URL:-https://github.com/turingcomplete790/Semantic-Engine/releases}"
 BUILD_DOCS="Build from source: install Rust, a C++17 compiler, and clang, then run
   scripts/package.sh in the source tree and install the result with --from-file."
 
@@ -122,8 +122,11 @@ if [ -n "$from_file" ]; then
     package=$from_file
     expected=$(cut -d' ' -f1 < "$from_file.sha256")
 else
-    [ -n "$RELEASE_URL" ] || die 5 "downloads are not configured yet; install a package with --from-file"
-    base="$RELEASE_URL/$version"
+    case "$version" in
+        latest) base="$RELEASE_URL/latest/download" ;;
+        v*) base="$RELEASE_URL/download/$version" ;;
+        *) base="$RELEASE_URL/download/v$version" ;;
+    esac
     sums="$work/SHA256SUMS"
     fetch "$base/SHA256SUMS" "$sums" || die 5 "cannot download $base/SHA256SUMS"
     file=$(grep "semantic-engine-.*-$target\.tar\.gz\$" "$sums" | head -n 1 | sed 's/^[0-9a-f]*[[:space:]]*\**//')

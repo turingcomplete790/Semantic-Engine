@@ -1,0 +1,82 @@
+# Builds release packages and SHA256SUMS on version tags (spec 002 FR-014, research R7).
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux on the oldest supported Ubuntu runners, for the widest glibc compatibility.
+          - { target: x86_64-unknown-linux-gnu, os: ubuntu-22.04 }
+          - { target: aarch64-unknown-linux-gnu, os: ubuntu-22.04-arm }
+          # Both macOS targets build on an Apple silicon runner; x86_64 is cross-compiled.
+          - { target: aarch64-apple-darwin, os: macos-latest }
+          - { target: x86_64-apple-darwin, os: macos-latest }
+          - { target: x86_64-pc-windows-msvc, os: windows-latest }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+      - name: Tag matches the plugin version
+        shell: bash
+        run: |
+          version=$(sed -n 's/^version = "\(.*\)"/\1/p' crates/plugin/Cargo.toml | head -n 1)
+          [ "${GITHUB_REF_NAME}" = "v${version}" ] || { echo "tag ${GITHUB_REF_NAME} != v${version}"; exit 1; }
+      - name: Build tools (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y clang libclang-dev
+      - name: Point bindgen at LLVM (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: echo "LIBCLANG_PATH=C:\Program Files\LLVM\bin" >> $env:GITHUB_ENV
+      - name: Package (Unix)
+        if: runner.os != 'Windows'
+        run: sh scripts/package.sh --target ${{ matrix.target }}
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/package.ps1 -Target ${{ matrix.target }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ matrix.target }}
+          path: dist/*
+
+  publish:
+    needs: package
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Combine checksums
+        run: |
+          cd dist
+          cat ./*.sha256 | sort -k2 > SHA256SUMS
+          sha256sum -c SHA256SUMS
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd dist
+          gh release create "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" \
+            --title "Semantic Engine ${GITHUB_REF_NAME}" --generate-notes \
+            semantic-engine-* SHA256SUMS

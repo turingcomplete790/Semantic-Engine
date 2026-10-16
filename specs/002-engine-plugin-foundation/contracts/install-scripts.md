@@ -12,6 +12,15 @@ pwsh -File install.ps1 [-PluginsDir DIR] [-Version X.Y.Z] [-FromFile PACKAGE] [-
   of `curl`/`fetch`/`wget` plus one of `sha256sum`/`shasum -a 256`/`sha256`.
 - `install.ps1` runs on Windows PowerShell 5.1 and PowerShell 7.
 
+## Release location
+
+Downloads use the GitHub releases layout under a base URL ending in `/releases`:
+`<url>/download/vX.Y.Z/<file>` for a version (`--version 0.1.0` or `v0.1.0`) and
+`<url>/latest/download/<file>` for `latest`. The base URL is
+`https://github.com/turingcomplete790/Semantic-Engine/releases`; `SEMANTIC_ENGINE_RELEASE_URL`
+overrides it. `mktemp`
+is also used; it exists on every supported system.
+
 ## Behaviour
 
 1. Detect OS and architecture; map to a package target (research R7). No target → exit 3.

@@ -39,7 +39,14 @@ mkdir -p "$dest/vocabulary"
 sed "s/^version: .*/version: $version/" plugin/semantic-engine.yml > "$dest/semantic-engine.yml"
 cp "$bin" "$dest/semantic-engine"
 cp vocabulary/*.ttl vocabulary/CHANGELOG.md vocabulary/TERMS.md "$dest/vocabulary/"
-"$bin" --versions > "$dest/VERSIONS.json"
+# A cross-compiled binary may not run here (for example x86_64 macOS built on arm64 without
+# Rosetta). The versions are the same for every target except build.target, so fall back to a
+# host build and substitute the target.
+if ! "$bin" --versions > "$dest/VERSIONS.json" 2>/dev/null; then
+    host=$(rustc -vV | sed -n 's/^host: //p')
+    cargo build --release --locked -p plugin
+    "target/release/semantic-engine" --versions | sed "s/\"$host\"/\"$target\"/" > "$dest/VERSIONS.json"
+fi
 
 mkdir -p "$out"
 archive="$out/$name.tar.gz"
