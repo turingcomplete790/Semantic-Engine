@@ -120,12 +120,12 @@ receive the versions (quickstart steps 2 and 3).
 
 ### Tests for US3
 
-- [ ] T031 [P] [US3] Write failing test `crates/plugin/tests/api_agreement.rs`: the set of operation and task names in the plugin registry, in `api/operations.json`, and in `docs/api.md` operation headings are equal; every error code the code can return is in `api/operations.json` and `docs/api.md`; the contract version is the same in all three (FR-012)
+- [X] T031 [P] [US3] Write failing test `crates/plugin/tests/api_agreement.rs`: the set of operation and task names in the plugin registry, in `api/operations.json`, and in `docs/api.md` operation headings are equal; every error code the code can return is in `api/operations.json` and `docs/api.md`; the contract version is the same in all three (FR-012)
 
 ### Implementation for US3
 
-- [ ] T032 [US3] Write `docs/api.md` from `contracts/operations.md`: how to call (`runPluginOperation`, `runPluginTask`), the envelope, one section per operation and task with request, response, errors, and "since", the error code table, compatibility rules, how to read `serverId` without the engine, and vocabulary terms referenced by IRI (`urn:semantic-stash:vocab:`); make T031 pass
-- [ ] T033 [US3] Add a "Changes" section to `docs/api.md` with the 1.0.0 entry and a note that `api/operations.json` and the code change in the same revision
+- [X] T032 [US3] Write `docs/api.md` from `contracts/operations.md`: how to call (`runPluginOperation`, `runPluginTask`), the envelope, one section per operation and task with request, response, errors, and "since", the error code table, compatibility rules, how to read `serverId` without the engine, and vocabulary terms referenced by IRI (`urn:semantic-stash:vocab:`); make T031 pass
+- [X] T033 [US3] Add a "Changes" section to `docs/api.md` with the 1.0.0 entry and a note that `api/operations.json` and the code change in the same revision
 
 ---
 
