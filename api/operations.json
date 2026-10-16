@@ -1,0 +1,22 @@
+{
+  "contractVersion": "1.0.0",
+  "pluginId": "semantic-engine",
+  "operations": [
+    {"name": "ping", "since": "1.0.0", "errors": []},
+    {"name": "status", "since": "1.0.0", "errors": ["STASH_UNREACHABLE", "STASH_TOO_OLD"]},
+    {"name": "getServerId", "since": "1.0.0", "errors": ["SERVER_ID_NOT_GENERATED", "SERVER_ID_INVALID", "STASH_UNREACHABLE"]}
+  ],
+  "tasks": [
+    {"name": "Generate server identifier", "op": "generateServerId", "since": "1.0.0",
+     "errors": ["SERVER_ID_INVALID", "STASH_UNREACHABLE"]}
+  ],
+  "errors": [
+    {"code": "INVALID_INPUT", "since": "1.0.0"},
+    {"code": "UNKNOWN_OPERATION", "since": "1.0.0"},
+    {"code": "STASH_UNREACHABLE", "since": "1.0.0"},
+    {"code": "STASH_TOO_OLD", "since": "1.0.0"},
+    {"code": "SERVER_ID_NOT_GENERATED", "since": "1.0.0"},
+    {"code": "SERVER_ID_INVALID", "since": "1.0.0"},
+    {"code": "INTERNAL", "since": "1.0.0"}
+  ]
+}

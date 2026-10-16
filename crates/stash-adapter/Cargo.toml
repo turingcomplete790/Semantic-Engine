@@ -1,0 +1,18 @@
+[package]
+name = "stash-adapter"
+version = "0.1.0"
+edition.workspace = true
+description = "The only code that talks to Stash: typed Cynic operations against a pinned schema"
+
+[dependencies]
+cynic = { version = "3.14", features = ["http-reqwest-blocking"] }
+# reqwest 0.13 matches cynic 3.14. TLS through rustls with the `ring` provider: built with the
+# `cc` crate, so no CMake (constitution v2.0.0); `aws-lc-rs` is deliberately not used.
+reqwest = { version = "0.13", default-features = false, features = ["blocking", "json", "rustls-no-provider"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12", "logging"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+
+[build-dependencies]
+cynic-codegen = "3.14"

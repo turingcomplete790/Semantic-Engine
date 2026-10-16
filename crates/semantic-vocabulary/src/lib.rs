@@ -245,6 +245,10 @@ fn obj_value(t: &Term) -> String {
         Term::NamedNode(n) => n.as_str().to_string(),
         Term::Literal(l) => l.value().to_string(),
         Term::BlankNode(b) => b.to_string(),
+        // RDF-star quoted triples exist only when oxrdf's `rdf-star` feature is on (Oxigraph
+        // enables it in the workspace); the vocabulary never contains them.
+        #[allow(unreachable_patterns)]
+        other => other.to_string(),
     }
 }
 

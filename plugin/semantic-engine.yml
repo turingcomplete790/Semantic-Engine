@@ -1,0 +1,17 @@
+name: Semantic Engine
+description: Shared semantic engine for the Semantic Stash Viewer and semantic-tagging.
+version: 0.1.0
+exec:
+  - semantic-engine
+interface: raw
+errLog: error
+tasks:
+  - name: Generate server identifier
+    description: Create this server's permanent identifier if it does not exist yet.
+    defaultArgs:
+      op: generateServerId
+settings:
+  serverId:
+    displayName: Server identifier
+    description: Generated once by the "Generate server identifier" task. Do not edit.
+    type: STRING

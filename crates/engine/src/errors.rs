@@ -1,0 +1,39 @@
+//! Error codes of the operation contract (contracts/operations.md, api/operations.json).
+
+use serde::Serialize;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum ErrorCode {
+    InvalidInput,
+    UnknownOperation,
+    StashUnreachable,
+    StashTooOld,
+    ServerIdNotGenerated,
+    ServerIdInvalid,
+    Internal,
+}
+
+impl ErrorCode {
+    pub const ALL: [ErrorCode; 7] = [
+        ErrorCode::InvalidInput,
+        ErrorCode::UnknownOperation,
+        ErrorCode::StashUnreachable,
+        ErrorCode::StashTooOld,
+        ErrorCode::ServerIdNotGenerated,
+        ErrorCode::ServerIdInvalid,
+        ErrorCode::Internal,
+    ];
+
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            ErrorCode::InvalidInput => "INVALID_INPUT",
+            ErrorCode::UnknownOperation => "UNKNOWN_OPERATION",
+            ErrorCode::StashUnreachable => "STASH_UNREACHABLE",
+            ErrorCode::StashTooOld => "STASH_TOO_OLD",
+            ErrorCode::ServerIdNotGenerated => "SERVER_ID_NOT_GENERATED",
+            ErrorCode::ServerIdInvalid => "SERVER_ID_INVALID",
+            ErrorCode::Internal => "INTERNAL",
+        }
+    }
+}
