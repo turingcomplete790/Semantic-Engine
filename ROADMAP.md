@@ -19,37 +19,44 @@ link the spec folder (`specs/NNN-name/`) next to the item.
 
 **Goal:** a project that builds, tests, and installs as an empty Stash plugin.
 
-- [x] Constitution v1.0.0
-- [ ] Cargo workspace (started: `crates/semantic-vocabulary`; engine, adapter, and plugin crates follow): engine library crate, Stash adapter crate, plugin executable crate
-- [ ] Server identity task: a plugin task that generates a UUID once and stores it in Stash, read
-      by every client as the server part of item identifiers
-      (`specs/001-semantic-vocabulary/` FR-014)
-- [ ] Plugin manifest and a no-op operation that Stash can invoke (`runPluginOperation`)
+- [x] Constitution (now v2.0.0)
+- [x] Cargo workspace: `semantic-vocabulary`, `stash-adapter` (the only Stash I/O, Cynic with the
+      pinned v0.31.1 schema), `engine`, and `plugin` (the `semantic-engine` executable)
       (`specs/002-engine-plugin-foundation/`)
-- [ ] RocksDB bundled through Oxigraph's default build (constitution v2.0.0): plain Cargo build,
+- [x] Server identity task: "Generate server identifier" stores a UUID once as the plugin setting
+      `serverId`, read by every client as the server part of item identifiers
+      (`specs/001-semantic-vocabulary/` FR-014, `specs/002-engine-plugin-foundation/` US2)
+- [x] Plugin manifest and operations Stash can invoke (`runPluginOperation`): `ping`, `status`,
+      `getServerId` (`specs/002-engine-plugin-foundation/` US1, US2)
+- [x] RocksDB bundled through Oxigraph's default build (constitution v2.0.0): plain Cargo build,
       no CMake, no system RocksDB; packages are self-contained and the status operation reports
       the bundled RocksDB version
-- [ ] Install scripts: POSIX shell for BSD, macOS, and Linux, and PowerShell for Windows
-- [ ] CI (started: `.github/workflows/vocabulary.yml`): format, clippy, tests; prebuilt packages
-      per platform the toolchain can target (Linux, macOS, Windows); runners need a C++17
-      compiler and clang for the bundled RocksDB
-- [ ] Fixture tooling: capture read-only GraphQL responses from a plugin-tagged library
+- [x] Install scripts: POSIX shell for BSD, macOS, and Linux (tested under dash and busybox sh),
+      and PowerShell for Windows; both verify the package's SHA-256 checksum
+- [x] CI and releases (`.github/workflows/ci.yml`, `release.yml`): format, clippy, tests, script
+      tests, builds on Linux, macOS, and Windows; v0.1.0 published with five packages and
+      `SHA256SUMS`
+- [x] Fixture tooling: `fixture-capture` records read-only, credential-free fixtures; fixtures
+      from the test instance in `crates/stash-adapter/tests/fixtures/test-instance/`
 - [x] Semantic vocabulary as a set of RDF documents in Turtle (`.ttl`), derived from the
       semantic-tagging design documents (`README.md`, `semantic-query-engine-roadmap.md`,
       `archetype-system-plan.md`): classes, properties, tag-type flags, scopes, Variations,
       Labels, and archetypes, each term citing the document section and plugin commit (or date)
       it was read at (constitution Principle II). The vocabulary is the contract the engine
       builds its graph from (Phase 2). Done: `vocabulary/` and `specs/001-semantic-vocabulary/`
-- [ ] API document for clients (the viewer and the plugin): the operations, request and response
+- [x] API document for clients (the viewer and the plugin): the operations, request and response
       shapes, errors, and versions (constitution Principle VI), kept in step with the plugin as
       it is built and updated whenever an operation or the vocabulary changes. It refers to
-      terms in `vocabulary/` by IRI (`urn:semantic-stash:vocab:`), never by redefining them
+      terms in `vocabulary/` by IRI (`urn:semantic-stash:vocab:`), never by redefining them.
+      Done: `docs/api.md`, `api/operations.json`, and the agreement test (contract 1.0.0)
 
 ## Phase 1: Spike (settle Principle IV's open questions)
 
 **Goal:** measured answers before any feature spec. Output is a written decision record.
 
 - [ ] Process model: per-invocation process start cost vs a long-lived process Stash keeps alive
+      (baseline from 002, Stash v0.31.1, local: process start ~4 ms, `ping` ~9 ms and `status`
+      ~21 ms through `runPluginOperation`, first call after a plugin reload ~1.3 s)
 - [ ] Persistence: on-disk Oxigraph store reopened per call; single-writer lock, read-only
       readers, or snapshot-only
 - [ ] Freshness: hook delivery when a tag, scene, image, or performer is saved from the web UI,

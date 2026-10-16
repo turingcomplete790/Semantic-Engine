@@ -35,3 +35,8 @@
   Stash itself; the choice of GraphQL client library comes from the constitution (FR-009).
 - Likely clarification topics for `/speckit-clarify`: where the server identifier is stored,
   and whether operations return Stash-compatible output only or also a richer envelope.
+- SC-003 reader check (T045, 2026-10-16): an independent client written in JavaScript from
+  `docs/api.md` alone, run in a browser console against the test instance, called the plugin on
+  the first attempt and received a correct envelope (`{"ok": true, "op": "ping",
+  "contractVersion": "1.0.0", "result": {"pong": true}}`). The call was `ping` rather than
+  `status`; both use the same `runPluginOperation` call and envelope.

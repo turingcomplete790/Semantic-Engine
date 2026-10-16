@@ -164,10 +164,10 @@ library counts unchanged (quickstart step 6).
 
 ## Phase 8: Polish and cross-cutting
 
-- [ ] T042 [P] Add `STASH_TOO_OLD`, `STASH_UNREACHABLE`, and log-redaction checks to `crates/plugin/tests/security.rs`: no stdout, stderr, or file written by the plugin contains the session cookie value; the plugin opens no listening socket (FR-016)
-- [ ] T043 [P] Update `ROADMAP.md` Phase 0: tick the workspace, server identity task, manifest, install scripts, CI, fixture tooling, and API document items, linking `specs/002-engine-plugin-foundation/`
-- [ ] T044 Run every step of `specs/002-engine-plugin-foundation/quickstart.md` against the test instance and fix drift; record the SC-005 status timing in `specs/002-engine-plugin-foundation/quickstart.md`
-- [ ] T045 [P] SC-003 check: give `docs/api.md` to a reader who has not seen the engine and record whether a first-attempt `status` call works, in `specs/002-engine-plugin-foundation/checklists/requirements.md` notes
+- [X] T042 [P] Add `STASH_TOO_OLD`, `STASH_UNREACHABLE`, and log-redaction checks to `crates/plugin/tests/security.rs`: no stdout, stderr, or file written by the plugin contains the session cookie value; the plugin opens no listening socket (FR-016)
+- [X] T043 [P] Update `ROADMAP.md` Phase 0: tick the workspace, server identity task, manifest, install scripts, CI, fixture tooling, and API document items, linking `specs/002-engine-plugin-foundation/`
+- [X] T044 Run every step of `specs/002-engine-plugin-foundation/quickstart.md` against the test instance and fix drift; record the SC-005 status timing in `specs/002-engine-plugin-foundation/quickstart.md`
+- [X] T045 [P] SC-003 check: give `docs/api.md` to a reader who has not seen the engine and record whether a first-attempt `status` call works, in `specs/002-engine-plugin-foundation/checklists/requirements.md` notes
 
 ---
 
