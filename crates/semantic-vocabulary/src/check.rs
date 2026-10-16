@@ -434,7 +434,8 @@ pub fn run(voc: &Vocabulary) -> Vec<Violation> {
             "TERMS.md is missing".into(),
         )),
         Some(t) => {
-            if t.trim_end() != voc.generate_terms_md().trim_end() {
+            // Line endings are not content: a Windows checkout may turn LF into CRLF.
+            if t.replace("\r\n", "\n").trim_end() != voc.generate_terms_md().trim_end() {
                 out.push(v(
                     "V011",
                     None,

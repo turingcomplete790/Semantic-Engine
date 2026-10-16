@@ -1,0 +1,7 @@
+# Keep LF everywhere: generated files (TERMS.md) are compared byte for byte, and the POSIX
+# install scripts break with CRLF. Windows tools handle LF fine.
+* text=auto eol=lf
+*.ps1 text eol=lf
+*.png binary
+*.tar.gz binary
+*.zip binary

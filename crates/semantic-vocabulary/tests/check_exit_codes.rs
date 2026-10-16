@@ -51,3 +51,13 @@ fn json_format_has_contract_shape() {
     assert!(v["violations"].as_array().unwrap().is_empty());
     assert!(v["vocabularyVersion"].is_string());
 }
+
+#[test]
+fn crlf_terms_md_is_still_current() {
+    // A Windows checkout can turn LF into CRLF; that must not fail V011.
+    let dir = common::scratch_copy();
+    let terms = common::read(&dir, "TERMS.md").replace('\n', "\r\n");
+    common::write(&dir, "TERMS.md", &terms);
+    let (code, out) = run(&dir);
+    assert_eq!(code, 0, "{out}");
+}
