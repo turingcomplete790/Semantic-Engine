@@ -70,7 +70,8 @@ jobs:
       - name: Combine checksums
         run: |
           cd dist
-          cat ./*.sha256 | sort -k2 > SHA256SUMS
+          # Strip any CR so a checksum file written on Windows cannot break the list.
+          cat ./*.sha256 | tr -d '\r' | sort -k2 > SHA256SUMS
           sha256sum -c SHA256SUMS
       - name: Create the release
         env:
