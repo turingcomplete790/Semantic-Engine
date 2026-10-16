@@ -1224,6 +1224,7 @@ name = "plugin"
 version = "0.1.0"
 dependencies = [
  "engine",
+ "reqwest",
  "serde",
  "serde_json",
  "stash-adapter",

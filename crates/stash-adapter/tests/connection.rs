@@ -96,12 +96,9 @@ fn sends_the_session_cookie_to_the_invoking_server_only() {
 
 #[test]
 fn unreachable_server_is_reported() {
-    // Bind then drop to get a port nothing listens on.
-    let port = TcpListener::bind("127.0.0.1:0")
-        .unwrap()
-        .local_addr()
-        .unwrap()
-        .port();
+    // TCP port 1 on loopback refuses connections; binding and releasing a random port races
+    // with the parallel fake-server test.
+    let port = 1;
     let client = Client::from_server_connection(&conn("127.0.0.1", port, None)).unwrap();
     let err = client.stash_version().unwrap_err();
     assert!(

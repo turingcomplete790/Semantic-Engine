@@ -13,7 +13,10 @@ dir="$src/graphql/schema"
     echo "# graphql/schema/types/*.graphql of the Stash ${ver} source on $(date +%Y-%m-%d). Do not edit."
     echo
     cat "$dir/schema.graphql"
-    for f in $(ls "$dir"/types/*.graphql | LC_ALL=C sort); do
+    # Pathname expansion is sorted; LC_ALL=C makes the order byte-wise and reproducible.
+    LC_ALL=C
+    export LC_ALL
+    for f in "$dir"/types/*.graphql; do
         echo
         echo "# ---- $(basename "$f")"
         cat "$f"

@@ -73,6 +73,13 @@ pub enum Error {
     Setup(String),
 }
 
+/// Installs the TLS crypto provider (rustls with ring). reqwest is built without a provider to
+/// avoid aws-lc's C/CMake build, so one must be installed before any reqwest client is created.
+/// Safe to call more than once.
+pub fn install_tls_provider() {
+    let _ = rustls::crypto::ring::default_provider().install_default();
+}
+
 pub struct Client {
     http: reqwest::blocking::Client,
     endpoint: String,
@@ -80,8 +87,7 @@ pub struct Client {
 
 impl Client {
     pub fn from_server_connection(conn: &ServerConnection) -> Result<Client, Error> {
-        // TLS uses rustls with the ring provider; installing it twice is harmless.
-        let _ = rustls::crypto::ring::default_provider().install_default();
+        install_tls_provider();
         let mut headers = reqwest::header::HeaderMap::new();
         if let Some(c) = &conn.session_cookie {
             let value = format!("{}={}", c.name, c.value);
