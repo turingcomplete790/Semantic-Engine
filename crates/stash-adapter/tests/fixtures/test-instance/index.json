@@ -1,0 +1,96 @@
+{
+  "counts": {
+    "images": 1,
+    "performers": 4,
+    "scenes": 1,
+    "tags": 12
+  },
+  "empty": [],
+  "queries": [
+    {
+      "items": 2,
+      "query": "tags where plugtag is not null"
+    },
+    {
+      "items": 2,
+      "query": "tags where isAction is not null"
+    },
+    {
+      "items": 2,
+      "query": "tags where isRole is not null"
+    },
+    {
+      "items": 3,
+      "query": "tags where isTrait is not null"
+    },
+    {
+      "items": 1,
+      "query": "tags where isLabel is not null"
+    },
+    {
+      "items": 1,
+      "query": "tags where isMiseEnScene is not null"
+    },
+    {
+      "items": 1,
+      "query": "tags where isVariation is not null"
+    },
+    {
+      "items": 1,
+      "query": "scenes where roleTagAssignments is not null"
+    },
+    {
+      "items": 1,
+      "query": "images where roleTagAssignments is not null"
+    },
+    {
+      "items": 1,
+      "query": "scenes where actionAssignments is not null"
+    },
+    {
+      "items": 0,
+      "query": "images where actionAssignments is not null"
+    },
+    {
+      "items": 1,
+      "query": "scenes where pluggableAssignments is not null"
+    },
+    {
+      "items": 0,
+      "query": "images where pluggableAssignments is not null"
+    },
+    {
+      "items": 1,
+      "query": "scenes where actionPairings is not null"
+    },
+    {
+      "items": 0,
+      "query": "images where actionPairings is not null"
+    },
+    {
+      "items": 1,
+      "query": "scenes where roleTagPairings is not null"
+    },
+    {
+      "items": 0,
+      "query": "images where roleTagPairings is not null"
+    },
+    {
+      "items": 1,
+      "query": "scenes where timeline is not null"
+    },
+    {
+      "items": 1,
+      "query": "images where timeline is not null"
+    },
+    {
+      "items": 2,
+      "query": "performers where isArchetype is not null"
+    },
+    {
+      "items": 2,
+      "query": "performers referenced by semantic scenes and images (2 ids)"
+    }
+  ],
+  "source": "fixture-capture (read-only queries; no credentials recorded)"
+}

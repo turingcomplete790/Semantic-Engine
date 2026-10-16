@@ -1,0 +1,42 @@
+[
+  {
+    "custom_fields": {},
+    "id": "7",
+    "name": "SE-Test Performer A",
+    "tags": [
+      {
+        "id": "26"
+      },
+      {
+        "id": "27"
+      },
+      {
+        "id": "23"
+      }
+    ]
+  },
+  {
+    "custom_fields": {},
+    "id": "8",
+    "name": "SE-Test Performer B",
+    "tags": []
+  },
+  {
+    "custom_fields": {
+      "archetypeParents": "[]",
+      "isArchetype": 1
+    },
+    "id": "9",
+    "name": "SE-Test Archetype Root",
+    "tags": []
+  },
+  {
+    "custom_fields": {
+      "archetypeParents": "[\"9\"]",
+      "isArchetype": 1
+    },
+    "id": "10",
+    "name": "SE-Test Archetype Child",
+    "tags": []
+  }
+]

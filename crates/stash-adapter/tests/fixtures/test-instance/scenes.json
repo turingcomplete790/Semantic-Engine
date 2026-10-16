@@ -1,0 +1,22 @@
+[
+  {
+    "custom_fields": {
+      "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": [\"making out\"]}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+      "actionPairings": "[{\"a\": {\"performer\": \"7\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"8\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"se-pair-1\"}]",
+      "pluggableAssignments": "{\"7\": [\"22\"]}",
+      "roleTagAssignments": "{\"7\": [\"19\"], \"8\": [\"20\"]}",
+      "roleTagPairings": "[{\"a\": {\"performer\": \"7\", \"roleTagId\": \"19\"}, \"b\": {\"performer\": \"8\", \"roleTagId\": \"20\"}, \"pairingId\": \"se-pair-2\"}]",
+      "timeline": "[{\"id\": \"se-stage-1\", \"type\": \"stage\", \"miseEnScenePicks\": [{\"tagId\": \"24\", \"tagName\": \"SE-Test Location Beach\", \"variation\": \"sunset\"}]}, {\"id\": \"se-slot-1\", \"ref\": {\"kind\": \"action-instance\", \"performerId\": \"7\", \"actionTagId\": \"21\"}, \"seconds\": 30}, {\"id\": \"se-slot-2\", \"ref\": {\"kind\": \"role-instance\", \"performerId\": \"8\", \"roleTagId\": \"20\"}, \"seconds\": 45}, {\"id\": \"se-stage-2\", \"type\": \"stage\", \"miseEnScenePicks\": [{\"tagId\": \"24\", \"tagName\": \"SE-Test Location Beach\", \"variation\": \"night\"}]}, {\"id\": \"se-slot-3\", \"ref\": {\"kind\": \"action-pairing\", \"pairingId\": \"se-pair-1\"}, \"seconds\": 90}]"
+    },
+    "id": "2",
+    "performers": [
+      {
+        "id": "7"
+      },
+      {
+        "id": "8"
+      }
+    ],
+    "title": ""
+  }
+]

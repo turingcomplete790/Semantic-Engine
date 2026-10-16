@@ -1,0 +1,108 @@
+[
+  {
+    "custom_fields": {
+      "isTrait": 1
+    },
+    "id": "9",
+    "name": "SSV Test Trait",
+    "parents": []
+  },
+  {
+    "custom_fields": {
+      "plugtag": 1
+    },
+    "id": "10",
+    "name": "SSV Test Pluggable",
+    "parents": []
+  },
+  {
+    "custom_fields": {
+      "isTrait": 0
+    },
+    "id": "12",
+    "name": "SSV Test Cleared Trait",
+    "parents": []
+  },
+  {
+    "custom_fields": {
+      "categories": "[\"Dominant\"]",
+      "isRole": 1
+    },
+    "id": "19",
+    "name": "SE-Test Role Dom",
+    "parents": []
+  },
+  {
+    "custom_fields": {
+      "categories": "[\"Submissive\"]",
+      "isRole": 1
+    },
+    "id": "20",
+    "name": "SE-Test Role Sub",
+    "parents": []
+  },
+  {
+    "custom_fields": {
+      "isAction": 1,
+      "variations": "[\"making out\", \"peck\"]"
+    },
+    "id": "21",
+    "name": "SE-Test Action Kissing",
+    "parents": []
+  },
+  {
+    "custom_fields": {
+      "plugtag": 1
+    },
+    "id": "22",
+    "name": "SE-Test Pluggable Red Hair",
+    "parents": []
+  },
+  {
+    "custom_fields": {
+      "categories": "[\"Appearance\"]",
+      "isTrait": 1,
+      "variations": "[\"Copper\", \"Auburn\"]"
+    },
+    "id": "23",
+    "name": "SE-Test Trait Hair Colour",
+    "parents": []
+  },
+  {
+    "custom_fields": {
+      "categories": "[\"Location\"]",
+      "isMiseEnScene": 1,
+      "variations": "[\"sunset\", \"night\"]"
+    },
+    "id": "24",
+    "name": "SE-Test Location Beach",
+    "parents": []
+  },
+  {
+    "custom_fields": {
+      "isAction": 1,
+      "variantOfTagId": "21"
+    },
+    "id": "25",
+    "name": "SE-Test Action Smooching",
+    "parents": []
+  },
+  {
+    "custom_fields": {
+      "isLabel": 1,
+      "labelFormula": "{\"threshold\": 100, \"traitRules\": [{\"id\": \"r1\", \"tagId\": \"23\", \"tagName\": \"SE-Test Trait Hair Colour\", \"recursive\": false, \"variationMatch\": \"Copper\", \"weight\": 100}], \"fieldRules\": [{\"id\": \"r2\", \"field\": \"gender\", \"modifier\": \"EQUALS\", \"value\": \"FEMALE\", \"weight\": 10}], \"labelRules\": [], \"pluggableRules\": [{\"id\": \"r3\", \"pluggableTagId\": \"22\", \"weight\": 50}]}"
+    },
+    "id": "26",
+    "name": "SE-Test Label Redhead",
+    "parents": []
+  },
+  {
+    "custom_fields": {
+      "isVariation": 1,
+      "variationData": "{\"performerId\": \"7\", \"pluggableTagIds\": [\"22\"], \"traitTagIds\": [\"23\"], \"labelTagIds\": [\"26\"]}"
+    },
+    "id": "27",
+    "name": "SE-Test Performer A (Redhead)",
+    "parents": []
+  }
+]

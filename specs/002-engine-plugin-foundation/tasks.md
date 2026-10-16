@@ -152,13 +152,13 @@ library counts unchanged (quickstart step 6).
 
 ### Tests for US5
 
-- [ ] T038 [P] [US5] Write failing test `crates/stash-adapter/tests/fixture_capture.rs` against a fake Stash: the tool issues only queries (assert no request body contains `mutation`), writes one file per query plus `index.json` with counts and empty sections, and no file contains the API key, cookie, or header values (FR-015, SC-006)
+- [X] T038 [P] [US5] Write failing test `crates/stash-adapter/tests/fixture_capture.rs` against a fake Stash: the tool issues only queries (assert no request body contains `mutation`), writes one file per query plus `index.json` with counts and empty sections, and no file contains the API key, cookie, or header values (FR-015, SC-006)
 
 ### Implementation for US5
 
-- [ ] T039 [US5] Add Cynic query operations in `crates/stash-adapter/src/fixtures.rs` for flagged tags (`custom_fields` "flag is not null" filters per Principle VII), performers with archetype flags, and scenes and images with semantic `custom_fields`, selecting only the fields the vocabulary mapping needs
-- [ ] T040 [US5] Implement `crates/stash-adapter/src/bin/fixture-capture.rs`: reads `STASH_URL` and `STASH_API_KEY` from the environment, `--out DIR`, runs T039 queries, scrubs, writes files and `index.json`; make T038 pass
-- [ ] T041 [US5] Run the tool against the test instance (`localhost:9998`) into `crates/stash-adapter/tests/fixtures/test-instance/`, confirm library counts before and after match, and commit the scrubbed fixtures
+- [X] T039 [US5] Add Cynic query operations in `crates/stash-adapter/src/fixtures.rs` for flagged tags (`custom_fields` "flag is not null" filters per Principle VII), performers with archetype flags, and scenes and images with semantic `custom_fields`, selecting only the fields the vocabulary mapping needs
+- [X] T040 [US5] Implement `crates/stash-adapter/src/bin/fixture-capture.rs`: reads `STASH_URL` and `STASH_API_KEY` from the environment, `--out DIR`, runs T039 queries, scrubs, writes files and `index.json`; make T038 pass
+- [X] T041 [US5] Run the tool against the test instance (`localhost:9998`) into `crates/stash-adapter/tests/fixtures/test-instance/`, confirm library counts before and after match, and commit the scrubbed fixtures
 
 ---
 

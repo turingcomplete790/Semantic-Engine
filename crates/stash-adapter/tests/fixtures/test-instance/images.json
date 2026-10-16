@@ -1,0 +1,15 @@
+[
+  {
+    "custom_fields": {
+      "roleTagAssignments": "{\"7\": [\"19\"], \"8\": [\"20\"]}",
+      "timeline": "[{\"id\": \"se-stage-1\", \"type\": \"stage\", \"miseEnScenePicks\": [{\"tagId\": \"24\", \"tagName\": \"SE-Test Location Beach\", \"variation\": \"sunset\"}]}, {\"id\": \"se-slot-1\", \"ref\": {\"kind\": \"action-instance\", \"performerId\": \"7\", \"actionTagId\": \"21\"}, \"seconds\": 30}]"
+    },
+    "id": "15",
+    "performers": [
+      {
+        "id": "7"
+      }
+    ],
+    "title": ""
+  }
+]

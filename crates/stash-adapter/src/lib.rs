@@ -2,6 +2,7 @@
 //! typed operation checked against the pinned schema `schemas/stash-v0.31.1.graphql`
 //! (constitution v1.1.0).
 
+pub mod fixtures;
 pub mod plugin_config;
 pub mod queries;
 
@@ -107,6 +108,28 @@ impl Client {
         Ok(Client {
             http,
             endpoint: conn.endpoint(),
+        })
+    }
+
+    /// A client for tools run outside Stash (fixture capture): `base_url` is the server address,
+    /// for example `http://localhost:9999`, and the API key is sent in the `ApiKey` header.
+    pub fn with_api_key(base_url: &str, api_key: &str) -> Result<Client, Error> {
+        install_tls_provider();
+        let mut headers = reqwest::header::HeaderMap::new();
+        let mut hv = reqwest::header::HeaderValue::from_str(api_key)
+            .map_err(|_| Error::Setup("the API key is not a valid header value".into()))?;
+        hv.set_sensitive(true);
+        headers.insert("ApiKey", hv);
+        let http = reqwest::blocking::Client::builder()
+            .default_headers(headers)
+            .connect_timeout(Duration::from_secs(5))
+            .timeout(Duration::from_secs(300))
+            .redirect(reqwest::redirect::Policy::none())
+            .build()
+            .map_err(|e| Error::Setup(e.to_string()))?;
+        Ok(Client {
+            http,
+            endpoint: format!("{}/graphql", base_url.trim_end_matches('/')),
         })
     }
 
