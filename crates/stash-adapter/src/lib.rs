@@ -2,6 +2,7 @@
 //! typed operation checked against the pinned schema `schemas/stash-v0.31.1.graphql`
 //! (constitution v1.1.0).
 
+pub mod plugin_config;
 pub mod queries;
 
 use cynic::http::ReqwestBlockingExt;

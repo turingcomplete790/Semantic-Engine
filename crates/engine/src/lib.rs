@@ -2,6 +2,7 @@
 //! `stash-adapter` (constitution Principle V).
 
 pub mod errors;
+pub mod server_id;
 pub mod versions;
 
 pub use errors::ErrorCode;

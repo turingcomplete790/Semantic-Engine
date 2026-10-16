@@ -96,16 +96,16 @@ receive the versions (quickstart steps 2 and 3).
 
 ### Tests for US2
 
-- [ ] T024 [P] [US2] Write failing test `crates/stash-adapter/tests/plugin_config.rs`: reading settings uses `configuration { plugins(include: ["semantic-engine"]) }`; writing uses `configurePlugin` with the **merged** map (existing keys preserved, since `configurePlugin` replaces the whole map, research R4)
-- [ ] T025 [P] [US2] Write failing test `crates/engine/tests/server_id.rs`: absent → generates a value matching `^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`, writes it, re-reads, reports `generated`; present and valid → unchanged, reports `existing`; present and invalid → `SERVER_ID_INVALID`, no write; the read path never generates
-- [ ] T026 [P] [US2] Write failing test `crates/plugin/tests/ops_server_id.rs`: `getServerId` returns `{"serverId"}` or `SERVER_ID_NOT_GENERATED` / `SERVER_ID_INVALID`; task `generateServerId` logs `serverId=<uuid> (generated)` then `(existing)` on a second run; `status` includes `serverId` once generated
+- [X] T024 [P] [US2] Write failing test `crates/stash-adapter/tests/plugin_config.rs`: reading settings uses `configuration { plugins(include: ["semantic-engine"]) }`; writing uses `configurePlugin` with the **merged** map (existing keys preserved, since `configurePlugin` replaces the whole map, research R4)
+- [X] T025 [P] [US2] Write failing test `crates/engine/tests/server_id.rs`: absent → generates a value matching `^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`, writes it, re-reads, reports `generated`; present and valid → unchanged, reports `existing`; present and invalid → `SERVER_ID_INVALID`, no write; the read path never generates
+- [X] T026 [P] [US2] Write failing test `crates/plugin/tests/ops_server_id.rs`: `getServerId` returns `{"serverId"}` or `SERVER_ID_NOT_GENERATED` / `SERVER_ID_INVALID`; task `generateServerId` logs `serverId=<uuid> (generated)` then `(existing)` on a second run; `status` includes `serverId` once generated
 
 ### Implementation for US2
 
-- [ ] T027 [US2] Implement `crates/stash-adapter/src/plugin_config.rs` (Cynic query and mutation for plugin settings, read-merge-write); make T024 pass
-- [ ] T028 [US2] Implement `crates/engine/src/server_id.rs` per data-model "Server identifier" lifecycle; make T025 pass
-- [ ] T029 [US2] Register `getServerId` and task `generateServerId` in `crates/plugin/src/ops.rs` and add `serverId` to `status`; make T026 pass
-- [ ] T030 [US2] Opt-in integration test `crates/plugin/tests/integration_server_id.rs` (gated on `STASH_TEST_URL`): run the task twice via `runPluginTask`, wait for the job, read the configuration twice through two separate client connections, assert one identical UUID
+- [X] T027 [US2] Implement `crates/stash-adapter/src/plugin_config.rs` (Cynic query and mutation for plugin settings, read-merge-write); make T024 pass
+- [X] T028 [US2] Implement `crates/engine/src/server_id.rs` per data-model "Server identifier" lifecycle; make T025 pass
+- [X] T029 [US2] Register `getServerId` and task `generateServerId` in `crates/plugin/src/ops.rs` and add `serverId` to `status`; make T026 pass
+- [X] T030 [US2] Opt-in integration test `crates/plugin/tests/integration_server_id.rs` (gated on `STASH_TEST_URL`): run the task twice via `runPluginTask`, wait for the job, read the configuration twice through two separate client connections, assert one identical UUID
 
 **Checkpoint**: US2 complete; item IRIs (feature 001 FR-014) can now be built.
 
