@@ -11,7 +11,9 @@ pub mod catch_up;
 pub mod clients;
 pub mod concurrency;
 pub mod hooks;
+pub mod payload;
 pub mod seed;
+pub mod snapshot;
 
 use crate::measure::{redact, Server};
 use crate::plugin_ops::PLUGIN_ID;
@@ -432,6 +434,8 @@ fn dispatch(b: &mut Bench) -> Outcome {
         "concurrency" => concurrency::command(b),
         "hooks" => hooks::command(b),
         "catch-up" => catch_up::command(b),
+        "payload" => payload::command(b),
+        "snapshot" => snapshot::command(b),
         other => Err(Failure::new(
             Exit::Usage,
             format!("{other} is not implemented in this build yet"),

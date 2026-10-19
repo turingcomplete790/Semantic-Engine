@@ -1,0 +1,118 @@
+{
+  "command": "spike-bench snapshot --path asset --scale 250k",
+  "engineCommit": "7d2819aeb332a906c19aef24bd0a71b1bb2e6620-dirty",
+  "extra": {
+    "assetAuth": {
+      "onlyWithLogin": true,
+      "requests": [
+        {
+          "file": "snapshot.nq.gz",
+          "refused": true,
+          "withLogin": 200,
+          "withoutLogin": 401
+        },
+        {
+          "file": "manifest.json",
+          "refused": true,
+          "withLogin": 200,
+          "withoutLogin": 401
+        }
+      ]
+    },
+    "freshness": {
+      "assetIsStale": false,
+      "clientIsCurrent": true,
+      "currentGeneration": 1,
+      "heldGeneration": 1,
+      "rule": "a client compares the generation it holds with snapshotInfo.currentGeneration",
+      "snapshotInfo": {
+        "max": 8.839188,
+        "median": 4.6324235,
+        "min": 3.891912,
+        "p95": 5.424855999999999,
+        "runs": 100
+      }
+    },
+    "partsSummary": {
+      "clientDecode": {
+        "max": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "p95": 0.0,
+        "runs": 0
+      },
+      "export": {
+        "max": 211092.563433,
+        "median": 186122.655359,
+        "min": 186065.627689,
+        "p95": 211092.563433,
+        "runs": 3
+      },
+      "fetch": {
+        "max": 122.526144,
+        "median": 105.42455000000001,
+        "min": 92.75093500000001,
+        "p95": 122.526144,
+        "runs": 3
+      },
+      "pluginDump": {
+        "max": 210944.577226,
+        "median": 186001.781004,
+        "min": 185904.919798,
+        "p95": 210944.577226,
+        "runs": 3
+      }
+    },
+    "sizes": {
+      "gzipBytes": 73888220,
+      "quads": 9794566,
+      "transferBytes": 73888220,
+      "transferIs": "the gzip file as served"
+    }
+  },
+  "failures": [],
+  "id": "snapshot-asset-250k",
+  "kind": "build",
+  "library": {
+    "images": 324926,
+    "kind": "synthetic",
+    "performers": 5000,
+    "scenes": 250000,
+    "tags": 42,
+    "triples": 9794566
+  },
+  "max": 211220.279045,
+  "median": 186234.139079,
+  "min": 186163.527602,
+  "p95": 211220.279045,
+  "parts": {
+    "export": [
+      211092.563433,
+      186122.655359,
+      186065.627689
+    ],
+    "fetch": [
+      122.526144,
+      105.42455000000001,
+      92.75093500000001
+    ],
+    "pluginDump": [
+      210944.577226,
+      186001.781004,
+      185904.919798
+    ]
+  },
+  "question": "snapshot",
+  "runs": 3,
+  "samples": [
+    211220.279045,
+    186234.139079,
+    186163.527602
+  ],
+  "server": {
+    "host": "http://localhost:9998",
+    "stashVersion": "v0.31.1"
+  },
+  "takenAt": "2026-10-19T19:45:26.093Z",
+  "variant": "asset"
+}

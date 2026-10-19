@@ -980,3 +980,57 @@ impl Client {
             .and_then(|s| s.updated_at.0.as_str().map(String::from)))
     }
 }
+
+// Plugin assets (research R6): Stash serves a plugin's `ui.assets` folders at
+// `/plugin/{id}/assets/...`, behind its normal authentication.
+
+/// A fetched plugin asset: the HTTP status and the body.
+#[derive(Debug, Clone)]
+pub struct Asset {
+    pub status: u16,
+    pub body: Vec<u8>,
+}
+
+fn get_asset(http: &reqwest::blocking::Client, url: &str) -> Result<Asset, Error> {
+    let resp = http
+        .get(url)
+        .send()
+        .map_err(|e| Error::Unreachable(e.to_string()))?;
+    let status = resp.status().as_u16();
+    let body = resp
+        .bytes()
+        .map_err(|e| Error::Unreachable(e.to_string()))?
+        .to_vec();
+    Ok(Asset { status, body })
+}
+
+impl Client {
+    fn asset_url(&self, plugin_id: &str, path: &str) -> String {
+        format!(
+            "{}/plugin/{plugin_id}/assets/{}",
+            self.endpoint.trim_end_matches("/graphql"),
+            path.trim_start_matches('/')
+        )
+    }
+
+    /// `GET /plugin/{plugin_id}/assets/{path}` with this client's credentials.
+    pub fn plugin_asset(&self, plugin_id: &str, path: &str) -> Result<Asset, Error> {
+        get_asset(&self.http, &self.asset_url(plugin_id, path))
+    }
+
+    /// The same request with no credentials, to check that Stash refuses it. Redirects are not
+    /// followed, so a redirect to the login page shows as its 3xx status.
+    pub fn plugin_asset_without_credentials(
+        &self,
+        plugin_id: &str,
+        path: &str,
+    ) -> Result<Asset, Error> {
+        let http = reqwest::blocking::Client::builder()
+            .connect_timeout(std::time::Duration::from_secs(5))
+            .timeout(std::time::Duration::from_secs(60))
+            .redirect(reqwest::redirect::Policy::none())
+            .build()
+            .map_err(|e| Error::Setup(e.to_string()))?;
+        get_asset(&http, &self.asset_url(plugin_id, path))
+    }
+}

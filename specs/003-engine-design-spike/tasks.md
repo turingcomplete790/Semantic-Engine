@@ -311,23 +311,23 @@ delivery paths compared.
 **Independent Test**: Run quickstart step 5 and read `results/limits-payload.json` and
 `results/snapshot-*.json`.
 
-- [ ] T035 [P] [US3] Implement the `payload` op in `crates/spike/src/plugin_ops/payload.rs`. It
+- [X] T035 [P] [US3] Implement the `payload` op in `crates/spike/src/plugin_ops/payload.rs`. It
   returns `{ bindings: [...] }` of about `bytes` size, using realistic binding objects (IRI plus
   label pairs).
-- [ ] T036 [US3] Implement the `payload` subcommand in `crates/spike/src/bench/payload.rs`:
+- [X] T036 [US3] Implement the `payload` subcommand in `crates/spike/src/bench/payload.rs`:
   - Double from 1 KiB until a call fails or its median exceeds 1 s, with at least 100 runs per
     size up to the point where latency passes 200 ms.
   - Record the curve, the failure point and its message, and the proposed page size: the largest
     size whose p95 is under 200 ms (R7).
   - Write `limits-payload`.
-- [ ] T037 [P] [US3] Implement the `exportSnapshot` and `snapshotInfo` ops in
+- [X] T037 [P] [US3] Implement the `exportSnapshot` and `snapshotInfo` ops in
   `crates/spike/src/plugin_ops/snapshot.rs`:
   - Export the current generation as gzip-compressed N-Quads.
   - With `to: output`, return `{ manifest, data }` with `data` base64-encoded.
   - With `to: asset`, write `store/assets/snapshot.nq.gz` and `store/assets/manifest.json`
     (generation, built at, vocabulary and engine versions), then return `{ manifest, path }`.
   - `snapshotInfo` returns the manifest.
-- [ ] T038 [US3] Implement the `snapshot --path op|asset --scale S` subcommand in
+- [X] T038 [US3] Implement the `snapshot --path op|asset --scale S` subcommand in
   `crates/spike/src/bench/snapshot.rs`:
   - Time the export and the fetch, either via `runPluginOperation` or by HTTP GET
     `/plugin/semantic-engine-spike/assets/snapshot.nq.gz` with the API key.
@@ -335,8 +335,15 @@ delivery paths compared.
   - Check that the asset GET without credentials is refused (R6).
   - Check that a client can tell whether its snapshot is current by comparing generations.
   - Write `snapshot-<path>-<S>`.
-- [ ] T039 [US3] Live: run quickstart step 5 (`payload`, and `snapshot` for both paths at `test`
+- [X] T039 [US3] Live: run quickstart step 5 (`payload`, and `snapshot` for both paths at `test`
   and `250k`) on the test server.
+  - Done 2026-10-19. `payload` scales at about 75 ms per MiB. The proposed page size is 2 MiB
+    (17,231 bindings, p95 192 ms). 16 MiB passed the 1 s stop with no failed call.
+  - `snapshot` at 250k (9.79M quads, 74 MB gzip) works on both paths with no failures. The
+    plugin's dump and gzip take 186–208 s. Delivery is small: 105 ms to GET the asset, 90 ms to
+    decode the op path's 98.5 MB base64. At `test` both paths take about 0.52 s.
+  - The asset GET without a login gets 401. `snapshotInfo` answers in about 5 ms (median), and
+    clients could tell their generation was current.
 
 **Checkpoint**: the paging and snapshot rules for Phase 3 can be stated from measurements.
 

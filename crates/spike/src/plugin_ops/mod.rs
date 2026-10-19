@@ -4,7 +4,9 @@
 
 pub mod build;
 pub mod hooks;
+pub mod payload;
 pub mod query;
+pub mod snapshot;
 pub mod write;
 
 use engine::ErrorCode;
@@ -46,6 +48,9 @@ pub const REGISTRY: &[(&str, Handler)] = &[
     ("write", write::op),
     ("buildFromStash", build::op),
     ("recordHook", hooks::op),
+    ("payload", payload::op),
+    ("exportSnapshot", snapshot::export_op),
+    ("snapshotInfo", snapshot::info_op),
 ];
 
 pub fn names() -> Vec<&'static str> {

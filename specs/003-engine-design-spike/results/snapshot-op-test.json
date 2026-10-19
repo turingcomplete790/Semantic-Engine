@@ -1,0 +1,101 @@
+{
+  "command": "spike-bench snapshot --path op --scale test",
+  "engineCommit": "7d2819aeb332a906c19aef24bd0a71b1bb2e6620-dirty",
+  "extra": {
+    "freshness": {
+      "assetIsStale": false,
+      "clientIsCurrent": true,
+      "currentGeneration": 1,
+      "heldGeneration": 1,
+      "rule": "a client compares the generation it holds with snapshotInfo.currentGeneration",
+      "snapshotInfo": {
+        "max": 10.56865,
+        "median": 4.681774,
+        "min": 3.817755,
+        "p95": 6.045914000000001,
+        "runs": 100
+      }
+    },
+    "partsSummary": {
+      "clientDecode": {
+        "max": 0.268585,
+        "median": 0.199836,
+        "min": 0.189538,
+        "p95": 0.268585,
+        "runs": 3
+      },
+      "export": {
+        "max": 700.633463,
+        "median": 519.751894,
+        "min": 466.31415300000003,
+        "p95": 700.633463,
+        "runs": 3
+      },
+      "fetch": {
+        "max": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "p95": 0.0,
+        "runs": 0
+      },
+      "pluginDump": {
+        "max": 676.396246,
+        "median": 492.779703,
+        "min": 441.31922,
+        "p95": 676.396246,
+        "runs": 3
+      }
+    },
+    "sizes": {
+      "gzipBytes": 247715,
+      "quads": 40083,
+      "transferBytes": 330288,
+      "transferIs": "base64 text inside the GraphQL JSON answer"
+    }
+  },
+  "failures": [],
+  "id": "snapshot-op-test",
+  "kind": "build",
+  "library": {
+    "images": 1327,
+    "kind": "synthetic",
+    "performers": 20,
+    "scenes": 1021,
+    "tags": 42,
+    "triples": 40083
+  },
+  "max": 700.9277999999999,
+  "median": 519.959478,
+  "min": 466.51320699999997,
+  "p95": 700.9277999999999,
+  "parts": {
+    "clientDecode": [
+      0.268585,
+      0.189538,
+      0.199836
+    ],
+    "export": [
+      700.633463,
+      466.31415300000003,
+      519.751894
+    ],
+    "pluginDump": [
+      676.396246,
+      441.31922,
+      492.779703
+    ]
+  },
+  "question": "snapshot",
+  "runs": 3,
+  "samples": [
+    700.9277999999999,
+    466.51320699999997,
+    519.959478
+  ],
+  "server": {
+    "host": "http://localhost:9998",
+    "stashVersion": "v0.31.1"
+  },
+  "takenAt": "2026-10-19T19:43:42.828Z",
+  "variant": "op"
+}
