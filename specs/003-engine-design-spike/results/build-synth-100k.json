@@ -1,0 +1,52 @@
+{
+  "command": "spike-bench synth --scale 100k",
+  "engineCommit": "f57af2232e08063e4e7a2ae3369ef79d88564c0b-dirty",
+  "extra": {
+    "bytesPerScene": 6462.86295,
+    "msPerScene": 0.13713387045,
+    "snapshotBytes": 323086575,
+    "snapshotNote": "snapshot size counts hard-linked files again; on the same filesystem they share blocks with work/",
+    "triples": 3917874,
+    "workBytes": 646286295
+  },
+  "failures": [],
+  "id": "build-synth-100k",
+  "kind": "build",
+  "library": {
+    "images": 129970,
+    "kind": "synthetic",
+    "performers": 2000,
+    "scenes": 100000,
+    "tags": 42,
+    "triples": 3917874
+  },
+  "max": 13967.811934,
+  "median": 13713.387045,
+  "min": 13517.316230999999,
+  "p95": 13967.811934,
+  "parts": {
+    "load": [
+      13964.224123999998,
+      13513.679541,
+      13709.308186999999
+    ],
+    "publish": [
+      3.5878099999999997,
+      3.63669,
+      4.078858
+    ]
+  },
+  "question": "build",
+  "runs": 3,
+  "samples": [
+    13967.811934,
+    13517.316230999999,
+    13713.387045
+  ],
+  "server": {
+    "host": "local",
+    "stashVersion": null
+  },
+  "takenAt": "2026-10-17T23:02:59.645Z",
+  "variant": "synth"
+}

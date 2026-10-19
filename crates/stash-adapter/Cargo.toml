@@ -14,5 +14,14 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "1"
 
+[features]
+# Spike-only mutations (specs/003-engine-design-spike, research R9). Only the `spike` crate turns
+# this on; the shipped plugin compiles query operations only.
+spike = []
+
 [build-dependencies]
 cynic-codegen = "3.14"
+
+[[test]]
+name = "spike"
+required-features = ["spike"]

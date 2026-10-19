@@ -1,0 +1,68 @@
+{
+  "command": "spike-bench build --from-stash --scale test",
+  "engineCommit": "f57af2232e08063e4e7a2ae3369ef79d88564c0b-dirty",
+  "extra": {
+    "buildSummary": {
+      "max": 1288.819489,
+      "median": 253.94496300000003,
+      "min": 236.590245,
+      "p95": 1288.819489,
+      "runs": 3
+    },
+    "fetchSummary": {
+      "max": 2954.595912,
+      "median": 153.69434,
+      "min": 142.517199,
+      "p95": 2954.595912,
+      "runs": 3
+    },
+    "msPerItem": 0.3845723566037736,
+    "requests": 21,
+    "semanticItems": {
+      "images": 500,
+      "performers": 6,
+      "scenes": 500,
+      "tags": 54
+    }
+  },
+  "failures": [],
+  "id": "build-stash-test",
+  "kind": "build",
+  "library": {
+    "images": 1327,
+    "kind": "test",
+    "performers": 6,
+    "scenes": 1021,
+    "tags": 59,
+    "triples": 18619
+  },
+  "max": 4243.42079,
+  "median": 407.646698,
+  "min": 379.113317,
+  "p95": 4243.42079,
+  "parts": {
+    "build": [
+      1288.819489,
+      253.94496300000003,
+      236.590245
+    ],
+    "fetch": [
+      2954.595912,
+      153.69434,
+      142.517199
+    ]
+  },
+  "question": "build",
+  "runs": 3,
+  "samples": [
+    4243.42079,
+    407.646698,
+    379.113317
+  ],
+  "server": {
+    "host": "http://localhost:9998",
+    "stashVersion": "v0.31.1"
+  },
+  "takenAt": "2026-10-17T23:13:09.340Z",
+  "variant": "stash"
+}

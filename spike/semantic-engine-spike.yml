@@ -1,0 +1,28 @@
+name: Semantic Engine Spike
+description: Measurement-only build for the Phase 1 spike. Do not install on real libraries.
+version: 0.0.0-spike
+exec:
+  - spike-plugin
+interface: raw
+ui:
+  assets:
+    /: store/assets              # served at /plugin/semantic-engine-spike/assets/
+hooks:
+  - name: Record semantic saves
+    description: Appends one line per hook to hooks.jsonl and exits.
+    triggeredBy:
+      - Tag.Create.Post
+      - Tag.Update.Post
+      - Tag.Merge.Post
+      - Tag.Destroy.Post
+      - Scene.Create.Post
+      - Scene.Update.Post
+      - Scene.Destroy.Post
+      - Image.Create.Post
+      - Image.Update.Post
+      - Image.Destroy.Post
+      - Performer.Create.Post
+      - Performer.Update.Post
+      - Performer.Destroy.Post
+    defaultArgs:
+      op: recordHook

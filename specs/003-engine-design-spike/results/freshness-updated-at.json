@@ -1,0 +1,332 @@
+{
+  "command": "spike-bench catch-up --scale test",
+  "engineCommit": "f57af2232e08063e4e7a2ae3369ef79d88564c0b-dirty",
+  "extra": {
+    "bumpTable": [
+      {
+        "client": "web-ui",
+        "entity": "tag",
+        "items": 1,
+        "mutation": "tagUpdate",
+        "note": "edit form; only a custom field changes here",
+        "updatedAtBumped": true
+      },
+      {
+        "client": "web-ui",
+        "entity": "scene",
+        "items": 1,
+        "mutation": "sceneUpdate",
+        "note": "edit form; only a custom field changes here",
+        "updatedAtBumped": true
+      },
+      {
+        "client": "web-ui",
+        "entity": "image",
+        "items": 1,
+        "mutation": "imageUpdate",
+        "note": "edit form; only a custom field changes here",
+        "updatedAtBumped": true
+      },
+      {
+        "client": "web-ui",
+        "entity": "performer",
+        "items": 1,
+        "mutation": "performerUpdate",
+        "note": "edit form; only a custom field changes here",
+        "updatedAtBumped": true
+      },
+      {
+        "client": "semantic-tagging",
+        "entity": "tag",
+        "items": 1,
+        "mutation": "tagUpdate",
+        "note": "the plugin's custom_fields.partial payload",
+        "updatedAtBumped": true
+      },
+      {
+        "client": "semantic-tagging",
+        "entity": "scene",
+        "items": 1,
+        "mutation": "sceneUpdate",
+        "note": "the plugin's custom_fields.partial payload",
+        "updatedAtBumped": true
+      },
+      {
+        "client": "semantic-tagging",
+        "entity": "image",
+        "items": 1,
+        "mutation": "imageUpdate",
+        "note": "the plugin's custom_fields.partial payload",
+        "updatedAtBumped": true
+      },
+      {
+        "client": "semantic-tagging",
+        "entity": "performer",
+        "items": 1,
+        "mutation": "performerUpdate",
+        "note": "the plugin's custom_fields.partial payload",
+        "updatedAtBumped": true
+      },
+      {
+        "client": "viewer",
+        "entity": "tag",
+        "items": 1,
+        "mutation": "tagUpdate",
+        "note": "viewer (planned): the equivalent request the web UI makes",
+        "updatedAtBumped": true
+      },
+      {
+        "client": "viewer",
+        "entity": "scene",
+        "items": 1,
+        "mutation": "sceneSaveActivity",
+        "note": "the viewer's only Stash write today (play activity); not a semantic save",
+        "updatedAtBumped": false
+      },
+      {
+        "client": "viewer",
+        "entity": "scene",
+        "items": 1,
+        "mutation": "sceneUpdate",
+        "note": "viewer (planned): the equivalent request the web UI makes",
+        "updatedAtBumped": true
+      },
+      {
+        "client": "viewer",
+        "entity": "image",
+        "items": 1,
+        "mutation": "imageUpdate",
+        "note": "viewer (planned): the equivalent request the web UI makes",
+        "updatedAtBumped": true
+      },
+      {
+        "client": "viewer",
+        "entity": "performer",
+        "items": 1,
+        "mutation": "performerUpdate",
+        "note": "viewer (planned): the equivalent request the web UI makes",
+        "updatedAtBumped": true
+      },
+      {
+        "client": "web-ui",
+        "entity": "scene",
+        "items": 10,
+        "mutation": "bulkSceneUpdate",
+        "note": "web UI bulk edit (also the viewer's planned bulk tagging)",
+        "updatedAtBumped": true
+      },
+      {
+        "client": "web-ui",
+        "entity": "scene",
+        "items": 100,
+        "mutation": "bulkSceneUpdate",
+        "note": "web UI bulk edit (also the viewer's planned bulk tagging)",
+        "updatedAtBumped": true
+      },
+      {
+        "client": "web-ui",
+        "entity": "scene",
+        "items": 1000,
+        "mutation": "bulkSceneUpdate",
+        "note": "web UI bulk edit (also the viewer's planned bulk tagging)",
+        "updatedAtBumped": true
+      }
+    ],
+    "byType": {
+      "images": {
+        "changedInLastHour": 1,
+        "summary": {
+          "max": 7.520855,
+          "median": 2.512171,
+          "min": 2.223155,
+          "p95": 4.078809,
+          "runs": 25
+        }
+      },
+      "performers": {
+        "changedInLastHour": 1,
+        "summary": {
+          "max": 4.850758,
+          "median": 2.167844,
+          "min": 1.9087500000000002,
+          "p95": 3.3985869999999996,
+          "runs": 25
+        }
+      },
+      "scenes": {
+        "changedInLastHour": 1000,
+        "summary": {
+          "max": 3.064771,
+          "median": 2.728979,
+          "min": 2.6190330000000004,
+          "p95": 3.06012,
+          "runs": 25
+        }
+      },
+      "tags": {
+        "changedInLastHour": 5,
+        "summary": {
+          "max": 2.7281940000000002,
+          "median": 1.910553,
+          "min": 1.6874520000000002,
+          "p95": 2.347053,
+          "runs": 25
+        }
+      }
+    },
+    "query": "find<Type>(filter: updated_at GREATER_THAN <one hour ago>, per_page 1): count only",
+    "thresholdFormat": {
+      "local": "2026-10-17T17:15:53-06:00",
+      "rule": "Stash stores updated_at as local-time text and compares filter values as text, to the second; send thresholds in that form, and never together with ids (the filter is then ignored)",
+      "sameInstantCounts": [
+        {
+          "localFormatCount": 1000,
+          "type": "scenes",
+          "utcFormatCount": 0
+        },
+        {
+          "localFormatCount": 1,
+          "type": "images",
+          "utcFormatCount": 0
+        },
+        {
+          "localFormatCount": 1,
+          "type": "performers",
+          "utcFormatCount": 0
+        },
+        {
+          "localFormatCount": 5,
+          "type": "tags",
+          "utcFormatCount": 0
+        }
+      ],
+      "serverOffsetSeconds": -21600,
+      "utc": "2026-10-17T23:15:53Z"
+    }
+  },
+  "failures": [],
+  "id": "freshness-updated-at",
+  "kind": "latency",
+  "library": {
+    "images": 1327,
+    "kind": "test",
+    "performers": 6,
+    "scenes": 1021,
+    "tags": 63,
+    "triples": 0
+  },
+  "max": 7.520855,
+  "median": 2.365868,
+  "min": 1.6874520000000002,
+  "p95": 3.3985869999999996,
+  "question": "freshness",
+  "runs": 100,
+  "samples": [
+    3.06012,
+    3.000019,
+    2.774749,
+    2.783266,
+    3.064771,
+    2.802292,
+    2.699483,
+    2.8453799999999996,
+    2.6489949999999998,
+    2.728979,
+    2.672035,
+    2.663811,
+    2.694017,
+    2.674732,
+    2.6907799999999997,
+    2.752672,
+    2.6190330000000004,
+    2.866764,
+    2.830734,
+    2.901322,
+    2.7303100000000002,
+    2.670001,
+    2.687938,
+    2.6241709999999996,
+    2.680244,
+    2.512171,
+    2.384683,
+    2.334694,
+    2.2977950000000003,
+    2.418848,
+    2.278673,
+    2.429335,
+    2.501164,
+    2.223155,
+    2.3346880000000003,
+    2.273373,
+    2.277431,
+    2.329565,
+    2.643907,
+    2.711088,
+    2.828022,
+    2.9490369999999997,
+    2.776786,
+    3.275698,
+    3.729781,
+    4.078809,
+    7.520855,
+    3.1037980000000003,
+    2.745843,
+    3.43506,
+    3.1915950000000004,
+    4.850758,
+    2.249896,
+    2.221453,
+    2.605524,
+    2.14786,
+    2.167844,
+    2.168906,
+    2.0312550000000003,
+    3.257448,
+    2.20083,
+    2.125446,
+    2.152985,
+    2.0747959999999996,
+    2.080451,
+    2.432589,
+    2.1714070000000003,
+    2.037068,
+    1.9818000000000002,
+    2.1245190000000003,
+    2.100545,
+    1.9087500000000002,
+    1.9822279999999999,
+    2.97525,
+    3.3985869999999996,
+    2.3290960000000003,
+    1.998853,
+    1.7655640000000001,
+    1.6874520000000002,
+    1.753603,
+    1.857382,
+    1.791096,
+    2.01932,
+    2.119504,
+    1.8733300000000002,
+    1.781976,
+    2.7281940000000002,
+    1.9604570000000001,
+    1.9010310000000001,
+    1.853727,
+    1.846225,
+    1.7822300000000002,
+    1.900774,
+    1.9466139999999998,
+    2.078581,
+    2.347053,
+    2.170923,
+    2.255598,
+    2.173319,
+    1.910553
+  ],
+  "server": {
+    "host": "http://localhost:9998",
+    "stashVersion": "v0.31.1"
+  },
+  "takenAt": "2026-10-18T00:15:54.006Z",
+  "variant": "updated-at"
+}

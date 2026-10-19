@@ -1,0 +1,30 @@
+{
+  "command": "spike-bench call-cost --scale 250k",
+  "engineCommit": "f57af2232e08063e4e7a2ae3369ef79d88564c0b-dirty",
+  "failures": [],
+  "id": "process-first-call-250k",
+  "kind": "observation",
+  "library": {
+    "images": 324926,
+    "kind": "synthetic",
+    "performers": 5000,
+    "scenes": 250000,
+    "tags": 42,
+    "triples": 9794566
+  },
+  "max": 14.578225999999999,
+  "median": 14.578225999999999,
+  "min": 14.578225999999999,
+  "p95": 14.578225999999999,
+  "question": "process",
+  "runs": 1,
+  "samples": [
+    14.578225999999999
+  ],
+  "server": {
+    "host": "http://localhost:9998",
+    "stashVersion": "v0.31.1"
+  },
+  "takenAt": "2026-10-17T23:12:17.660Z",
+  "variant": "first-call"
+}

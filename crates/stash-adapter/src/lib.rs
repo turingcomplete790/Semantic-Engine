@@ -5,6 +5,8 @@
 pub mod fixtures;
 pub mod plugin_config;
 pub mod queries;
+#[cfg(feature = "spike")]
+pub mod spike;
 
 use cynic::http::ReqwestBlockingExt;
 use serde::Deserialize;
