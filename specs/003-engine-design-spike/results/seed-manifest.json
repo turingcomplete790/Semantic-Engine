@@ -13718,6 +13718,13 @@
       ]
     }
   ],
-  "state": "seeded",
-  "seededAt": "2026-10-17T18:40:49.864Z"
+  "state": "cleaned",
+  "seededAt": "2026-10-17T18:40:49.864Z",
+  "cleanedAt": "2026-10-19T21:11:47.918Z",
+  "statsAfterCleanup": {
+    "scenes": 1021,
+    "images": 1327,
+    "performers": 7,
+    "tags": 17
+  }
 }

@@ -1,0 +1,156 @@
+{
+  "command": "spike-bench delta --scale 250k",
+  "engineCommit": "2026f7d46195405d8583ae2df85308fe3fc6158c-dirty",
+  "extra": {
+    "client": {
+      "applyTotalMs": 5226.879515999999,
+      "copyMs": 1.141267,
+      "deltasApplied": 12,
+      "latestGeneration": 13,
+      "startGeneration": 1
+    },
+    "fullDumpLevel1": {
+      "bytes": 112836759,
+      "dumpMs": 121094.185311,
+      "quads": 9794566,
+      "wallMs": 121196.40375
+    },
+    "fullDumpLevel6": {
+      "bytes": 73888220,
+      "dumpMedianMs": 186001.781004,
+      "from": "snapshot-asset-250k"
+    },
+    "generationsRemovedAfter": 11,
+    "match": {
+      "copyQuads": 9794566,
+      "countMs": 5783.1380580000005,
+      "differingScenes": [],
+      "latestQuads": 9794566,
+      "matches": true,
+      "touchedScenes": 3333
+    },
+    "perItems": [
+      {
+        "addedMedian": 10.0,
+        "clientApplyMedianMs": 1.160267,
+        "deltaBytesMedian": 317.0,
+        "deltaShareOfPlainWrite": 0.012181838806578376,
+        "items": 1,
+        "plainWriteMedianMs": 187.400526,
+        "plugin": {
+          "delta": 2.301861,
+          "lock": 141.263192,
+          "publish": 31.160841,
+          "readOld": 6.842204,
+          "total": 189.683409,
+          "write": 1.373387
+        },
+        "removedMedian": 10.0,
+        "runs": 3,
+        "wallMedianMs": 196.62944199999998
+      },
+      {
+        "addedMedian": 100.0,
+        "clientApplyMedianMs": 12.550304,
+        "deltaBytesMedian": 1412.0,
+        "deltaShareOfPlainWrite": 0.019004755160620238,
+        "items": 10,
+        "plainWriteMedianMs": 242.186424,
+        "plugin": {
+          "delta": 4.610216,
+          "lock": 144.06658,
+          "publish": 32.525850000000005,
+          "readOld": 54.144218,
+          "total": 245.954138,
+          "write": 10.598485
+        },
+        "removedMedian": 100.0,
+        "runs": 3,
+        "wallMedianMs": 252.29844200000002
+      },
+      {
+        "addedMedian": 1000.0,
+        "clientApplyMedianMs": 131.587855,
+        "deltaBytesMedian": 12883.0,
+        "deltaShareOfPlainWrite": 0.032541607587243074,
+        "items": 100,
+        "plainWriteMedianMs": 871.156378,
+        "plugin": {
+          "delta": 28.348829,
+          "lock": 148.695716,
+          "publish": 44.634705,
+          "readOld": 501.920349,
+          "total": 899.505207,
+          "write": 140.27673800000002
+        },
+        "removedMedian": 1000.0,
+        "runs": 3,
+        "wallMedianMs": 910.501435
+      },
+      {
+        "addedMedian": 10000.0,
+        "clientApplyMedianMs": 1569.484629,
+        "deltaBytesMedian": 126112.0,
+        "deltaShareOfPlainWrite": 0.03823690343055046,
+        "items": 1000,
+        "plainWriteMedianMs": 3847.140558,
+        "plugin": {
+          "delta": 147.102742,
+          "lock": 128.687474,
+          "publish": 71.624322,
+          "readOld": 1947.765456,
+          "total": 3994.2433,
+          "write": 1627.2904
+        },
+        "removedMedian": 10000.0,
+        "runs": 3,
+        "wallMedianMs": 4019.592057
+      }
+    ],
+    "samplesAre": "single-item edits, wall time through Stash"
+  },
+  "failures": [],
+  "id": "snapshot-delta-250k",
+  "kind": "build",
+  "library": {
+    "images": 324926,
+    "kind": "synthetic",
+    "performers": 5000,
+    "scenes": 250000,
+    "tags": 42,
+    "triples": 9794566
+  },
+  "max": 236.91127,
+  "median": 196.62944199999998,
+  "min": 184.057316,
+  "p95": 236.91127,
+  "parts": {
+    "clientApply": [
+      1.276493,
+      1.160267,
+      1.081178,
+      11.474720000000001,
+      12.678177,
+      12.550304,
+      131.587855,
+      130.586639,
+      145.665946,
+      1734.3313569999998,
+      1475.001951,
+      1569.484629
+    ]
+  },
+  "question": "snapshot",
+  "runs": 3,
+  "samples": [
+    236.91127,
+    196.62944199999998,
+    184.057316
+  ],
+  "server": {
+    "host": "http://localhost:9998",
+    "stashVersion": "v0.31.1"
+  },
+  "takenAt": "2026-10-19T20:39:40.502Z",
+  "variant": "delta"
+}

@@ -54,19 +54,24 @@ link the spec folder (`specs/NNN-name/`) next to the item.
 
 **Goal:** measured answers before any feature spec. Output is a written decision record.
 
-- [ ] Process model: per-invocation process start cost vs a long-lived process Stash keeps alive
-      (baseline from 002, Stash v0.31.1, local: process start ~4 ms, `ping` ~9 ms and `status`
-      ~21 ms through `runPluginOperation`, first call after a plugin reload ~1.3 s)
-- [ ] Persistence: on-disk Oxigraph store reopened per call; single-writer lock, read-only
-      readers, or snapshot-only
-- [ ] Freshness: hook delivery when a tag, scene, image, or performer is saved from the web UI,
-      the plugin, or the viewer
-- [ ] Result limits: the largest result `runPluginOperation` can return, and paging when it is
-      exceeded
-- [ ] Snapshot delivery: operation result vs the plugin's asset folder Stash serves; how a
-      client catches up from it
-- [ ] Build time and size against the viewer's 009 budgets (SC-001)
-- [ ] Decision: proceed, or fall back to clients keeping in-process engines only
+Done 2026-10-20: [specs/003-engine-design-spike/decision-record.md](specs/003-engine-design-spike/decision-record.md) (outcome `proceed-with-changes`).
+
+- [x] Process model: one process per call, reopening the published snapshot read-only. Query p95
+      88.7 ms at 250k scenes; the long-lived helper is dropped, since it saves about 10 ms
+      (decision record §1)
+- [x] Persistence: on-disk store with published snapshot generations and a single writer. Readers
+      of published snapshots never saw a partial write; read-only readers of the live store did
+      in 72% of reads (§2)
+- [x] Freshness: hooks fire for every save from every client, adding about 5 ms per saved item. A
+      hook records the change and the next engine call applies it (§3)
+- [x] Result limits: pages of 1 MiB, about 8,600 bindings; the hard ceiling is 2 MiB. Time grows
+      by about 75 ms per MiB, and no call failed up to 16 MiB (§4)
+- [x] Snapshot delivery: not needed. Clients query the engine and hold no snapshot
+      (constitution v3.0.0, Principle III). Measured for reference: 186 s and 74 MB at 250k (§5)
+- [x] Build time and size: within the viewer's 009 budgets. First build estimated at 30–40 s at
+      Production size; release archives 1.8–2.2 MB (§6)
+- [x] Decision: proceed with the shared engine, with constitution v3.0.0, the reworded Phase 4,
+      and the Phase 2 rules in the record (§7)
 
 ## Phase 2: Semantic graph (engine core)
 
@@ -87,6 +92,8 @@ link the spec folder (`specs/NNN-name/`) next to the item.
 - [ ] Bounded, flag-filtered discovery (constitution Principle VII)
 - [ ] Incremental build with progress and cancellation; store rebuilt when missing, damaged, or
       from an older format
+- [ ] Store with published snapshot generations, a single writer, and readers of published
+      generations only (constitution Principle IV; decision record rules 1–3)
 - [ ] Compatibility fixtures: a plugin-tagged library produces the documented graph
 
 ## Phase 3: Query operations (Milestone 2)
@@ -96,16 +103,19 @@ link the spec folder (`specs/NNN-name/`) next to the item.
 - [ ] Versioned operation protocol (Principle VI): request, response, structured errors
 - [ ] SPARQL `SELECT`: triple patterns, variables, joins, projection, basic filters
 - [ ] Scoping rules enforced (scene-scoped predicates only join within one scene)
-- [ ] Paging and result-size limits per Phase 1 findings
-- [ ] Hook-driven incremental updates, with a manual rebuild task
+- [ ] Paging and result-size limits per Phase 1 findings: 1 MiB pages, never over 2 MiB
+      (decision record rule 9)
+- [ ] Hook-driven incremental updates: hooks append to a journal and the next engine call
+      applies it (003 decision record, rules 4–8), with a manual rebuild task
 - [ ] Status operation: engine version, store format, last update, graph counts
 
 ## Phase 4: Client adoption
 
-**Goal:** the viewer and the plugin use the engine, each still working without it.
+**Goal:** the viewer and the plugin are user interfaces over the engine. Their semantic features
+query it; without it they say clearly that it is missing (constitution Principles I and III).
 
-- [ ] Viewer: the engine as an optional companion, falling back to its in-process engine
-      (viewer Phase 6; needs the viewer's constitution amendment first)
+- [ ] Viewer: semantic features query the engine, with a clear state when it is absent; no
+      in-process engine (viewer Phase 6; needs the viewer's constitution amendment first)
 - [ ] Plugin: the semantic-search plugin calls the engine through `runPluginOperation`
 - [ ] Cross-client equivalence tests: the same library state gives the same answers in each
 - [ ] Remove or retire duplicated engine work in the clients' roadmaps
@@ -125,7 +135,8 @@ link the spec folder (`specs/NNN-name/`) next to the item.
 
 - [ ] Profile evaluation; join ordering; query caching where it pays
 - [ ] Reduce store size and memory footprint
-- [ ] Snapshot export so a client can start from the engine's state instead of building its own
+- ~~Snapshot export so a client can start from the engine's state~~: dropped. Clients query the
+  engine and hold no snapshot (constitution v3.0.0, Principle III; 003 decision record §5)
 
 ## Out of scope
 

@@ -30,6 +30,14 @@ jobs:
       - run: cargo fmt --all --check
       - run: cargo clippy --all-targets --locked -- -D warnings
       - run: cargo test --workspace --locked
+      # The release package must carry no spike code (spec 003 FR-013).
+      - name: Release package has no spike files
+        run: |
+          scripts/package.sh --out dist
+          if tar -tzf dist/semantic-engine-*.tar.gz | grep -E 'spike-plugin|semantic-engine-spike'; then
+            echo "error: the release package contains spike files" >&2
+            exit 1
+          fi
       # V014 passes with a notice until the first snapshot exists.
       - run: cargo run --locked -p semantic-vocabulary --bin vocab-check
       - run: scripts/validate-ttl.sh vocabulary

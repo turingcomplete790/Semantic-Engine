@@ -162,8 +162,7 @@ pub fn current_generation(dir: &Path) -> Result<u64, StoreError> {
 /// Returns the new generation number. The caller holds the lock for the whole write.
 pub fn publish(w: &Writer) -> Result<u64, StoreError> {
     w.store.flush().map_err(storage)?;
-    let last = generations(&w.dir)?.last().copied().unwrap_or(0);
-    let next = last.max(current_generation(&w.dir).unwrap_or(0)) + 1;
+    let next = next_generation(w)?;
     fs::create_dir_all(snapshots_dir(&w.dir))?;
     w.store
         .backup(snapshots_dir(&w.dir).join(next.to_string()))
@@ -172,6 +171,14 @@ pub fn publish(w: &Writer) -> Result<u64, StoreError> {
     fs::write(&tmp, format!("{next}\n"))?;
     fs::rename(&tmp, w.dir.join("current"))?;
     Ok(next)
+}
+
+/// The number the next [`publish`] will use. Only the lock holder can ask, so it cannot change
+/// before that publish; files that must exist before readers see the generation (such as a
+/// change file) can be named with it.
+pub fn next_generation(w: &Writer) -> Result<u64, StoreError> {
+    let last = generations(&w.dir)?.last().copied().unwrap_or(0);
+    Ok(last.max(current_generation(&w.dir).unwrap_or(0)) + 1)
 }
 
 /// Opens the published generation read-only (option B readers). Returns its number too.
@@ -232,4 +239,27 @@ pub fn disk_size(path: &Path) -> io::Result<u64> {
         total += fs::metadata(path)?.len();
     }
     Ok(total)
+}
+
+/// Copies published generation `generation` to `dest`, for a client that keeps its own copy and
+/// updates it with change files. Table files (`.sst`) are never modified after RocksDB writes
+/// them, so they are hard-linked when possible; every other file (the MANIFEST is appended to)
+/// is copied, so writing the copy can never change the published generation.
+pub fn copy_generation(dir: &Path, generation: u64, dest: &Path) -> Result<(), StoreError> {
+    let src = snapshots_dir(dir).join(generation.to_string());
+    if !src.is_dir() {
+        return Err(StoreError::DamagedCurrent(format!(
+            "generation {generation} is missing from snapshots/"
+        )));
+    }
+    fs::create_dir_all(dest)?;
+    for e in fs::read_dir(&src)? {
+        let e = e?;
+        let to = dest.join(e.file_name());
+        let is_table = e.path().extension().is_some_and(|x| x == "sst");
+        if !(is_table && fs::hard_link(e.path(), &to).is_ok()) {
+            fs::copy(e.path(), &to)?;
+        }
+    }
+    Ok(())
 }

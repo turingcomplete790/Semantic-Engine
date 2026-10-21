@@ -100,6 +100,9 @@ inside an operation result, or as a file Stash serves from the plugin's folder.
 **Why this priority**: These limits decide how Phase 3 pages its results and how the viewer catches
 up, but they do not block the go/no-go on their own.
 
+**Note (2026-10-20, constitution v3.0.0)**: clients no longer hold snapshots; they query the engine
+(Principle III). The snapshot measurements stand as reference only.
+
 **Independent Test**: Run the measurement command with answers of growing size and read the
 recorded size at which calls fail or exceed the latency budget; fetch a snapshot both ways and
 read the recorded times and any access rules.
@@ -135,7 +138,9 @@ rule for later specs.
 2. **Given** the decision is to proceed, **When** Phase 2 is specified, **Then** its spec can state
    persistence, concurrency, and freshness by citing the record, as Principle IV requires.
 3. **Given** the decision is not to proceed, **When** the record is read, **Then** it names which
-   measured limit failed and what each client should do instead.
+   measured limit failed and what each client should do instead. (Since constitution v3.0.0,
+   clients cannot fall back to engines of their own, so this outcome would also need a MAJOR
+   amendment.)
 
 ### Edge Cases
 
@@ -202,6 +207,8 @@ rule for later specs.
 - **FR-014**: The decision record MUST end with one of three outcomes: proceed; proceed with listed
   changes to the roadmap or constitution; or fall back to clients keeping in-process engines. A
   "proceed" outcome MUST state the persistence, concurrency, and freshness rules Phase 2 will use.
+  Since constitution v3.0.0 (2026-10-20 note), the fall-back outcome is not available without a
+  MAJOR amendment to Principles I and III.
 - **FR-015**: If an answer requires a constitution change (for example a different persistence or
   process model than Principle IV allows), the record MUST name the principle and the proposed
   amendment; the amendment itself is made separately.
@@ -236,6 +243,8 @@ rule for later specs.
 - **SC-006**: A maintainer of either client, given only the decision record, can say whether their
   client should depend on the engine and what page size and freshness delay to expect; checked by the
   owner reading it.
+  Since constitution v3.0.0 clients depend on the engine (Principle I), so the check is that page
+  size, freshness delay and per-save cost are clear from the record alone.
 
 ## Assumptions
 

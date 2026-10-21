@@ -3,6 +3,7 @@
 //! its parser; they are not part of that contract.
 
 pub mod build;
+pub mod delta;
 pub mod hooks;
 pub mod payload;
 pub mod query;
@@ -51,6 +52,7 @@ pub const REGISTRY: &[(&str, Handler)] = &[
     ("payload", payload::op),
     ("exportSnapshot", snapshot::export_op),
     ("snapshotInfo", snapshot::info_op),
+    ("applyEdit", delta::op),
 ];
 
 pub fn names() -> Vec<&'static str> {

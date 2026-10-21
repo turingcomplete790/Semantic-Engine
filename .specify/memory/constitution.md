@@ -6,7 +6,8 @@ server and answers SPARQL-style queries over it. It exists so that the
 [semantic-tagging](../semantic-tagging/) plugin (and its future semantic-search plugin) share one
 engine instead of each building, polling, and maintaining their own. It is the shared-engine
 helper described in the viewer's ROADMAP Phase 6 and in the plugin's Milestone 8 ("Optional
-Extraction"), delivered as a Stash plugin.
+Extraction"), delivered as a Stash plugin. Clients are user interfaces over the engine: they send
+it queries and show its answers, and hold no semantic graph of their own.
 
 ## Core Principles
 
@@ -19,11 +20,14 @@ Extraction"), delivered as a Stash plugin.
   Stash server, safe to delete at any time.
 - The store MUST be rebuilt automatically when missing, damaged, or from an older format, and
   MUST never be shared across Stash servers.
-- A stock Stash instance MUST keep working for every client without this plugin installed; the
-  engine is an optimisation, never a requirement.
+- Stash itself MUST keep working without this plugin installed. Clients' semantic features
+  depend on the engine: without it they MUST say clearly that the engine is missing, and MUST NOT
+  compute semantic answers of their own.
 
 **Rationale**: Users trust Stash with their library. A second authoritative store creates sync
-bugs and lock-in; a disposable cache costs time at worst, never data.
+bugs and lock-in; a disposable cache costs time at worst, never data. One engine that every
+client depends on is what removes the duplicated engines; a client fallback engine would bring
+them back.
 
 ### II. The Plugin Design Documents Are the Contract (NON-NEGOTIABLE)
 
@@ -56,6 +60,8 @@ only useful if both can trust it to mean the same thing by the same data.
   JavaScript, or a test.
 - The engine MUST NOT contain UI or client-specific behaviour; client needs are met through
   general operations and queries.
+- Clients MUST get semantic data by querying the engine. They MUST NOT keep a copy of the
+  engine's graph or snapshot, and MUST NOT carry their own query engine.
 
 **Rationale**: Duplicated engines were the reason this project exists. A second matching path
 reintroduces divergent answers and wasted effort.
@@ -70,12 +76,20 @@ reintroduces divergent answers and wasted effort.
   server that invoked it, or phone home.
 - Stash credentials and the API key supplied by Stash MUST NOT be written to logs or stored
   outside what Stash already holds.
-- Because plugin invocations may be short-lived processes, the design MUST state, per spec, how
-  state persists between calls (on-disk store), how concurrent invocations are serialised (single
-  writer, read-only readers), and how freshness is maintained from hooks. These are open design
-  questions resolved by a spike and recorded in the spec before implementation.
-- Failure MUST be graceful: if the engine is absent, stale, or errors, callers get a clear error
-  or can fall back to their own build; the engine MUST NOT return silently wrong results.
+- Stash starts a new plugin process for every call, so state lives on disk between calls. The
+  Phase 1 spike settled the model (`specs/003-engine-design-spike/decision-record.md`), and
+  every spec that touches state MUST follow it or amend this principle:
+  - **Persistence**: an on-disk store under the plugin's folder. One working store is written,
+    and numbered read-only snapshot generations are published by atomic rename.
+  - **Concurrency**: a single writer holds the writer lock. Readers open only a published
+    read-only generation, never the store being written.
+  - **Freshness**: Stash's plugin hooks keep the graph current. Changes made while the engine was
+    absent or disabled are caught up from Stash's `updated_at` times, and deletions by comparing
+    ids.
+- Hooks run synchronously, inside the client's save, so every hook handler's cost per saved item
+  MUST be stated and measured (Principle VII).
+- Failure MUST be graceful: if the engine is absent, stale, or errors, callers get a clear,
+  structured error; the engine MUST NOT return silently wrong results.
 
 **Rationale**: Stash has no change subscription and no side channel. Staying inside its plugin
 system keeps the trust boundary and the deployment story unchanged.
@@ -87,21 +101,20 @@ system keeps the trust boundary and the deployment story unchanged.
   interface so the backend can be replaced without touching callers.
 - Domain logic MUST live in library crates with no dependency on any UI toolkit, windowing, or
   network stack beyond the Stash adapter. The plugin executable is a thin shell over those
-  libraries so the viewer MAY link the same crate in-process.
+  libraries.
 - Stash I/O MUST go through a single adapter module; the graph builder and query layer consume it
   and never call the network themselves.
 - `unsafe` code and FFI MUST be isolated, justified in the plan's Constitution Check, and covered
   by tests.
 
-**Rationale**: One crate shared by the plugin and the viewer is the cheapest way to guarantee one
-set of semantics, and headless crates are testable without Stash or a GPU.
+**Rationale**: Keeping the semantics in headless library crates makes them testable without
+Stash or a GPU, and keeps the plugin shell small.
 
 ### VI. Versioned, Explicit Contracts
 
 - The operation protocol (names, request and response JSON, error shapes) and any snapshot or
-  store format MUST each carry an explicit version. Breaking changes MUST bump the version and
-  clients MUST be able to detect a mismatch and degrade (rebuild, or fall back to their own
-  engine) rather than misread.
+  store format MUST each carry an explicit version. Breaking changes MUST bump the version, and
+  clients MUST be able to detect a mismatch and report it clearly rather than misread.
 - Operations MUST be documented in the spec's contracts, including result-size limits and
   paging, since plugin responses pass through Stash.
 - Errors MUST be structured (code, message, offending query position where applicable), never
@@ -117,8 +130,9 @@ boundary is explicit and checkable.
   per-item request patterns (N+1) in builds or updates.
 - Builds and updates MUST be incremental after the first build, report progress, and be
   cancellable; query evaluation MUST NOT block other operations longer than a stated budget.
-  Spec-level budgets (process start, first build, incremental update, query latency on a
-  representative library) MUST be written down and measured by a repeatable command.
+  Spec-level budgets (process start, first build, incremental update, query latency, and hook
+  cost per saved item on a representative library) MUST be written down and measured by a
+  repeatable command.
 - Tests come first for behaviour: contract tests for each operation and compatibility fixtures
   captured read-only from a library tagged by the plugin, so the engine's graph matches the
   documents' expectations. Tests MUST run without a live Stash using recorded GraphQL fixtures.
@@ -158,8 +172,9 @@ index itself, and its answers are only trusted if they are checkable and reprodu
 
 - Work follows Spec Kit: specify → plan → tasks → implement. Every plan MUST include a
   Constitution Check against Principles I–VII.
-- Before a feature spec begins, open design questions (Principle IV) MUST be settled by a
-  documented spike with measurements.
+- Before a feature spec begins, open design questions MUST be settled by a documented spike
+  with measurements. Principle IV's process, persistence, concurrency, and freshness questions
+  were settled by the Phase 1 spike (`specs/003-engine-design-spike/`).
 - Changes to the semantic contract MUST be coordinated with the plugin and viewer: the spec names
   the affected clients and the document sections changed.
 - Pull requests MUST pass formatting, lint, and the full fixture test suite, and MUST state
@@ -181,8 +196,9 @@ principle changes meaning, a migration note for dependent specs and the two clie
   verify compliance. Violations MUST be justified in the plan's complexity table or the change
   is rejected.
 - **Cross-project alignment**: amendments to Principles II, IV, or VI MUST be checked against
-  the viewer's constitution (Principles I, II, VII, XII) and the plugin's documents for conflict,
-  and the viewer's pending Phase 6 amendment wording is the reference for the shared-cache
-  relationship.
+  the viewer's constitution (Principles I, II, VII, XII) and the plugin's documents for conflict.
+  This constitution defines the client relationship: clients are user interfaces over the engine
+  (Principles I and III). Conflicting text in the client projects is resolved by amending those
+  projects.
 
-**Version**: 2.0.0 | **Ratified**: 2026-10-14 | **Last Amended**: 2026-10-15
+**Version**: 3.0.0 | **Ratified**: 2026-10-14 | **Last Amended**: 2026-10-19

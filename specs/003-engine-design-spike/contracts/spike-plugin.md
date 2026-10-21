@@ -48,8 +48,9 @@ disabling the plugin with `setPluginsEnabled`, and it re-enables the plugin afte
 | `write` | `option` (`A`/`B`/`C`), `scale`, `lockMode` (`wait`/`fail`), `waitMs` | `{ triples, timings: { lock, write, flush, publish }, generation }` | `concurrency`, `synth` |
 | `buildFromStash` | — | `{ items, triples, timings: { fetch, build } }` (flag-filtered fetch via adapter) | `build` |
 | `payload` | `bytes` | `{ bindings: [...] }` of about the requested size | `payload` |
-| `exportSnapshot` | `store`, `to` (`output`/`asset`) | `output`: `{ manifest, data }` (gzip + base64 N-Quads). `asset`: `{ manifest, path }` | `snapshot` |
+| `exportSnapshot` | `store`, `to` (`output`/`asset`), `level` (gzip 0–9, default 6) | `output`: `{ manifest, data }` (gzip + base64 N-Quads). `asset`: `{ manifest, path }` | `snapshot` |
 | `snapshotInfo` | `store` (optional) | `{ manifest, currentGeneration, assetIsStale }`: the `manifest.json` contents (`null` if no asset was exported) and the store's published generation | `snapshot`, freshness check |
+| `applyEdit` | `store`, `items` (default 1), `seed` | moves each picked scene's role assignments to the next role tag, writes `deltas/<to>.nq.gz` (`D `/`A ` N-Quads lines) and `deltas/<to>.json` before publishing generation `to`; returns `{ from, to, removed, added, bytes, scenes, timings }` | `delta` |
 | `recordHook` | (hook context from Stash) | appends `{ receivedAt, type, id, inputFields, inputBytes }` to `hooks.jsonl` | hooks |
 
 Store layout and the publish sequence follow the

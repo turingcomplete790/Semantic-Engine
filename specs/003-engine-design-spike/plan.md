@@ -92,6 +92,13 @@ No violations. Complexity Tracking not required.
 - Snapshot files are served from the spike plugin's own folder through Stash's plugin asset
   route (R6).
 
+**Re-check against constitution v3.0.0 (2026-10-20)**: Pass.
+- **Principles I and III (clients depend on the engine; no client copies or engines):** the
+  spike's snapshot and change-file operations are measurement-only. They are never packaged
+  (FR-013), and the decision record rejects client snapshots.
+- **Principle IV (settled model):** the decision record adopts what v3.0.0 states: published
+  generations, a single writer, and hooks for freshness with `updated_at` catch-up.
+
 ## Project Structure
 
 ### Documentation (this feature)
@@ -122,14 +129,20 @@ crates/
 │                                #   bulkImageUpdate) and runPluginOperation
 └── spike/                       # NEW, publish = false, never built by package scripts
     ├── Cargo.toml
-    ├── src/lib.rs               # shared: store paths, snapshot publish/open, writer lock, stats
+    ├── src/lib.rs               # module list
+    ├── src/store.rs             # store layout, snapshot publish/open, writer lock, generation copy
+    ├── src/measure.rs           # Measurement records, statistics, no-overwrite result files
     ├── src/synth.rs             # vocabulary-shaped synthetic graphs at a given scene count
-    ├── src/bin/spike-plugin.rs  # raw-interface plugin: ops + hook recorder
-    └── src/bin/spike-bench.rs   # harness: subcommands in contracts/spike-bench.md
+    ├── src/plugin_ops/          # spike plugin operations (query, write, buildFromStash, recordHook,
+    │                            #   payload, exportSnapshot, snapshotInfo, applyEdit)
+    ├── src/bench/               # harness subcommands in contracts/spike-bench.md
+    ├── src/bin/spike-plugin.rs  # raw-interface plugin entry point
+    └── src/bin/spike-bench.rs   # harness entry point
 spike/
 └── semantic-engine-spike.yml    # spike plugin manifest (separate plugin id)
 scripts/
-└── spike-install.sh             # builds spike-plugin and copies it with its manifest into a plugins dir
+├── spike-install.sh             # builds spike-plugin and copies it with its manifest into a plugins dir
+└── spike-build-cost.sh          # build time and release sizes (results/build-release.json)
 ```
 
 **Structure Decision**:

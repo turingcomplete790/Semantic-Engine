@@ -1,0 +1,22 @@
+{
+  "id": "build-release",
+  "question": "build",
+  "variant": "release",
+  "kind": "build",
+  "command": "scripts/spike-build-cost.sh --runs 3 --release v0.1.0",
+  "server": { "stashVersion": null, "host": "local" },
+  "library": { "kind": "test", "scenes": 0, "images": 0, "performers": 0, "tags": 0, "triples": 0 },
+  "samples": [234118,235344,234224],
+  "runs": 3, "median": 234224, "p95": 235344, "min": 234118, "max": 235344,
+  "failures": [],
+  "takenAt": "2026-10-19T21:09:26.000Z",
+  "engineCommit": "2026f7d46195405d8583ae2df85308fe3fc6158c-dirty",
+  "extra": {
+    "samplesAre": "local clean release builds of the plugin (cargo clean -p plugin), ms",
+    "hostTarget": "x86_64-unknown-linux-gnu",
+    "pluginBinaryBytes": 5953416,
+    "releaseAssets": { "tag": "v0.1.0", "assets": [{"bytes":1966080,"name":"semantic-engine-0.1.0-aarch64-apple-darwin.tar.gz"},{"bytes":2152196,"name":"semantic-engine-0.1.0-aarch64-unknown-linux-gnu.tar.gz"},{"bytes":2037760,"name":"semantic-engine-0.1.0-x86_64-apple-darwin.tar.gz"},{"bytes":1842636,"name":"semantic-engine-0.1.0-x86_64-pc-windows-msvc.zip"},{"bytes":2178235,"name":"semantic-engine-0.1.0-x86_64-unknown-linux-gnu.tar.gz"},{"bytes":587,"name":"SHA256SUMS"}] },
+    "ciJobs": {"jobs":[{"name":"checks","seconds":106},{"name":"platforms (windows-latest)","seconds":121},{"name":"platforms (macos-latest)","seconds":78}],"runId":38971302058,"workflow":"ci.yml"},
+    "releaseJobs": {"jobs":[{"name":"package (x86_64-apple-darwin, macos-latest)","seconds":46},{"name":"package (aarch64-unknown-linux-gnu, ubuntu-22.04-arm)","seconds":55},{"name":"package (aarch64-apple-darwin, macos-latest)","seconds":50},{"name":"package (x86_64-pc-windows-msvc, windows-latest)","seconds":60},{"name":"package (x86_64-unknown-linux-gnu, ubuntu-22.04)","seconds":49},{"name":"publish","seconds":9}],"runId":38918012741,"workflow":"release.yml"}
+  }
+}

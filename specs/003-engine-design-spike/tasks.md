@@ -344,6 +344,57 @@ delivery paths compared.
     decode the op path's 98.5 MB base64. At `test` both paths take about 0.52 s.
   - The asset GET without a login gets 401. `snapshotInfo` answers in about 5 ms (median), and
     clients could tell their generation was current.
+- [X] T050 [US3] Measure incremental snapshot updates (change files), since the 250k full dump
+  takes 186–208 s (T039). Added 2026-10-19, after T039.
+  - **Plugin op** `applyEdit` in `crates/spike/src/plugin_ops/delta.rs`. Arguments: `store`,
+    `items` (default 1) and `seed`.
+    - Under the writer lock (option B), for each of `items` scenes, read that scene's current
+      quads: the scene IRI as subject, plus its assignment IRIs.
+    - Remove them and insert a changed version (for example, a different role tag on one
+      assignment), then publish a new generation.
+    - Write `store/<name>/deltas/<gen>.nq.gz`, one quad per line prefixed `D ` (removed) or
+      `A ` (added). Record the generation it applies to (`from`) and the one it produces (`to`).
+    - Return `{ from, to, removed, added, bytes, timings: { lock, readOld, write, delta,
+      publish } }`.
+  - **Full-dump comparison:** add an optional `level` argument (gzip 0–9, default 6) to
+    `exportSnapshot` in `crates/spike/src/plugin_ops/snapshot.rs`.
+  - **Bench subcommand** `delta --scale S` in `crates/spike/src/bench/delta.rs`:
+    - Run `applyEdit` with `items` 1, 10, 100 and 1000, 3 runs each, on the synthetic store.
+      Never Stash: no Stash writes.
+    - Client side:
+      - Before the edits, make a local copy of the starting generation with `Store::backup`.
+      - Afterwards, apply every delta in order and time the apply.
+      - Check that the copy now matches the latest generation: the same quad count, and the
+        same quads for every touched scene.
+    - Also time one `exportSnapshot` at `level` 1 at the same scale, to compare with the
+      level-6 full dump from T039.
+    - Write `snapshot-delta-<S>`, holding:
+      - delta size and write time per `items`;
+      - the write's extra cost over a plain write;
+      - the client's apply time and the match check;
+      - the level-1 full-dump time.
+  - **Docs:** update `contracts/spike-plugin.md` (`applyEdit`, `level`), `contracts/spike-bench.md`
+    (`delta`, result id `snapshot-delta-<S>`) and `quickstart.md` step 5.
+  - **Tests:** in `crates/spike/tests/plugin_limit_ops.rs`.
+    - A delta chain applied to a copy of generation n reproduces generation n+k exactly.
+    - An edit with `items` 0 is `INVALID_INPUT`.
+    - A missing store is an error, not an empty delta.
+  - **Live:** run `delta --scale test` and `delta --scale 250k`.
+  - Done 2026-10-19. Both scales: the client's copy matches the latest generation exactly
+    (250k: 9,794,566 quads, 3,333 edited scenes checked).
+  - At 250k, editing 1 scene writes a 317-byte change file in 2.3 ms. The whole edit takes 190 ms
+    in the plugin (open writer 141 ms, publish 31 ms), and the client applies it in 1.2 ms.
+  - Bigger edits at 250k:
+
+    | Scenes edited | Change file | Edit in plugin | Client apply |
+    |---|---|---|---|
+    | 10 | 1.4 KB | 246 ms | 13 ms |
+    | 100 | 13 KB | 0.9 s | 132 ms |
+    | 1000 | 126 KB | 4.0 s | 1.6 s |
+
+  - Writing the change file adds 1–4 % to the edit. Reading each scene's old quads dominates the
+    large edits.
+  - A full dump at gzip level 1 takes 121 s and 113 MB, against 186 s and 74 MB at level 6.
 
 **Checkpoint**: the paging and snapshot rules for Phase 3 can be stated from measurements.
 
@@ -357,21 +408,27 @@ viewer's 009 budgets, and ends with an outcome (FR-014).
 **Independent Test**: Read `decision-record.md` alone and check it against
 `contracts/decision-record.md`.
 
-- [ ] T040 [P] [US4] Write `scripts/spike-build-cost.sh` (POSIX `sh`):
+- [X] T040 [P] [US4] Write `scripts/spike-build-cost.sh` (POSIX `sh`):
   - Read the v0.1.0 release asset sizes with `gh release view v0.1.0 --json assets`, and the
     latest green CI run's per-job durations with `gh run view --json jobs`.
   - Time one local `cargo clean -p plugin && cargo build --release -p plugin`, 3 runs.
   - Write `specs/003-engine-design-spike/results/build-release.json` in the Measurement shape,
     with `question: build` (FR-010, R10).
-- [ ] T041 [US4] Implement the `report` subcommand in `crates/spike/src/bench/report.rs`:
+- [X] T041 [US4] Implement the `report` subcommand in `crates/spike/src/bench/report.rs`:
   - Load the newest result per id (recomputing `median` and `p95` from `samples`) and print a
     Markdown summary grouped by the seven questions.
   - Show the difference from the previous run of the same id, and flag any median more than 25%
     away (SC-002).
-- [ ] T042 [US4] Live: re-run `spike-bench call-cost --scale test` and check with `report` that the
+- [X] T042 [US4] Live: re-run `spike-bench call-cost --scale test` and check with `report` that the
   median is within 25% of the recorded one (SC-002). Then run `spike-bench cleanup` and check
   `seed-manifest.json` reaches `state: cleaned` and `stats` equals `statsBefore` (SC-005).
-- [ ] T043 [US4] Write `specs/003-engine-design-spike/decision-record.md` in the exact structure
+  - Done 2026-10-19. SC-002 passes: the `process-reopen-test` median is 17.71 ms against
+    15.70 ms recorded (+12.8%).
+  - Cleanup restored 1,501 items and deleted 46 tags; `state: cleaned`.
+  - The stats differ only in performers, 7 against 6. The extra one is performer 11, "SE-Test
+    Yennifer", which the owner created by hand on 2026-10-17, after the seed. The harness creates
+    no performers, so SC-005 is met for everything the spike wrote.
+- [X] T043 [US4] Write `specs/003-engine-design-spike/decision-record.md` in the exact structure
   of `contracts/decision-record.md`:
   - **The seven decisions**, each with:
     - an options table (columns name, key figures, constitution, verdict);
@@ -386,9 +443,13 @@ viewer's 009 budgets, and ends with an outcome (FR-014).
   - **"Constitution amendments proposed"** is filled per FR-015.
   - **The outcome line** is `proceed`, `proceed-with-changes` or `fall-back`, and matches
     section 7.
-- [ ] T044 [US4] Owner review of `decision-record.md` for SC-006: the owner can say, for each
+- [X] T044 [US4] Owner review of `decision-record.md` for SC-006: the owner can say, for each
   client, whether to depend on the engine, the page size and the freshness delay. Record the review
   date in the record's header.
+  - Since constitution v3.0.0, clients depend on the engine. The review checks that the page size,
+    freshness delay and per-save cost are clear from the record alone. The record was revised
+    2026-10-20 to match v3.0.0.
+  - Done 2026-10-20: the owner reviewed the revised record.
 
 **Checkpoint**: the spike's deliverable is complete. Phase 2 can cite it.
 
@@ -396,20 +457,20 @@ viewer's 009 budgets, and ends with an outcome (FR-014).
 
 ## Phase 7: Polish & cross-cutting
 
-- [ ] T045 [P] Add a CI step to `.github/workflows/ci.yml` that runs `scripts/package.sh` for the
+- [X] T045 [P] Add a CI step to `.github/workflows/ci.yml` that runs `scripts/package.sh` for the
   host target and fails if the archive contains `spike-plugin` or `semantic-engine-spike.yml`
   (FR-013).
-- [ ] T046 [P] Run `cargo fmt --all`, `cargo clippy --workspace --all-targets --all-features -- -D warnings`
+- [X] T046 [P] Run `cargo fmt --all`, `cargo clippy --workspace --all-targets --all-features -- -D warnings`
   and `cargo test --workspace` so the spike crate builds and its tests pass in CI.
-- [ ] T047 Tick the seven Phase 1 items in `ROADMAP.md` with a one-line answer each, linking
+- [X] T047 Tick the seven Phase 1 items in `ROADMAP.md` with a one-line answer each, linking
   `specs/003-engine-design-spike/decision-record.md`.
   - If the outcome is `proceed-with-changes` or `fall-back`, also edit the Phase 2–4 items the
     record changes.
-- [ ] T048 Remove the spike plugin from the test server
+- [X] T048 Remove the spike plugin from the test server
   (`<STASH_TEST_PLUGINS_DIR>/semantic-engine-spike/`) and reload plugins.
   - Check `api/operations.json` and `docs/api.md` are unchanged from contract 1.0.0
     (`git diff --exit-code api docs`).
-- [ ] T049 Fill in the results of each step in `specs/003-engine-design-spike/quickstart.md`, as
+- [X] T049 Fill in the results of each step in `specs/003-engine-design-spike/quickstart.md`, as
   002's quickstart did.
 
 ---
@@ -427,10 +488,11 @@ viewer's 009 budgets, and ends with an outcome (FR-014).
 - **US2** (T027–T034): needs Foundational, and is independent of US1. T027 and T028 come before
   T029, then T030 and T031 follow; T032 needs T029; T033 needs T029, T030 and T032; T034 needs
   T031.
-- **US3** (T035–T039): needs Foundational. Its `snapshot` path at `250k` reuses US1's synthetic
-  store (T022). T035→T036; T037→T038; T039 needs T036 and T038.
+- **US3** (T035–T039, T050): needs Foundational. Its `snapshot` path at `250k` reuses US1's
+  synthetic store (T022). T035→T036; T037→T038; T039 needs T036 and T038; T050 needs T037 and
+  runs after T039 (its edits add generations to the 250k store).
 - **US4** (T040–T044): needs the live results of US1, US2 and US3 (T025, T026, T033, T034,
-  T039). T040 can start any time.
+  T039, T050). T040 can start any time.
 - **Polish** (T045–T049): T045 and T046 any time after Setup; T047–T049 after T043.
 
 ### User story dependencies
@@ -452,7 +514,7 @@ Setup → Foundational ─┬─ US1 (P1) ──────┐
 - **Within US1:** T021 is parallel with T019 and T020.
 - **Within US3:** T035 and T037 can run in parallel.
 - **Other:** T040, T045 and T046 can run any time.
-- **Not parallel:** live runs (T018, T025, T033, T034, T039 and T042) share one test server, so
+- **Not parallel:** live runs (T018, T025, T033, T034, T039, T050 and T042) share one test server, so
   they run one at a time to keep the timings clean.
 
 ### Parallel example: Foundational tests
@@ -484,7 +546,8 @@ Task: "T028 scripted client saves in crates/spike/src/bench/clients.rs"
 2. US1: per-call cost at four scales and the sharing options.
 3. **Stop and check**: if reopening a 250k snapshot per call already misses the 200 ms budget by a
    wide margin, write a short interim note before going further. The go/no-go may already be
-   clear, and US2 and US3 can then be cut down to what the fallback needs.
+   clear, and US2 and US3 can then be cut down to what the fallback needs. (Superseded: since
+  constitution v3.0.0 there is no client fallback engine.)
 
 ### Incremental delivery
 

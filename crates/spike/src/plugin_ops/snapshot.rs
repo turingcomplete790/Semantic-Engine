@@ -1,7 +1,8 @@
 //! `exportSnapshot` and `snapshotInfo`: deliver a whole published generation to a client
 //! (research R6, tasks T037).
 //!
-//! `exportSnapshot` arguments: `store` (folder under `store/`, default `test`) and `to`:
+//! `exportSnapshot` arguments: `store` (folder under `store/`, default `test`), `level` (gzip
+//! 0–9, default 6), and `to`:
 //! - `output` (default): `{ manifest, data }`, with `data` the gzip-compressed N-Quads in base64.
 //! - `asset`: writes `store/assets/snapshot.nq.gz` and `store/assets/manifest.json`, which Stash
 //!   serves at `/plugin/semantic-engine-spike/assets/`, and returns `{ manifest, path }`.
@@ -35,8 +36,8 @@ fn ms(d: Duration) -> f64 {
 }
 
 /// Writes every quad of `store` as gzip-compressed N-Quads. Returns the quad count.
-pub fn dump_gz<W: Write>(store: &Store, out: W) -> Result<(u64, W), String> {
-    let gz = GzEncoder::new(out, Compression::default());
+pub fn dump_gz<W: Write>(store: &Store, out: W, level: u32) -> Result<(u64, W), String> {
+    let gz = GzEncoder::new(out, Compression::new(level));
     let mut ser = RdfSerializer::from_format(RdfFormat::NQuads).for_writer(gz);
     let mut n = 0u64;
     for q in store.iter() {
@@ -87,6 +88,15 @@ pub fn export_op(ctx: &Ctx, _: &mut Logger) -> Envelope {
             format!("to must be output or asset, got {to:?}"),
         );
     }
+    let level = ctx.arg_u64("level").unwrap_or(6);
+    if level > 9 {
+        return fail(
+            OP,
+            ErrorCode::InvalidInput,
+            format!("level must be 0 to 9, got {level}"),
+        );
+    }
+    let level = level as u32;
     let t0 = Instant::now();
     let name = ctx.arg_str("store").unwrap_or("test").to_string();
     let dir = ctx.store_dir.join(&name);
@@ -98,7 +108,7 @@ pub fn export_op(ctx: &Ctx, _: &mut Logger) -> Envelope {
     let open_ms = ms(t0.elapsed());
 
     let t1 = Instant::now();
-    let (quads, data) = match dump_gz(&store, Vec::new()) {
+    let (quads, data) = match dump_gz(&store, Vec::new(), level) {
         Ok(x) => x,
         Err(e) => return fail(OP, ErrorCode::Internal, format!("dump: {e}")),
     };
@@ -128,6 +138,7 @@ pub fn export_op(ctx: &Ctx, _: &mut Logger) -> Envelope {
         }
         json!({ "manifest": m, "path": SNAPSHOT_FILE })
     };
+    result["gzipLevel"] = json!(level);
     result["timings"] = json!({
         "storeOpen": open_ms,
         "dump": dump_ms,

@@ -34,6 +34,7 @@ from one of these subcommands (spec FR-002).
 | `catch-up` | FR-007, R7 | no | `freshness-updated-at`, `freshness-id-diff` |
 | `payload` | FR-008, R7 | no | `limits-payload` (size curve) |
 | `snapshot --path op\|asset --scale S` | FR-009, R6 | no | `snapshot-<path>-<S>` |
+| `delta --scale S` | FR-009, T050 | no (edits the synthetic store only) | `snapshot-delta-<S>` (change-file size, write and apply time, copy match, level-1 full dump) |
 | `report` | FR-001 | no | prints a Markdown summary of `results/` to paste into the decision record |
 
 Every subcommand writes [Measurement](../data-model.md#measurement) JSON. A rerun writes a file

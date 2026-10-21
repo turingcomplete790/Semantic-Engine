@@ -1,5 +1,5 @@
-//! `payload`, `exportSnapshot`, and `snapshotInfo` ops on a local plugin folder (tasks T035,
-//! T037).
+//! `payload`, `exportSnapshot`, `snapshotInfo`, and `applyEdit` ops on a local plugin folder
+//! (tasks T035, T037, T050).
 
 use base64::Engine as _;
 use serde_json::{json, Value};
@@ -139,4 +139,94 @@ fn snapshots_of_missing_stores_are_errors() {
     assert_eq!(r["error"]["code"], "INVALID_INPUT");
     let r = call(&dir, json!({"op": "snapshotInfo"}));
     assert_eq!(r["error"]["code"], "INTERNAL");
+}
+
+#[test]
+fn a_delta_chain_turns_a_copy_of_generation_n_into_generation_n_plus_k() {
+    use oxigraph::store::Store;
+    use spike::plugin_ops::delta::{apply_delta, delta_path, item_quads};
+    use spike::store;
+
+    let dir = tmp("delta");
+    let w = call(
+        &dir,
+        json!({"op": "write", "option": "B", "store": "s", "scale": "200"}),
+    );
+    assert_eq!(w["ok"], true, "{w}");
+    let sdir = std::path::Path::new(&dir).join("store").join("s");
+    let copy = std::path::Path::new(&dir).join("client-copy");
+    store::copy_generation(&sdir, 1, &copy).unwrap();
+    let gen1_len = store::open_current_read_only(&sdir)
+        .unwrap()
+        .1
+        .len()
+        .unwrap();
+
+    let mut touched = Vec::new();
+    for (items, seed) in [(3, 1), (5, 2)] {
+        let e = call(
+            &dir,
+            json!({"op": "applyEdit", "store": "s", "items": items, "seed": seed}),
+        );
+        assert_eq!(e["ok"], true, "{e}");
+        let r = &e["result"];
+        assert_eq!(r["to"].as_u64(), Some(r["from"].as_u64().unwrap() + 1));
+        assert!(r["removed"].as_u64().unwrap() > 0 && r["added"].as_u64().unwrap() > 0);
+        assert_eq!(r["scenes"].as_array().unwrap().len(), items);
+        touched.extend(
+            r["scenes"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|s| s.as_u64().unwrap()),
+        );
+    }
+
+    let client = Store::open(&copy).unwrap();
+    for to in [2, 3] {
+        apply_delta(&client, &delta_path(&sdir, to)).unwrap();
+    }
+    let (g, latest) = store::open_current_read_only(&sdir).unwrap();
+    assert_eq!(g, 3);
+    assert_eq!(client.len().unwrap(), latest.len().unwrap());
+    let iris = semantic_vocabulary::iri::ItemIris::new(spike::synth::SERVER_ID).unwrap();
+    for s in touched {
+        let scene = iris.scene(&s.to_string());
+        let (a, b) = (
+            item_quads(&client, &scene).unwrap(),
+            item_quads(&latest, &scene).unwrap(),
+        );
+        assert!(!a.is_empty());
+        assert_eq!(a, b, "scene {s}");
+    }
+
+    // Writing the client's copy never changes the published generation it came from.
+    drop(client);
+    let gen1 = Store::open_read_only(store::snapshots_dir(&sdir).join("1")).unwrap();
+    assert_eq!(gen1.len().unwrap(), gen1_len);
+}
+
+#[test]
+fn bad_edits_and_levels_are_refused() {
+    let dir = tmp("edit-bad");
+    let r = call(&dir, json!({"op": "applyEdit", "store": "nothing"}));
+    assert_eq!(r["error"]["code"], "INTERNAL");
+    let w = call(
+        &dir,
+        json!({"op": "write", "option": "B", "store": "s", "scale": "20"}),
+    );
+    assert_eq!(w["ok"], true, "{w}");
+    let r = call(&dir, json!({"op": "applyEdit", "store": "s", "items": 0}));
+    assert_eq!(r["error"]["code"], "INVALID_INPUT");
+    let r = call(
+        &dir,
+        json!({"op": "exportSnapshot", "store": "s", "level": 10}),
+    );
+    assert_eq!(r["error"]["code"], "INVALID_INPUT");
+    let r = call(
+        &dir,
+        json!({"op": "exportSnapshot", "store": "s", "level": 1}),
+    );
+    assert_eq!(r["ok"], true, "{r}");
+    assert_eq!(r["result"]["gzipLevel"], 1);
 }

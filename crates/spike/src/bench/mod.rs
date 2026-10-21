@@ -10,8 +10,10 @@ pub mod call_cost;
 pub mod catch_up;
 pub mod clients;
 pub mod concurrency;
+pub mod delta;
 pub mod hooks;
 pub mod payload;
+pub mod report;
 pub mod seed;
 pub mod snapshot;
 
@@ -28,7 +30,7 @@ pub const TEST_URL: &str = "http://localhost:9998";
 pub const DEFAULT_OUT: &str = "specs/003-engine-design-spike/results";
 
 /// Every subcommand in the contract.
-pub const SUBCOMMANDS: [&str; 11] = [
+pub const SUBCOMMANDS: [&str; 12] = [
     "seed",
     "cleanup",
     "synth",
@@ -39,6 +41,7 @@ pub const SUBCOMMANDS: [&str; 11] = [
     "catch-up",
     "payload",
     "snapshot",
+    "delta",
     "report",
 ];
 /// Subcommands that write to Stash: test server only, whatever `--allow-host` says.
@@ -127,7 +130,7 @@ impl OpCall {
 const USAGE: &str = "usage: spike-bench <subcommand> [--runs N] [--scale S] [--out DIR] [--allow-host URL] [options]
 
 subcommands: seed, cleanup, synth, build, call-cost, concurrency, hooks, catch-up, payload,
-             snapshot, report (contracts/spike-bench.md)
+             snapshot, delta, report (contracts/spike-bench.md)
 
 environment: STASH_TEST_URL, STASH_TEST_API_KEY (writes only to http://localhost:9998)";
 
@@ -436,6 +439,8 @@ fn dispatch(b: &mut Bench) -> Outcome {
         "catch-up" => catch_up::command(b),
         "payload" => payload::command(b),
         "snapshot" => snapshot::command(b),
+        "delta" => delta::command(b),
+        "report" => report::command(b),
         other => Err(Failure::new(
             Exit::Usage,
             format!("{other} is not implemented in this build yet"),
