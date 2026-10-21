@@ -4,3 +4,4 @@ target/
 dist/
 graphify-out/
 .graphifyignore
+.claude/scheduled_tasks.lock
