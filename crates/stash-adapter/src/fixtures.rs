@@ -57,7 +57,7 @@ pub struct CustomFieldCriterion {
     pub modifier: CriterionModifier,
 }
 
-fn not_null(field: &str) -> Vec<CustomFieldCriterion> {
+pub(crate) fn not_null(field: &str) -> Vec<CustomFieldCriterion> {
     vec![CustomFieldCriterion {
         field: field.to_string(),
         value: None,

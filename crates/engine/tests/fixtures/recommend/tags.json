@@ -1,0 +1,99 @@
+[
+  {
+    "id": "21",
+    "name": "Cowgirl",
+    "parents": [],
+    "custom_fields": {
+      "isAction": 1
+    }
+  },
+  {
+    "id": "23",
+    "name": "Hug",
+    "parents": [],
+    "custom_fields": {
+      "isAction": 1
+    }
+  },
+  {
+    "id": "22",
+    "name": "Reverse Cowgirl (scraped)",
+    "parents": [],
+    "custom_fields": {
+      "variantOfTagId": "21"
+    }
+  },
+  {
+    "id": "30",
+    "name": "Customer",
+    "parents": [],
+    "custom_fields": {
+      "isRole": 1
+    }
+  },
+  {
+    "id": "80",
+    "name": "Blonde",
+    "parents": [],
+    "custom_fields": {
+      "plugtag": 1
+    }
+  },
+  {
+    "id": "85",
+    "name": "Bedroom",
+    "parents": [],
+    "custom_fields": {
+      "isMiseEnScene": 1
+    }
+  },
+  {
+    "id": "86",
+    "name": "Bed (scraped)",
+    "parents": [],
+    "custom_fields": {
+      "variantOfTagId": "85"
+    }
+  },
+  {
+    "id": "87",
+    "name": "Client (scraped)",
+    "parents": [],
+    "custom_fields": {
+      "variantOfTagId": "30"
+    }
+  },
+  {
+    "id": "45",
+    "name": "Size Difference",
+    "parents": [],
+    "custom_fields": {
+      "isRelation": 1,
+      "relationEnds": "{\"a\":\"60\",\"b\":\"61\"}"
+    }
+  },
+  {
+    "id": "88",
+    "name": "Height Gap (scraped)",
+    "parents": [],
+    "custom_fields": {
+      "variantOfTagId": "45"
+    }
+  },
+  {
+    "id": "60",
+    "name": "Smaller",
+    "parents": [],
+    "custom_fields": {
+      "isRole": 1
+    }
+  },
+  {
+    "id": "61",
+    "name": "Larger",
+    "parents": [],
+    "custom_fields": {
+      "isRole": 1
+    }
+  }
+]

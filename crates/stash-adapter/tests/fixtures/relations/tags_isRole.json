@@ -1,0 +1,103 @@
+{
+  "data": {
+    "findTags": {
+      "tags": [
+        {
+          "id": "30",
+          "name": "Customer",
+          "parents": [],
+          "custom_fields": {
+            "isRole": 1
+          }
+        },
+        {
+          "id": "31",
+          "name": "Patient",
+          "parents": [
+            {
+              "id": "30"
+            }
+          ],
+          "custom_fields": {
+            "isRole": 1
+          }
+        },
+        {
+          "id": "32",
+          "name": "Professional",
+          "parents": [],
+          "custom_fields": {
+            "isRole": 1
+          }
+        },
+        {
+          "id": "33",
+          "name": "Nurse",
+          "parents": [
+            {
+              "id": "32"
+            },
+            {
+              "id": "90"
+            }
+          ],
+          "custom_fields": {
+            "isRole": 1
+          }
+        },
+        {
+          "id": "34",
+          "name": "Doctor",
+          "parents": [
+            {
+              "id": "32"
+            }
+          ],
+          "custom_fields": {
+            "isRole": 1
+          }
+        },
+        {
+          "id": "60",
+          "name": "Smaller",
+          "parents": [],
+          "custom_fields": {
+            "isRole": 1
+          }
+        },
+        {
+          "id": "61",
+          "name": "Larger",
+          "parents": [],
+          "custom_fields": {
+            "isRole": 1
+          }
+        },
+        {
+          "id": "70",
+          "name": "Loop A",
+          "parents": [
+            {
+              "id": "71"
+            }
+          ],
+          "custom_fields": {
+            "isRole": 1
+          }
+        },
+        {
+          "id": "71",
+          "name": "Loop B",
+          "parents": [
+            {
+              "id": "70"
+            }
+          ],
+          "custom_fields": {
+            "isRole": 1
+          }
+        }
+      ]
+    }
+  }
+}

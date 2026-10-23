@@ -1,0 +1,213 @@
+{
+  "data": {
+    "findScenes": {
+      "scenes": [
+        {
+          "id": "101",
+          "updated_at": "2026-10-21T10:00:00-06:00",
+          "performers": [
+            {
+              "id": "7"
+            },
+            {
+              "id": "8"
+            }
+          ],
+          "custom_fields": {
+            "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": []}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+            "actionPairings": "[{\"a\": {\"performer\": \"7\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"8\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p101\"}]"
+          }
+        },
+        {
+          "id": "102",
+          "updated_at": "2026-10-21T10:00:00-06:00",
+          "performers": [
+            {
+              "id": "12"
+            },
+            {
+              "id": "13"
+            }
+          ],
+          "custom_fields": {
+            "actionAssignments": "{\"12\": [{\"actionTagId\": \"21\", \"variations\": []}], \"13\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+            "actionPairings": "[{\"a\": {\"performer\": \"12\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"13\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p102\"}]"
+          }
+        },
+        {
+          "id": "103",
+          "updated_at": "2026-10-21T10:00:00-06:00",
+          "performers": [
+            {
+              "id": "14"
+            },
+            {
+              "id": "15"
+            }
+          ],
+          "custom_fields": {
+            "actionAssignments": "{\"14\": [{\"actionTagId\": \"21\", \"variations\": []}], \"15\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+            "actionPairings": "[{\"a\": {\"performer\": \"14\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"15\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p103\"}]"
+          }
+        },
+        {
+          "id": "104",
+          "updated_at": "2026-10-21T10:00:00-06:00",
+          "performers": [
+            {
+              "id": "7"
+            },
+            {
+              "id": "8"
+            },
+            {
+              "id": "12"
+            }
+          ],
+          "custom_fields": {
+            "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": []}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}], \"12\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+            "actionPairings": "[{\"a\": {\"performer\": \"7\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"8\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p104a\"}, {\"a\": {\"performer\": \"7\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"12\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p104b\"}]"
+          }
+        },
+        {
+          "id": "105",
+          "updated_at": "2026-10-21T10:00:00-06:00",
+          "performers": [
+            {
+              "id": "7"
+            },
+            {
+              "id": "8"
+            }
+          ],
+          "custom_fields": {
+            "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": []}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+            "actionPairings": "[]"
+          }
+        },
+        {
+          "id": "106",
+          "updated_at": "2026-10-21T10:00:00-06:00",
+          "performers": [
+            {
+              "id": "7"
+            },
+            {
+              "id": "8"
+            }
+          ],
+          "custom_fields": {
+            "actionAssignments": "{\"7\": [{\"actionTagId\": \"22\", \"variations\": []}], \"8\": [{\"actionTagId\": \"22\", \"variations\": []}]}",
+            "actionPairings": "[{\"a\": {\"performer\": \"7\", \"actionTagId\": \"22\"}, \"b\": {\"performer\": \"8\", \"actionTagId\": \"22\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p106\"}]"
+          }
+        },
+        {
+          "id": "107",
+          "updated_at": "2026-10-21T10:00:00-06:00",
+          "performers": [
+            {
+              "id": "7"
+            },
+            {
+              "id": "8"
+            }
+          ],
+          "custom_fields": {
+            "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": []}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+            "actionPairings": "[{\"a\": {\"performer\": \"7\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"8\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p107\"}]",
+            "relationAssignments": "[{\"relationTagId\": \"45\", \"a\": \"7\", \"b\": \"8\", \"auto\": false}]"
+          }
+        },
+        {
+          "id": "108",
+          "updated_at": "2026-10-21T10:00:00-06:00",
+          "performers": [
+            {
+              "id": "7"
+            },
+            {
+              "id": "8"
+            }
+          ],
+          "custom_fields": {
+            "roleTagAssignments": "{\"7\": [\"60\"]}",
+            "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": []}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+            "actionPairings": "[{\"a\": {\"performer\": \"7\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"8\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p108\"}]"
+          }
+        },
+        {
+          "id": "109",
+          "updated_at": "2026-10-21T10:00:00-06:00",
+          "performers": [
+            {
+              "id": "7"
+            },
+            {
+              "id": "8"
+            }
+          ],
+          "custom_fields": {
+            "roleTagAssignments": "{\"7\": [\"60\"], \"8\": [\"61\"]}",
+            "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": []}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+            "actionPairings": "[{\"a\": {\"performer\": \"7\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"8\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p109\"}]",
+            "relationAssignments": "[{\"relationTagId\": \"45\", \"a\": \"7\", \"b\": \"8\", \"auto\": true, \"ruleId\": \"r1\"}]",
+            "autoRoleAssignments": "{\"7\": [\"60\"], \"8\": [\"61\"]}"
+          }
+        },
+        {
+          "id": "110",
+          "updated_at": "2026-10-21T10:00:00-06:00",
+          "performers": [
+            {
+              "id": "16"
+            },
+            {
+              "id": "17"
+            }
+          ],
+          "custom_fields": {
+            "roleTagAssignments": "{\"16\": [\"31\"], \"17\": [\"34\"]}",
+            "actionAssignments": "{\"16\": [{\"actionTagId\": \"23\", \"variations\": []}], \"17\": [{\"actionTagId\": \"23\", \"variations\": []}]}",
+            "actionPairings": "[{\"a\": {\"performer\": \"16\", \"actionTagId\": \"23\"}, \"b\": {\"performer\": \"17\", \"actionTagId\": \"23\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p110\"}]"
+          }
+        },
+        {
+          "id": "111",
+          "updated_at": "2026-10-21T10:00:00-06:00",
+          "performers": [
+            {
+              "id": "16"
+            },
+            {
+              "id": "18"
+            }
+          ],
+          "custom_fields": {
+            "roleTagAssignments": "{\"16\": [\"31\"], \"18\": [\"33\"]}",
+            "actionAssignments": "{\"16\": [{\"actionTagId\": \"23\", \"variations\": []}], \"18\": [{\"actionTagId\": \"23\", \"variations\": []}]}",
+            "actionPairings": "[{\"a\": {\"performer\": \"16\", \"actionTagId\": \"23\"}, \"b\": {\"performer\": \"18\", \"actionTagId\": \"23\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p111\"}]"
+          }
+        },
+        {
+          "id": "112",
+          "updated_at": "2026-10-21T10:00:00-06:00",
+          "performers": [
+            {
+              "id": "7"
+            },
+            {
+              "id": "8"
+            }
+          ],
+          "custom_fields": {
+            "roleTagAssignments": "{\"7\": [\"60\"], \"8\": [\"61\"]}",
+            "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": []}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+            "actionPairings": "[]",
+            "relationAssignments": "[{\"relationTagId\": \"45\", \"a\": \"7\", \"b\": \"8\", \"auto\": true, \"ruleId\": \"r1\"}]",
+            "autoRoleAssignments": "{\"7\": [\"60\"], \"8\": [\"61\"]}"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -18,6 +18,12 @@ pub const REGISTRY: &[(&str, Handler)] = &[
     ("status", status),
     ("getServerId", get_server_id),
     ("generateServerId", generate_server_id),
+    ("relations", crate::relations::relations),
+    ("explainRelation", crate::relations::explain_relation),
+    ("recommendations", crate::relations::recommendations),
+    ("recordChange", crate::relations::record_change),
+    ("applyRelations", crate::relations::apply_relations),
+    ("reapplyRelations", crate::relations::reapply_relations),
 ];
 
 pub fn names() -> Vec<&'static str> {

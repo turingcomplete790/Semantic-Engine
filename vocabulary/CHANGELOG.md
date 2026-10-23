@@ -4,6 +4,31 @@ Release procedure: bump `sem:version` in `core.ttl`, add the entry here, run
 `vocab-check --write-terms --write-snapshot`, then `vocab-check`. A removed or renamed term, or an
 incompatible domain or range, needs a higher MAJOR; added terms need a higher MINOR (rule V014).
 
+## 1.2.0 (2026-10-21)
+
+Relations, role and relation hierarchies, and auto-apply rules
+(`specs/004-relations-role-hierarchy`).
+
+### Deliberate additions (constitution Principle II)
+
+The semantic-tagging design documents at `3c82c85` have no Relations, role hierarchy, or
+auto-apply. The owner requested them on 2026-10-21. The additions are additive: no existing term
+or stored key changes meaning or shape, so clients that do not know them keep working.
+
+- **Classes:** `Relation` (a tag type, flag `isRelation`), `RelationInstance` (one relation
+  between two performers in one scene or image), and `RelationRule` (an auto-apply rule).
+- **Hierarchy:** `broaderRole` and `broaderRelation`, both sub-properties of `parentTag`. They
+  come from a Stash parent that has the same type flag; other parents keep their plain
+  `parentTag` meaning.
+- **Relation ends and rules:** `endARole`, `endBRole`, `hasRelationRule`, `relationRuleId`,
+  `endALabel`, `endARoleCondition`, `endBLabel`, `endBRoleCondition`, `linkingAction`. Only an
+  action pairing links two performers; holding the same Action does not.
+- **Instances:** `ofRelation`, `atEndA`, `atEndB`, `appliedAutomatically`, `appliedByRule`.
+- **Mappings:** `isRelation`, `relationEnds`, `relationRules`, `relationAssignments`,
+  `autoRoleAssignments`. Automatic end roles also appear in the existing `roleTagAssignments`,
+  so every client sees them; `autoRoleAssignments` only records which ones auto-apply added.
+- **Item IRIs:** `{media}/relation:{relationTagId}:{a}:{b}` and `{relationTag}/rule:{ruleId}`.
+
 ## 1.1.0 (2026-10-15)
 
 - Added `ruleId` (Label rule to string): the plugin's stable identifier of a rule within its

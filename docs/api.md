@@ -1,6 +1,6 @@
 # Semantic Engine API
 
-Contract version: **1.0.0**
+Contract version: **1.1.0**
 
 This is the contract for clients of the Semantic Engine Stash plugin, such as the Semantic Stash
 Viewer and the semantic-tagging plugin. It lists every operation and task, what to send, what
@@ -40,11 +40,11 @@ GraphQL call.
 Every operation returns one JSON object as the value of `runPluginOperation`:
 
 ```json
-{ "ok": true, "op": "status", "contractVersion": "1.0.0", "result": { } }
+{ "ok": true, "op": "status", "contractVersion": "1.1.0", "result": { } }
 ```
 
 ```json
-{ "ok": false, "op": "getServerId", "contractVersion": "1.0.0",
+{ "ok": false, "op": "getServerId", "contractVersion": "1.1.0",
   "error": { "code": "SERVER_ID_NOT_GENERATED", "message": "no server identifier yet; run the \"Generate server identifier\" task" } }
 ```
 
@@ -86,7 +86,7 @@ Reports versions, the server's Stash version, and the server identifier.
 ```json
 {
   "engineVersion": "0.1.0",
-  "contractVersion": "1.0.0",
+  "contractVersion": "1.1.0",
   "vocabularyVersion": "1.1.0",
   "oxigraphVersion": "0.4.11",
   "rocksdbVersion": "10.3.0",
@@ -125,6 +125,127 @@ Returns this server's permanent identifier. It never creates one.
 - Errors: `SERVER_ID_NOT_GENERATED`, `SERVER_ID_INVALID`, `STASH_UNREACHABLE`
 - Since: 1.0.0
 
+### `relations`
+
+Returns every Role and Relation with its broader and narrower terms, each Relation's ends and
+auto-apply rules, and every problem found in the definitions. Roles and Relations are Stash
+tags flagged `isRole` and `isRelation`; a tag's broader terms are its Stash parents of the same
+type (vocabulary 1.2.0).
+
+- Arguments:
+
+  | Argument | Type | Required | Meaning |
+  |---|---|---|---|
+  | `tag` | tag id | no | Only this Role or Relation and its broader and narrower terms |
+  | `recursive` | boolean | no, default `false` | `narrower` lists every depth instead of direct children |
+
+- Result:
+
+```json
+{
+  "roles": [ { "id": "31", "name": "Patient", "broader": ["30"], "narrower": [] } ],
+  "relations": [
+    { "id": "41", "name": "Extra Care", "ends": { "a": "31", "b": "33" },
+      "broader": ["40"], "narrower": [], "valid": true,
+      "rules": [ { "id": "ec1", "a": { "role": "31" }, "b": { "role": "33" }, "actions": ["21"] } ] }
+  ],
+  "problems": [
+    { "kind": "loop", "tags": ["70", "71"] },
+    { "kind": "invalidEnds", "relation": "74", "detail": "end b 60 is not 32 or narrower than it, as broader relation 40 requires" }
+  ]
+}
+```
+
+- `ends` is `null` when an end is missing. A relation with `valid: false` is never applied.
+- Problem `kind`s:
+  - `loop`: parents that form a cycle. Those links are ignored.
+  - `missingEnd`: a relation without both ends.
+  - `endNotRole`: an end that is not a Role.
+  - `invalidEnds`: a narrower relation whose ends are not under its broader relation's ends.
+  - `badRule`: a rule that is ignored. Its relation stays valid.
+- Problems are always listed in full, even when `tag` narrows the roles and relations.
+- Errors:
+  - `INVALID_INPUT`: `tag` is not a Role or Relation, or an argument has the wrong type.
+  - `STASH_UNREACHABLE`.
+  - `INTERNAL`: Stash answered with an error.
+- Since: 1.1.0
+
+### `explainRelation`
+
+Explains why one relation instance is on one scene or image: the rule that applied it, what met
+each end, and the action pairing that linked the two performers. It runs the same evaluation that
+applied the relation.
+
+- Arguments (all required): `media` (`scene` or `image`), `id`, `relationTagId`, `a`, `b` (the
+  performers at ends a and b).
+- Result for an automatic instance:
+
+```json
+{
+  "applied": "auto", "holds": true, "ruleId": "r1",
+  "endA": { "performer": "7", "met": { "label": "50" } },
+  "endB": { "performer": "8", "met": { "role": "32", "via": ["34"] } },
+  "link": { "action": "21", "by": "pairing", "pairingId": "se-pair-1" },
+  "addedRoles": { "7": ["60"], "8": ["61"] }
+}
+```
+
+- `via`: the narrower role the performer holds when the rule asks for a broader one.
+- `holds: false`: the stored automatic instance no longer meets its rule. The next "Apply
+  relations" run removes it.
+- `{ "applied": "hand" }`: the instance was applied by hand. `{ "applied": "none" }`: there is no
+  such instance.
+- Errors:
+  - `INVALID_INPUT`: an argument is missing.
+  - `NOT_FOUND`: no such scene or image.
+  - `STASH_UNREACHABLE`.
+  - `INTERNAL`: the item's stored relation data cannot be read.
+- Since: 1.1.0
+
+### `recommendations`
+
+Recommends vocabulary tags for one scene or image, by category, from the item's own native Stash
+tags (for example tags a scraper or Stash's Auto Tag added). This is the same rule the
+semantic-tagging plugin's pickers use, and it adds Relations.
+
+- A tag is recommended when it is one of the item's native tags.
+- Actions, Mise-en-scène, and Relations are also recommended through a common variant: a native
+  tag whose `variantOfTagId` points at them.
+- Roles and Pluggables match directly only.
+
+- Arguments (both required): `media` (`scene` or `image`) and `id`
+- Result:
+
+```json
+{
+  "actions": [ { "tag": "21", "from": "21" }, { "tag": "21", "from": "22" } ],
+  "roles": [], "pluggables": [], "miseEnScene": [],
+  "relations": [ { "tag": "45", "from": "45" } ]
+}
+```
+
+- `from`: the native tag that suggested each recommendation.
+- Every category is present. A recommendation only suggests; it never applies anything, and the
+  operation never writes.
+- Errors:
+  - `INVALID_INPUT`: an argument is missing.
+  - `NOT_FOUND`: no such scene or image.
+  - `STASH_UNREACHABLE`.
+  - `INTERNAL`.
+- Since: 1.1.0
+
+### `recordChange` (the save hook)
+
+Stash calls this through the hook "Apply relations after a save" when a scene or image is
+created or updated. It records the item and, for the first save of a burst, starts the "Apply
+relations" task. It does no other work, so it adds only a few milliseconds to the save. Clients
+never need to call it.
+
+- Arguments: Stash's hook context (`hookContext`)
+- Result: `{ "recorded": true, "started": true | false }`
+- Errors: none; problems are logged and never fail the save
+- Since: 1.1.0
+
 ## Tasks
 
 ### Generate server identifier (`generateServerId`)
@@ -140,6 +261,31 @@ Run it once per server; running it again is safe.
 - Errors: `SERVER_ID_INVALID` (a value is stored but is not a valid identifier; it is reported and
   never overwritten), `STASH_UNREACHABLE`
 - Since: 1.0.0
+
+### Apply relations (`applyRelations`)
+
+Applies relations to the scenes and images saved since the last run, together with their end
+roles, and removes automatic ones that no longer hold. Relations set by hand are never changed.
+Saves start it automatically; it runs in Stash's job queue, so no save and no client call waits
+for it.
+
+- Run with: `runPluginTask(plugin_id: "semantic-engine", task_name: "Apply relations")`
+- Writes: `relationAssignments`, `roleTagAssignments`, and `autoRoleAssignments` of the scenes and
+  images whose relations changed, and nothing else
+- Log: progress, then `applyRelations: N items, M changed, K skipped, U unstable, T s`
+- Errors: `STASH_UNREACHABLE`, `INTERNAL`
+- Since: 1.1.0
+
+### Re-apply relations (`reapplyRelations`)
+
+Re-evaluates relations after rules, hierarchies, or Labels change. Saves do not do this for other
+scenes.
+
+- Arguments: `scope` (`all` (the default), `scenes`, or `images`), and optional `ids`, a list of
+  item ids within one scope
+- Stopping the job part-way is safe; running it again finishes the rest
+- Errors: `INVALID_INPUT`, `STASH_UNREACHABLE`, `INTERNAL`
+- Since: 1.1.0
 
 ## The server identifier
 
@@ -179,6 +325,7 @@ terms yet.
 | `STASH_TOO_OLD` | the server is older than the minimum supported Stash version |
 | `SERVER_ID_NOT_GENERATED` | the server has no identifier yet |
 | `SERVER_ID_INVALID` | the stored identifier is not a lower-case hyphenated UUID |
+| `NOT_FOUND` | a scene, image, or tag named in the arguments does not exist (since 1.1.0) |
 | `INTERNAL` | an unexpected failure inside the plugin; the message says what failed |
 
 ## Compatibility
@@ -191,6 +338,11 @@ terms yet.
 - `status` reports `contractVersion`, so a client can check it before relying on newer features.
 
 ## Changes
+
+### 1.1.0 (in progress, spec 004)
+
+Operations `relations`, `explainRelation`, `recommendations`, and `recordChange` (the save
+hook); tasks "Apply relations" and "Re-apply relations"; error code `NOT_FOUND`.
 
 ### 1.0.0 (2026-10-16)
 

@@ -1,0 +1,83 @@
+{
+  "data": {
+    "findTags": {
+      "tags": [
+        {
+          "id": "40",
+          "name": "Full Service",
+          "parents": [],
+          "custom_fields": {
+            "isRelation": 1,
+            "relationEnds": "{\"a\": \"30\", \"b\": \"32\"}",
+            "relationRules": "[{\"id\": \"fs1\", \"a\": {\"role\": \"30\"}, \"b\": {\"role\": \"32\"}}]"
+          }
+        },
+        {
+          "id": "41",
+          "name": "Extra Care",
+          "parents": [
+            {
+              "id": "40"
+            }
+          ],
+          "custom_fields": {
+            "isRelation": 1,
+            "relationEnds": "{\"a\": \"31\", \"b\": \"33\"}",
+            "relationRules": "[{\"id\": \"ec1\", \"a\": {\"role\": \"31\"}, \"b\": {\"role\": \"33\"}, \"actions\": [\"21\"]}]"
+          }
+        },
+        {
+          "id": "45",
+          "name": "Size Difference",
+          "parents": [],
+          "custom_fields": {
+            "isRelation": 1,
+            "relationEnds": "{\"a\": \"60\", \"b\": \"61\"}",
+            "relationRules": "[{\"id\": \"r1\", \"a\": {\"label\": \"50\"}, \"b\": {\"label\": \"51\"}}]"
+          }
+        },
+        {
+          "id": "72",
+          "name": "Missing End",
+          "parents": [],
+          "custom_fields": {
+            "isRelation": 1,
+            "relationEnds": "{\"a\": \"30\"}"
+          }
+        },
+        {
+          "id": "73",
+          "name": "End Not Role",
+          "parents": [],
+          "custom_fields": {
+            "isRelation": 1,
+            "relationEnds": "{\"a\": \"30\", \"b\": \"50\"}"
+          }
+        },
+        {
+          "id": "74",
+          "name": "Bad Narrower",
+          "parents": [
+            {
+              "id": "40"
+            }
+          ],
+          "custom_fields": {
+            "isRelation": 1,
+            "relationEnds": "{\"a\": \"31\", \"b\": \"60\"}"
+          }
+        },
+        {
+          "id": "75",
+          "name": "Bad Rules",
+          "parents": [],
+          "custom_fields": {
+            "isRelation": 1,
+            "relationEnds": "{\"a\": \"30\", \"b\": \"32\"}",
+            "relationRules": "[{\"id\": \"both\", \"a\": {\"label\": \"50\", \"role\": \"30\"}, \"b\": {\"role\": \"32\"}}, {\"a\": {\"role\": \"30\"}, \"b\": {\"role\": \"32\"}}, {\"id\": \"dup\", \"a\": {\"role\": \"30\"}, \"b\": {\"role\": \"32\"}}, {\"id\": \"dup\", \"a\": {\"role\": \"31\"}, \"b\": {\"role\": \"32\"}}]"
+          }
+        }
+      ]
+    }
+  }
+}

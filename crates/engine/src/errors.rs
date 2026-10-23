@@ -11,17 +11,20 @@ pub enum ErrorCode {
     StashTooOld,
     ServerIdNotGenerated,
     ServerIdInvalid,
+    /// A scene, image, or tag named in the arguments does not exist (since 1.1.0).
+    NotFound,
     Internal,
 }
 
 impl ErrorCode {
-    pub const ALL: [ErrorCode; 7] = [
+    pub const ALL: [ErrorCode; 8] = [
         ErrorCode::InvalidInput,
         ErrorCode::UnknownOperation,
         ErrorCode::StashUnreachable,
         ErrorCode::StashTooOld,
         ErrorCode::ServerIdNotGenerated,
         ErrorCode::ServerIdInvalid,
+        ErrorCode::NotFound,
         ErrorCode::Internal,
     ];
 
@@ -33,6 +36,7 @@ impl ErrorCode {
             ErrorCode::StashTooOld => "STASH_TOO_OLD",
             ErrorCode::ServerIdNotGenerated => "SERVER_ID_NOT_GENERATED",
             ErrorCode::ServerIdInvalid => "SERVER_ID_INVALID",
+            ErrorCode::NotFound => "NOT_FOUND",
             ErrorCode::Internal => "INTERNAL",
         }
     }

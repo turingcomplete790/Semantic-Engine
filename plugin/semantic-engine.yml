@@ -11,6 +11,25 @@ tasks:
     description: Create this server's permanent identifier if it does not exist yet.
     defaultArgs:
       op: generateServerId
+  - name: Apply relations
+    description: Apply relations and their end roles to the scenes and images saved since the last run. Started by the save hook; safe to run by hand.
+    defaultArgs:
+      op: applyRelations
+  - name: Re-apply relations
+    description: Re-evaluate relations on every scene and image that can hold them, after editing rules, hierarchies, or Labels.
+    defaultArgs:
+      op: reapplyRelations
+      scope: all
+hooks:
+  - name: Apply relations after a save
+    description: Records the saved scene or image and starts the "Apply relations" task. Adds only a few milliseconds to the save.
+    triggeredBy:
+      - Scene.Create.Post
+      - Scene.Update.Post
+      - Image.Create.Post
+      - Image.Update.Post
+    defaultArgs:
+      op: recordChange
 settings:
   serverId:
     displayName: Server identifier

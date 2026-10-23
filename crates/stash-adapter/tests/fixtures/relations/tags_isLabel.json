@@ -1,0 +1,24 @@
+{
+  "data": {
+    "findTags": {
+      "tags": [
+        {
+          "id": "50",
+          "name": "Short",
+          "parents": [],
+          "custom_fields": {
+            "isLabel": 1
+          }
+        },
+        {
+          "id": "51",
+          "name": "Tall",
+          "parents": [],
+          "custom_fields": {
+            "isLabel": 1
+          }
+        }
+      ]
+    }
+  }
+}

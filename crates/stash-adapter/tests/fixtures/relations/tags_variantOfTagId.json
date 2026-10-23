@@ -1,0 +1,16 @@
+{
+  "data": {
+    "findTags": {
+      "tags": [
+        {
+          "id": "22",
+          "name": "Making Out (scraped)",
+          "parents": [],
+          "custom_fields": {
+            "variantOfTagId": "21"
+          }
+        }
+      ]
+    }
+  }
+}

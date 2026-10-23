@@ -5,6 +5,7 @@
 pub mod fixtures;
 pub mod plugin_config;
 pub mod queries;
+pub mod relations;
 #[cfg(feature = "spike")]
 pub mod spike;
 
@@ -84,6 +85,19 @@ pub fn install_tls_provider() {
     let _ = rustls::crypto::ring::default_provider().install_default();
 }
 
+/// A blocking HTTP client builder for `endpoint`. Plain `http://` endpoints never use TLS, so
+/// the platform certificate store is not loaded for them: loading it costs about 8 ms per
+/// process, which every plugin call (hooks included) would otherwise pay (spec 004 research R6).
+/// `https://` endpoints keep full certificate verification.
+fn http_builder(endpoint: &str) -> reqwest::blocking::ClientBuilder {
+    let b = reqwest::blocking::Client::builder();
+    if endpoint.starts_with("http://") {
+        b.tls_certs_only(Vec::new())
+    } else {
+        b
+    }
+}
+
 pub struct Client {
     http: reqwest::blocking::Client,
     endpoint: String,
@@ -100,17 +114,15 @@ impl Client {
             hv.set_sensitive(true);
             headers.insert(reqwest::header::COOKIE, hv);
         }
-        let http = reqwest::blocking::Client::builder()
+        let endpoint = conn.endpoint();
+        let http = http_builder(&endpoint)
             .default_headers(headers)
             .connect_timeout(Duration::from_secs(5))
             .timeout(Duration::from_secs(60))
             .redirect(reqwest::redirect::Policy::none())
             .build()
             .map_err(|e| Error::Setup(e.to_string()))?;
-        Ok(Client {
-            http,
-            endpoint: conn.endpoint(),
-        })
+        Ok(Client { http, endpoint })
     }
 
     /// A client for tools run outside Stash (fixture capture): `base_url` is the server address,
@@ -122,17 +134,15 @@ impl Client {
             .map_err(|_| Error::Setup("the API key is not a valid header value".into()))?;
         hv.set_sensitive(true);
         headers.insert("ApiKey", hv);
-        let http = reqwest::blocking::Client::builder()
+        let endpoint = format!("{}/graphql", base_url.trim_end_matches('/'));
+        let http = http_builder(&endpoint)
             .default_headers(headers)
             .connect_timeout(Duration::from_secs(5))
             .timeout(Duration::from_secs(300))
             .redirect(reqwest::redirect::Policy::none())
             .build()
             .map_err(|e| Error::Setup(e.to_string()))?;
-        Ok(Client {
-            http,
-            endpoint: format!("{}/graphql", base_url.trim_end_matches('/')),
-        })
+        Ok(Client { http, endpoint })
     }
 
     pub(crate) fn run<Q, V>(&self, op: cynic::Operation<Q, V>) -> Result<Q, Error>

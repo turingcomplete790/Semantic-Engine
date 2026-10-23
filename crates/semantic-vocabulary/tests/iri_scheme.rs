@@ -63,3 +63,20 @@ fn rejects_malformed_server_and_ids() {
     assert!(i.try_scene("a/b").is_err());
     assert!(i.try_scene("").is_err());
 }
+
+#[test]
+fn relation_iris_match_the_scheme() {
+    let i = iris();
+    let m = i.scene("12");
+    // Ordered ends keep the two directions of one relation distinct.
+    assert_eq!(
+        i.relation_instance(&m, "45", "7", "8"),
+        format!("{m}/relation:45:7:8")
+    );
+    assert_ne!(
+        i.relation_instance(&m, "45", "7", "8"),
+        i.relation_instance(&m, "45", "8", "7")
+    );
+    let r = i.tag("45");
+    assert_eq!(i.relation_rule(&r, "r1"), format!("{r}/rule:r1"));
+}

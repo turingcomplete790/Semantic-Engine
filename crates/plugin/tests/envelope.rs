@@ -48,7 +48,7 @@ fn empty_stdin_is_invalid_input_inside_an_envelope() {
     assert!(v["error"].is_null());
     assert_eq!(v["output"]["ok"], false);
     assert_eq!(v["output"]["error"]["code"], "INVALID_INPUT");
-    assert_eq!(v["output"]["contractVersion"], "1.0.0");
+    assert_eq!(v["output"]["contractVersion"], engine::CONTRACT_VERSION);
 }
 
 #[test]
@@ -66,7 +66,7 @@ fn every_envelope_has_ok_op_and_contract_version() {
     let o = &v["output"];
     assert!(o["ok"].is_boolean());
     assert_eq!(o["op"], "nope");
-    assert_eq!(o["contractVersion"], "1.0.0");
+    assert_eq!(o["contractVersion"], engine::CONTRACT_VERSION);
     assert!(
         !v.to_string().contains("secret-cookie-value"),
         "cookie must never be echoed"

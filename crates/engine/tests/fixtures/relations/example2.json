@@ -1,0 +1,60 @@
+[
+  {
+    "id": "60",
+    "name": "Smaller",
+    "parents": [],
+    "custom_fields": {
+      "isRole": 1
+    }
+  },
+  {
+    "id": "61",
+    "name": "Larger",
+    "parents": [],
+    "custom_fields": {
+      "isRole": 1
+    }
+  },
+  {
+    "id": "50",
+    "name": "Short",
+    "parents": [],
+    "custom_fields": {
+      "isLabel": 1
+    }
+  },
+  {
+    "id": "51",
+    "name": "Tall",
+    "parents": [],
+    "custom_fields": {
+      "isLabel": 1
+    }
+  },
+  {
+    "id": "21",
+    "name": "Kissing",
+    "parents": [],
+    "custom_fields": {
+      "isAction": 1
+    }
+  },
+  {
+    "id": "22",
+    "name": "Making Out (scraped)",
+    "parents": [],
+    "custom_fields": {
+      "variantOfTagId": "21"
+    }
+  },
+  {
+    "id": "45",
+    "name": "Size Difference",
+    "parents": [],
+    "custom_fields": {
+      "isRelation": 1,
+      "relationEnds": "{\"a\": \"60\", \"b\": \"61\"}",
+      "relationRules": "[{\"id\": \"r1\", \"a\": {\"label\": \"50\"}, \"b\": {\"label\": \"51\"}}]"
+    }
+  }
+]

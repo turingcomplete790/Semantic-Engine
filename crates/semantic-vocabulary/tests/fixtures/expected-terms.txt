@@ -102,3 +102,23 @@ prop slotSeconds timeline.ttl SceneScoped
 prop linkedMarker timeline.ttl SceneScoped
 prop hasPick timeline.ttl SceneScoped
 prop inStage timeline.ttl SceneScoped
+# 1.2.0: relations, role and relation hierarchy, auto-apply (spec 004)
+class Relation core.ttl
+class RelationInstance core.ttl SceneScoped
+class RelationRule core.ttl
+prop broaderRole core.ttl Global
+prop broaderRelation core.ttl Global
+prop endARole core.ttl Global
+prop endBRole core.ttl Global
+prop hasRelationRule core.ttl Global
+prop relationRuleId core.ttl Global
+prop endALabel core.ttl Global
+prop endARoleCondition core.ttl Global
+prop endBLabel core.ttl Global
+prop endBRoleCondition core.ttl Global
+prop linkingAction core.ttl Global
+prop ofRelation core.ttl SceneScoped
+prop atEndA core.ttl SceneScoped
+prop atEndB core.ttl SceneScoped
+prop appliedAutomatically core.ttl SceneScoped
+prop appliedByRule core.ttl SceneScoped

@@ -127,4 +127,18 @@ impl ItemIris {
     pub fn label_rule(&self, label: &str, rule_id: &str) -> String {
         format!("{label}/rule:{}", check_id(rule_id).expect("valid"))
     }
+    /// One relation between two performers in one media item; `a` and `b` are the performers at
+    /// the relation's first and second end, so the two directions get different IRIs (since 1.2.0).
+    pub fn relation_instance(&self, media: &str, relation: &str, a: &str, b: &str) -> String {
+        format!(
+            "{media}/relation:{}:{}:{}",
+            check_id(relation).expect("valid"),
+            check_id(a).expect("valid"),
+            check_id(b).expect("valid")
+        )
+    }
+    /// An auto-apply rule of a relation, by the rule's own stable id (since 1.2.0).
+    pub fn relation_rule(&self, relation: &str, rule_id: &str) -> String {
+        format!("{relation}/rule:{}", check_id(rule_id).expect("valid"))
+    }
 }

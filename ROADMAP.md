@@ -77,6 +77,9 @@ Done 2026-10-20: [specs/003-engine-design-spike/decision-record.md](specs/003-en
 
 **Goal:** the graph the design documents define, built from Stash, headless and testable.
 
+- [x] Relations, role and relation hierarchies, and auto-apply on save, with vocabulary 1.2.0
+      and contract 1.1.0 (`specs/004-relations-role-hierarchy`): the save hook records changes and
+      a background job applies them; "Re-apply relations" for definition changes
 - [ ] Stash adapter crate: the one place that talks to Stash, using the Cynic GraphQL library
       with typed operations generated against a pinned copy of Stash's schema (constitution
       v1.1.0, Technology & Platform Constraints)
@@ -102,6 +105,9 @@ Done 2026-10-20: [specs/003-engine-design-spike/decision-record.md](specs/003-en
 
 - [ ] Versioned operation protocol (Principle VI): request, response, structured errors
 - [ ] SPARQL `SELECT`: triple patterns, variables, joins, projection, basic filters
+- [ ] Relation and Role criteria accept `recursive` and expand through the engine's hierarchy
+      (`Hierarchy::expand_criterion`, 004 US3); verify 004 SC-004 (exact matches) and SC-007
+      (p95 under 200 ms at 250k scenes) here
 - [ ] Scoping rules enforced (scene-scoped predicates only join within one scene)
 - [ ] Paging and result-size limits per Phase 1 findings: 1 MiB pages, never over 2 MiB
       (decision record rule 9)
@@ -117,6 +123,10 @@ query it; without it they say clearly that it is missing (constitution Principle
 - [ ] Viewer: semantic features query the engine, with a clear state when it is absent; no
       in-process engine (viewer Phase 6; needs the viewer's constitution amendment first)
 - [ ] Plugin: the semantic-search plugin calls the engine through `runPluginOperation`
+- [ ] Plugin: tag pickers take recommendations from the engine's `recommendations` operation
+      and retire `computeRecommendedTagIds` (004 US4; `specs/004-relations-role-hierarchy/plugin-notes.md`)
+- [ ] Plugin: adopt Relations, role hierarchy, and auto-apply in its design documents (004
+      plugin notes, constitution Principle II)
 - [ ] Cross-client equivalence tests: the same library state gives the same answers in each
 - [ ] Remove or retire duplicated engine work in the clients' roadmaps
 

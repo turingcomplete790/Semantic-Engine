@@ -7,7 +7,7 @@
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
 
 # Vocabulary identity
-<urn:semantic-stash:vocab:> sem:version "1.1.0" .
+<urn:semantic-stash:vocab:> sem:version "1.2.0" .
 
 # ---- Vocabulary metadata (FR-017)
 
@@ -833,3 +833,211 @@ sem:hasTag a rdf:Property ;
     sem:scope sem:SceneScoped ;
     sem:status sem:Planned ;
     sem:since "1.0.0" .
+
+
+# ---- Relations, role and relation hierarchy, auto-apply (1.2.0, spec 004)
+
+sem:Relation a rdfs:Class ;
+    rdfs:subClassOf sem:Tag ;
+    rdfs:label "Relation"@en ;
+    rdfs:comment "A Relation tag: links two performers in one scene or image, defined by the Roles at its two ends; may have broader relations and auto-apply rules." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:RelationInstance a rdfs:Class ;
+    rdfs:subClassOf sem:Placeable, sem:MediaScoped ;
+    rdfs:label "Relation instance"@en ;
+    rdfs:comment "One Relation linking two performers in one scene or image, applied by hand or automatically." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:RelationRule a rdfs:Class ;
+    rdfs:label "Relation rule"@en ;
+    rdfs:comment "An auto-apply rule of a Relation: a condition for each end (a Label, or a Role held in the item) and the Actions whose pairing may link the two performers." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:broaderRole a rdf:Property ;
+    rdfs:subPropertyOf sem:parentTag ;
+    rdfs:domain sem:Role ;
+    rdfs:range sem:Role ;
+    rdfs:label "broader role"@en ;
+    rdfs:comment "A broader role, from a Stash parent that is also a Role. A narrower role takes part in every relation of its broader roles, at any depth." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:broaderRelation a rdf:Property ;
+    rdfs:subPropertyOf sem:parentTag ;
+    rdfs:domain sem:Relation ;
+    rdfs:range sem:Relation ;
+    rdfs:label "broader relation"@en ;
+    rdfs:comment "A broader relation, from a Stash parent that is also a Relation. Recursive searches for the broader relation also match this one." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:endARole a rdf:Property ;
+    rdfs:domain sem:Relation ;
+    rdfs:range sem:Role ;
+    rdfs:label "end A role"@en ;
+    rdfs:comment "The Role at the relation's first end." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:endBRole a rdf:Property ;
+    rdfs:domain sem:Relation ;
+    rdfs:range sem:Role ;
+    rdfs:label "end B role"@en ;
+    rdfs:comment "The Role at the relation's second end." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:hasRelationRule a rdf:Property ;
+    rdfs:domain sem:Relation ;
+    rdfs:range sem:RelationRule ;
+    rdfs:label "has relation rule"@en ;
+    rdfs:comment "One of the relation's auto-apply rules." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:relationRuleId a rdf:Property ;
+    rdfs:domain sem:RelationRule ;
+    rdfs:range xsd:string ;
+    rdfs:label "relation rule id"@en ;
+    rdfs:comment "The rule's stable identifier within its relation; used to build the rule's IRI." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:endALabel a rdf:Property ;
+    rdfs:domain sem:RelationRule ;
+    rdfs:range sem:Label ;
+    rdfs:label "end A label"@en ;
+    rdfs:comment "End A's condition: the performer has this Label." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:endARoleCondition a rdf:Property ;
+    rdfs:domain sem:RelationRule ;
+    rdfs:range sem:Role ;
+    rdfs:label "end A role condition"@en ;
+    rdfs:comment "End A's condition: the performer has this Role, or a narrower one, in the scene or image." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:endBLabel a rdf:Property ;
+    rdfs:domain sem:RelationRule ;
+    rdfs:range sem:Label ;
+    rdfs:label "end B label"@en ;
+    rdfs:comment "End B's condition: the performer has this Label." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:endBRoleCondition a rdf:Property ;
+    rdfs:domain sem:RelationRule ;
+    rdfs:range sem:Role ;
+    rdfs:label "end B role condition"@en ;
+    rdfs:comment "End B's condition: the performer has this Role, or a narrower one, in the scene or image." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:linkingAction a rdf:Property ;
+    rdfs:domain sem:RelationRule ;
+    rdfs:range sem:Action ;
+    rdfs:label "linking action"@en ;
+    rdfs:comment "An Action whose pairing may link the two performers; a rule with none accepts any Action. Holding the same Action without a pairing never links them." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:ofRelation a rdf:Property ;
+    rdfs:domain sem:RelationInstance ;
+    rdfs:range sem:Relation ;
+    rdfs:label "of relation"@en ;
+    rdfs:comment "The relation this instance applies." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:atEndA a rdf:Property ;
+    rdfs:domain sem:RelationInstance ;
+    rdfs:range sem:Performer ;
+    rdfs:label "at end A"@en ;
+    rdfs:comment "The performer at the relation's first end." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:atEndB a rdf:Property ;
+    rdfs:domain sem:RelationInstance ;
+    rdfs:range sem:Performer ;
+    rdfs:label "at end B"@en ;
+    rdfs:comment "The performer at the relation's second end." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:appliedAutomatically a rdf:Property ;
+    rdfs:domain sem:RelationInstance ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "applied automatically"@en ;
+    rdfs:comment "True when auto-apply wrote this instance; false or absent when applied by hand." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:appliedByRule a rdf:Property ;
+    rdfs:domain sem:RelationInstance ;
+    rdfs:range sem:RelationRule ;
+    rdfs:label "applied by rule"@en ;
+    rdfs:comment "The rule that applied this instance, for automatic instances." ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:scope sem:SceneScoped ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .

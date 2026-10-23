@@ -1,0 +1,24 @@
+{
+  "data": {
+    "findTags": {
+      "tags": [
+        {
+          "id": "23",
+          "name": "Hug",
+          "parents": [],
+          "custom_fields": {
+            "isAction": 1
+          }
+        },
+        {
+          "id": "21",
+          "name": "Kissing",
+          "parents": [],
+          "custom_fields": {
+            "isAction": 1
+          }
+        }
+      ]
+    }
+  }
+}

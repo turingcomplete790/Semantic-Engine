@@ -88,18 +88,27 @@ pub fn run(stdin: &[u8]) -> (serde_json::Value, String) {
     (out["output"].clone(), log)
 }
 
-/// Like `fake_stash`, but each reply is computed from the request body.
+/// Like `fake_stash`, but each reply is computed from the request body. Connections that send
+/// no request are ignored, so only real requests count toward `count`.
 pub fn fake_stash_fn(count: usize, handler: fn(&str) -> String) -> (u16, mpsc::Receiver<String>) {
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let port = listener.local_addr().unwrap().port();
     let (tx, rx) = mpsc::channel();
     thread::spawn(move || {
-        for _ in 0..count {
+        let mut served = 0;
+        while served < count {
             let Ok((stream, _)) = listener.accept() else {
                 return;
             };
             let mut reader = BufReader::new(stream.try_clone().unwrap());
             let mut len = 0usize;
+            // A connection the client opened but never used sends nothing; it must not use up
+            // one of the `count` replies.
+            let mut request_line = String::new();
+            if reader.read_line(&mut request_line).unwrap_or(0) == 0 {
+                continue;
+            }
+            served += 1;
             loop {
                 let mut h = String::new();
                 if reader.read_line(&mut h).unwrap_or(0) == 0 {
@@ -140,3 +149,42 @@ pub fn echo_configure(body: &str) -> Option<String> {
 }
 
 pub const VALID_ID: &str = "11111111-2222-4333-8444-555555555555";
+
+/// Plugin input for `op` with extra arguments.
+pub fn input_args(port: u16, op: &str, args: serde_json::Value) -> Vec<u8> {
+    let mut a = args.as_object().cloned().unwrap_or_default();
+    a.insert("op".into(), op.into());
+    serde_json::json!({
+        "server_connection": {
+            "Scheme": "http", "Host": "127.0.0.1", "Port": port,
+            "SessionCookie": {"Name": "session", "Value": "cookie-secret"},
+            "Dir": "/tmp", "PluginDir": "/tmp"
+        },
+        "args": a
+    })
+    .to_string()
+    .into_bytes()
+}
+
+/// A recorded relation response from `crates/stash-adapter/tests/fixtures/relations/`.
+pub fn relation_fixture(name: &str) -> String {
+    std::fs::read_to_string(
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../stash-adapter/tests/fixtures/relations")
+            .join(name),
+    )
+    .unwrap()
+}
+
+/// Answers each flag-filtered `findTags` with that flag's recorded response.
+pub fn tags_by_flag(body: &str) -> String {
+    let v: serde_json::Value = serde_json::from_str(body).unwrap();
+    let field = v["variables"]["filter"]["custom_fields"][0]["field"]
+        .as_str()
+        .unwrap_or("none")
+        .to_string();
+    relation_fixture(&format!("tags_{field}.json"))
+}
+
+/// Requests one `relations` call makes: one definitions read per flag.
+pub const DEFINITION_READS: usize = 7;

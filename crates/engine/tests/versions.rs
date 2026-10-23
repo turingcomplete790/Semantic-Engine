@@ -9,7 +9,7 @@ fn semver(s: &str) -> bool {
 fn versions_are_complete() {
     let v = engine::versions();
     assert!(!v.engine_version.is_empty());
-    assert_eq!(v.contract_version, "1.0.0");
+    assert_eq!(v.contract_version, engine::CONTRACT_VERSION);
     assert_eq!(v.stash_minimum_version, "v0.31.1");
     let vocab = semantic_vocabulary::embedded().unwrap().version().unwrap();
     assert_eq!(v.vocabulary_version, vocab);

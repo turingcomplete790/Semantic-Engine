@@ -261,6 +261,7 @@ sem:map_performerTags a sem:Mapping ;
     sem:since "1.0.0" .
 
 sem:map_tagParents a sem:Mapping ;
+    rdfs:comment "A parent with the same type flag (a Role under a Role, a Relation under a Relation) also produces sem:broaderRole or sem:broaderRelation (since 1.2.0)." ;
     sem:fromEntity "Tag" ;
     sem:fromField "parents" ;
     sem:allowedValues "Stash tag ids; direct parents only" ;
@@ -269,6 +270,58 @@ sem:map_tagParents a sem:Mapping ;
     sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
     sem:status sem:Active ;
     sem:since "1.0.0" .
+
+sem:map_isRelation a sem:Mapping ;
+    sem:fromEntity "Tag" ;
+    sem:fromField "custom_fields.isRelation" ;
+    sem:allowedValues "1 (stored as a 0/1 value; other values mean not set)" ;
+    sem:produces sem:Relation ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:map_relationEnds a sem:Mapping ;
+    rdfs:comment "Also produces sem:endBRole." ;
+    sem:fromEntity "Tag" ;
+    sem:fromField "custom_fields.relationEnds" ;
+    sem:allowedValues "JSON {\"a\": roleTagId, \"b\": roleTagId}" ;
+    sem:produces sem:endARole ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:map_relationRules a sem:Mapping ;
+    sem:fromEntity "Tag" ;
+    sem:fromField "custom_fields.relationRules" ;
+    sem:allowedValues "JSON list of {id, a: {label | role}, b: {label | role}, actions?}" ;
+    sem:produces sem:RelationRule ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:map_relationAssignments a sem:Mapping ;
+    sem:fromEntity "Scene, Image" ;
+    sem:fromField "custom_fields.relationAssignments" ;
+    sem:allowedValues "JSON list of {relationTagId, a, b, auto?, ruleId?}" ;
+    sem:produces sem:RelationInstance ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
+
+sem:map_autoRoleAssignments a sem:Mapping ;
+    rdfs:comment "Marks which Role assignments auto-apply added as relation end roles; the same roles also appear in roleTagAssignments." ;
+    sem:fromEntity "Scene, Image" ;
+    sem:fromField "custom_fields.autoRoleAssignments" ;
+    sem:allowedValues "JSON map of performer id to the Role tag ids auto-apply added" ;
+    sem:produces sem:RoleInstance ;
+    sem:source "specs/004-relations-role-hierarchy/spec.md (owner, 2026-10-21)" ;
+    sem:sourceRevision "owner request 2026-10-21; not in the plugin documents at 3c82c85" ;
+    sem:status sem:Active ;
+    sem:since "1.2.0" .
 
 sem:map_serverId a sem:Mapping ;
     rdfs:comment "Planned: generated once by an engine-plugin task and stored in Stash." ;

@@ -23,16 +23,14 @@ fn every_vocabulary_predicate_and_class_is_a_defined_term() {
     for p in &predicates {
         assert!(
             p == RDF_TYPE || p == RDFS_LABEL || (p.starts_with(VOCAB) && defined.contains(p)),
-            "predicate {p} is not a vocabulary 1.1.0 term"
+            "predicate {p} is not a vocabulary term"
         );
     }
     for c in &classes {
-        assert!(
-            defined.contains(c),
-            "class {c} is not a vocabulary 1.1.0 term"
-        );
+        assert!(defined.contains(c), "class {c} is not a vocabulary term");
     }
-    assert_eq!(vocab.version().as_deref(), Some("1.1.0"));
+    // Built against 1.1.0; later MINOR versions only add terms, so major 1 is enough.
+    assert!(vocab.version().is_some_and(|v| v.starts_with("1.")));
 }
 
 #[test]

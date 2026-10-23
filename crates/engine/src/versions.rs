@@ -3,7 +3,7 @@
 use serde::Serialize;
 
 /// Version of the operation contract (contracts/operations.md).
-pub const CONTRACT_VERSION: &str = "1.0.0";
+pub const CONTRACT_VERSION: &str = "1.1.0";
 /// Oldest Stash release this engine supports (FR-017).
 pub const STASH_MINIMUM_VERSION: &str = "v0.31.1";
 

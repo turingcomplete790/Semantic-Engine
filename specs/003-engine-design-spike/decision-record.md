@@ -324,6 +324,10 @@ The changes:
    - If it gets the lock, it applies the entries, publishes a new generation, and then answers.
    - If another call holds the lock, it answers from the current generation and reports that
      changes are pending.
+   - **Superseded 2026-10-21** by `specs/004-relations-role-hierarchy/research.md` R6: the hook
+     records the change and starts a Stash background job ("Apply relations"); no client call
+     pays for applying. The owner judged that a 1,000-scene edit adding seconds to some later
+     call is not acceptable.
 7. **Catch-up:** each apply also asks Stash for items with `updated_at` after the last apply.
    This catches saves whose hooks were lost, for example while the plugin was disabled. The
    threshold is sent in the server's local-time format, one second early, and never together

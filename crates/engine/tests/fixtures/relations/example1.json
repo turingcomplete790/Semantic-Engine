@@ -1,0 +1,85 @@
+[
+  {
+    "id": "30",
+    "name": "Customer",
+    "parents": [],
+    "custom_fields": {
+      "isRole": 1
+    }
+  },
+  {
+    "id": "31",
+    "name": "Patient",
+    "parents": [
+      "30"
+    ],
+    "custom_fields": {
+      "isRole": 1
+    }
+  },
+  {
+    "id": "32",
+    "name": "Professional",
+    "parents": [],
+    "custom_fields": {
+      "isRole": 1
+    }
+  },
+  {
+    "id": "33",
+    "name": "Nurse",
+    "parents": [
+      "32",
+      "90"
+    ],
+    "custom_fields": {
+      "isRole": 1
+    }
+  },
+  {
+    "id": "34",
+    "name": "Doctor",
+    "parents": [
+      "32"
+    ],
+    "custom_fields": {
+      "isRole": 1
+    }
+  },
+  {
+    "id": "90",
+    "name": "Browse: Medical",
+    "parents": [],
+    "custom_fields": {}
+  },
+  {
+    "id": "23",
+    "name": "Hug",
+    "parents": [],
+    "custom_fields": {
+      "isAction": 1
+    }
+  },
+  {
+    "id": "40",
+    "name": "Full Service",
+    "parents": [],
+    "custom_fields": {
+      "isRelation": 1,
+      "relationEnds": "{\"a\": \"30\", \"b\": \"32\"}",
+      "relationRules": "[{\"id\": \"fs1\", \"a\": {\"role\": \"30\"}, \"b\": {\"role\": \"32\"}}]"
+    }
+  },
+  {
+    "id": "41",
+    "name": "Extra Care",
+    "parents": [
+      "40"
+    ],
+    "custom_fields": {
+      "isRelation": 1,
+      "relationEnds": "{\"a\": \"31\", \"b\": \"33\"}",
+      "relationRules": "[{\"id\": \"ec1\", \"a\": {\"role\": \"31\"}, \"b\": {\"role\": \"33\"}, \"actions\": [\"21\"]}]"
+    }
+  }
+]

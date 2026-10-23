@@ -1,14 +1,22 @@
 {
-  "contractVersion": "1.0.0",
+  "contractVersion": "1.1.0",
   "pluginId": "semantic-engine",
   "operations": [
     {"name": "ping", "since": "1.0.0", "errors": []},
     {"name": "status", "since": "1.0.0", "errors": ["STASH_UNREACHABLE", "STASH_TOO_OLD"]},
-    {"name": "getServerId", "since": "1.0.0", "errors": ["SERVER_ID_NOT_GENERATED", "SERVER_ID_INVALID", "STASH_UNREACHABLE"]}
+    {"name": "getServerId", "since": "1.0.0", "errors": ["SERVER_ID_NOT_GENERATED", "SERVER_ID_INVALID", "STASH_UNREACHABLE"]},
+    {"name": "relations", "since": "1.1.0", "errors": ["INVALID_INPUT", "STASH_UNREACHABLE", "INTERNAL"]},
+    {"name": "explainRelation", "since": "1.1.0", "errors": ["INVALID_INPUT", "NOT_FOUND", "STASH_UNREACHABLE", "INTERNAL"]},
+    {"name": "recommendations", "since": "1.1.0", "errors": ["INVALID_INPUT", "NOT_FOUND", "STASH_UNREACHABLE", "INTERNAL"]},
+    {"name": "recordChange", "since": "1.1.0", "errors": []}
   ],
   "tasks": [
     {"name": "Generate server identifier", "op": "generateServerId", "since": "1.0.0",
-     "errors": ["SERVER_ID_INVALID", "STASH_UNREACHABLE"]}
+     "errors": ["SERVER_ID_INVALID", "STASH_UNREACHABLE"]},
+    {"name": "Apply relations", "op": "applyRelations", "since": "1.1.0",
+     "errors": ["INVALID_INPUT", "STASH_UNREACHABLE", "INTERNAL"]},
+    {"name": "Re-apply relations", "op": "reapplyRelations", "since": "1.1.0",
+     "errors": ["INVALID_INPUT", "STASH_UNREACHABLE", "INTERNAL"]}
   ],
   "errors": [
     {"code": "INVALID_INPUT", "since": "1.0.0"},
@@ -17,6 +25,7 @@
     {"code": "STASH_TOO_OLD", "since": "1.0.0"},
     {"code": "SERVER_ID_NOT_GENERATED", "since": "1.0.0"},
     {"code": "SERVER_ID_INVALID", "since": "1.0.0"},
+    {"code": "NOT_FOUND", "since": "1.1.0"},
     {"code": "INTERNAL", "since": "1.0.0"}
   ]
 }

@@ -1,0 +1,181 @@
+[
+  {
+    "kind": "scene",
+    "id": "101",
+    "note": "Example 2: P1 (Short) and P2 (Tall) paired on Kissing",
+    "performers": [
+      "7",
+      "8"
+    ],
+    "updated_at": "2026-10-21T10:00:00-06:00",
+    "custom_fields": {
+      "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": []}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+      "actionPairings": "[{\"a\": {\"performer\": \"7\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"8\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p101\"}]"
+    }
+  },
+  {
+    "kind": "scene",
+    "id": "102",
+    "note": "reversed: the Tall performer is listed first",
+    "performers": [
+      "12",
+      "13"
+    ],
+    "updated_at": "2026-10-21T10:00:00-06:00",
+    "custom_fields": {
+      "actionAssignments": "{\"12\": [{\"actionTagId\": \"21\", \"variations\": []}], \"13\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+      "actionPairings": "[{\"a\": {\"performer\": \"12\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"13\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p102\"}]"
+    }
+  },
+  {
+    "kind": "scene",
+    "id": "103",
+    "note": "both directions: both performers are Short and Tall",
+    "performers": [
+      "14",
+      "15"
+    ],
+    "updated_at": "2026-10-21T10:00:00-06:00",
+    "custom_fields": {
+      "actionAssignments": "{\"14\": [{\"actionTagId\": \"21\", \"variations\": []}], \"15\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+      "actionPairings": "[{\"a\": {\"performer\": \"14\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"15\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p103\"}]"
+    }
+  },
+  {
+    "kind": "scene",
+    "id": "104",
+    "note": "three performers: P1 paired with P2 and with performer 12",
+    "performers": [
+      "7",
+      "8",
+      "12"
+    ],
+    "updated_at": "2026-10-21T10:00:00-06:00",
+    "custom_fields": {
+      "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": []}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}], \"12\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+      "actionPairings": "[{\"a\": {\"performer\": \"7\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"8\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p104a\"}, {\"a\": {\"performer\": \"7\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"12\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p104b\"}]"
+    }
+  },
+  {
+    "kind": "scene",
+    "id": "105",
+    "note": "same Action without a pairing: not linked",
+    "performers": [
+      "7",
+      "8"
+    ],
+    "updated_at": "2026-10-21T10:00:00-06:00",
+    "custom_fields": {
+      "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": []}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+      "actionPairings": "[]"
+    }
+  },
+  {
+    "kind": "scene",
+    "id": "106",
+    "note": "paired on a variant of Kissing",
+    "performers": [
+      "7",
+      "8"
+    ],
+    "updated_at": "2026-10-21T10:00:00-06:00",
+    "custom_fields": {
+      "actionAssignments": "{\"7\": [{\"actionTagId\": \"22\", \"variations\": []}], \"8\": [{\"actionTagId\": \"22\", \"variations\": []}]}",
+      "actionPairings": "[{\"a\": {\"performer\": \"7\", \"actionTagId\": \"22\"}, \"b\": {\"performer\": \"8\", \"actionTagId\": \"22\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p106\"}]"
+    }
+  },
+  {
+    "kind": "scene",
+    "id": "107",
+    "note": "hand-applied Size Difference already present",
+    "performers": [
+      "7",
+      "8"
+    ],
+    "updated_at": "2026-10-21T10:00:00-06:00",
+    "custom_fields": {
+      "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": []}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+      "actionPairings": "[{\"a\": {\"performer\": \"7\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"8\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p107\"}]",
+      "relationAssignments": "[{\"relationTagId\": \"45\", \"a\": \"7\", \"b\": \"8\", \"auto\": false}]"
+    }
+  },
+  {
+    "kind": "scene",
+    "id": "108",
+    "note": "P1 already holds Smaller by hand",
+    "performers": [
+      "7",
+      "8"
+    ],
+    "updated_at": "2026-10-21T10:00:00-06:00",
+    "custom_fields": {
+      "roleTagAssignments": "{\"7\": [\"60\"]}",
+      "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": []}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+      "actionPairings": "[{\"a\": {\"performer\": \"7\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"8\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p108\"}]"
+    }
+  },
+  {
+    "kind": "scene",
+    "id": "109",
+    "note": "already up to date",
+    "performers": [
+      "7",
+      "8"
+    ],
+    "updated_at": "2026-10-21T10:00:00-06:00",
+    "custom_fields": {
+      "roleTagAssignments": "{\"7\": [\"60\"], \"8\": [\"61\"]}",
+      "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": []}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+      "actionPairings": "[{\"a\": {\"performer\": \"7\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"8\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p109\"}]",
+      "relationAssignments": "[{\"relationTagId\": \"45\", \"a\": \"7\", \"b\": \"8\", \"auto\": true, \"ruleId\": \"r1\"}]",
+      "autoRoleAssignments": "{\"7\": [\"60\"], \"8\": [\"61\"]}"
+    }
+  },
+  {
+    "kind": "scene",
+    "id": "110",
+    "note": "Example 1: Patient and Doctor paired on Hug",
+    "performers": [
+      "16",
+      "17"
+    ],
+    "updated_at": "2026-10-21T10:00:00-06:00",
+    "custom_fields": {
+      "roleTagAssignments": "{\"16\": [\"31\"], \"17\": [\"34\"]}",
+      "actionAssignments": "{\"16\": [{\"actionTagId\": \"23\", \"variations\": []}], \"17\": [{\"actionTagId\": \"23\", \"variations\": []}]}",
+      "actionPairings": "[{\"a\": {\"performer\": \"16\", \"actionTagId\": \"23\"}, \"b\": {\"performer\": \"17\", \"actionTagId\": \"23\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p110\"}]"
+    }
+  },
+  {
+    "kind": "scene",
+    "id": "111",
+    "note": "Patient and Nurse paired on Hug: Extra Care needs Kissing, Full Service applies",
+    "performers": [
+      "16",
+      "18"
+    ],
+    "updated_at": "2026-10-21T10:00:00-06:00",
+    "custom_fields": {
+      "roleTagAssignments": "{\"16\": [\"31\"], \"18\": [\"33\"]}",
+      "actionAssignments": "{\"16\": [{\"actionTagId\": \"23\", \"variations\": []}], \"18\": [{\"actionTagId\": \"23\", \"variations\": []}]}",
+      "actionPairings": "[{\"a\": {\"performer\": \"16\", \"actionTagId\": \"23\"}, \"b\": {\"performer\": \"18\", \"actionTagId\": \"23\"}, \"direction\": \"bidirectional\", \"pairingId\": \"p111\"}]"
+    }
+  },
+  {
+    "kind": "scene",
+    "id": "112",
+    "note": "stale automatic relation: the pairing was removed",
+    "performers": [
+      "7",
+      "8"
+    ],
+    "updated_at": "2026-10-21T10:00:00-06:00",
+    "custom_fields": {
+      "roleTagAssignments": "{\"7\": [\"60\"], \"8\": [\"61\"]}",
+      "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": []}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
+      "actionPairings": "[]",
+      "relationAssignments": "[{\"relationTagId\": \"45\", \"a\": \"7\", \"b\": \"8\", \"auto\": true, \"ruleId\": \"r1\"}]",
+      "autoRoleAssignments": "{\"7\": [\"60\"], \"8\": [\"61\"]}"
+    }
+  }
+]

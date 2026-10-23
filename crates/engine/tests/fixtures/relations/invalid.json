@@ -1,0 +1,61 @@
+[
+  {
+    "id": "70",
+    "name": "Loop A",
+    "parents": [
+      "71"
+    ],
+    "custom_fields": {
+      "isRole": 1
+    }
+  },
+  {
+    "id": "71",
+    "name": "Loop B",
+    "parents": [
+      "70"
+    ],
+    "custom_fields": {
+      "isRole": 1
+    }
+  },
+  {
+    "id": "72",
+    "name": "Missing End",
+    "parents": [],
+    "custom_fields": {
+      "isRelation": 1,
+      "relationEnds": "{\"a\": \"30\"}"
+    }
+  },
+  {
+    "id": "73",
+    "name": "End Not Role",
+    "parents": [],
+    "custom_fields": {
+      "isRelation": 1,
+      "relationEnds": "{\"a\": \"30\", \"b\": \"50\"}"
+    }
+  },
+  {
+    "id": "74",
+    "name": "Bad Narrower",
+    "parents": [
+      "40"
+    ],
+    "custom_fields": {
+      "isRelation": 1,
+      "relationEnds": "{\"a\": \"31\", \"b\": \"60\"}"
+    }
+  },
+  {
+    "id": "75",
+    "name": "Bad Rules",
+    "parents": [],
+    "custom_fields": {
+      "isRelation": 1,
+      "relationEnds": "{\"a\": \"30\", \"b\": \"32\"}",
+      "relationRules": "[{\"id\": \"both\", \"a\": {\"label\": \"50\", \"role\": \"30\"}, \"b\": {\"role\": \"32\"}}, {\"a\": {\"role\": \"30\"}, \"b\": {\"role\": \"32\"}}, {\"id\": \"dup\", \"a\": {\"role\": \"30\"}, \"b\": {\"role\": \"32\"}}, {\"id\": \"dup\", \"a\": {\"role\": \"31\"}, \"b\": {\"role\": \"32\"}}]"
+    }
+  }
+]

@@ -1,10 +1,13 @@
 //! The Stash plugin: reads Stash's raw-interface input, dispatches one operation, and writes
 //! the result envelope (contracts/operations.md).
 
+pub mod apply;
 pub mod envelope;
 pub mod input;
+pub mod journal;
 pub mod log;
 pub mod ops;
+pub mod relations;
 
 use std::io::Read;
 
