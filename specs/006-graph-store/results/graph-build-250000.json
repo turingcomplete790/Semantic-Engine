@@ -1,0 +1,16 @@
+{
+  "command": "build --scenes 250000 --dir target/graph-bench/250k",
+  "result": {
+    "factsStored": 9794566,
+    "factsWritten": 9794566,
+    "generation": 1,
+    "images": 324926,
+    "loadMs": 73721.850463,
+    "peakKiB": 1763272,
+    "performers": 5000,
+    "publishMs": 3252.370131,
+    "scenes": 250000,
+    "totalMs": 76974.220594
+  },
+  "scenes": 250000
+}

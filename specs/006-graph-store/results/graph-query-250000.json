@@ -1,0 +1,65 @@
+{
+  "command": "query --dir target/graph-bench/250k --runs 30",
+  "result": {
+    "allCallsMs": {
+      "max": 172.95692400000001,
+      "median": 13.096933,
+      "min": 6.7962489999999995,
+      "p95": 71.667754,
+      "runs": 150
+    },
+    "queries": {
+      "1 pattern: scenes": {
+        "callMs": {
+          "max": 14.706861,
+          "median": 7.609642,
+          "min": 6.7962489999999995,
+          "p95": 9.632731,
+          "runs": 30
+        },
+        "rows": 100
+      },
+      "2 patterns: media with role": {
+        "callMs": {
+          "max": 23.497214,
+          "median": 10.511901,
+          "min": 8.967557,
+          "p95": 17.724717000000002,
+          "runs": 30
+        },
+        "rows": 100
+      },
+      "3 patterns: performers with role": {
+        "callMs": {
+          "max": 14.829049000000001,
+          "median": 13.072036,
+          "min": 10.558651000000001,
+          "p95": 13.738405,
+          "runs": 30
+        },
+        "rows": 100
+      },
+      "4 patterns: role and action in one scene": {
+        "callMs": {
+          "max": 172.95692400000001,
+          "median": 67.538099,
+          "min": 53.362688999999996,
+          "p95": 79.581388,
+          "runs": 30
+        },
+        "rows": 100
+      },
+      "5 patterns: trait holder with role": {
+        "callMs": {
+          "max": 69.67442899999999,
+          "median": 47.434849,
+          "min": 39.629928,
+          "p95": 54.958329,
+          "runs": 30
+        },
+        "rows": 100
+      }
+    }
+  },
+  "scenes": 250000
+}

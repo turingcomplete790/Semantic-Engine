@@ -2,6 +2,7 @@
 //! `stash-adapter` (constitution Principle V).
 
 pub mod errors;
+pub mod graph;
 pub mod recommend;
 pub mod relations;
 pub mod server_id;

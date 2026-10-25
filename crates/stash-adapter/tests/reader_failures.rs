@@ -194,5 +194,5 @@ fn writes_are_never_retried() {
         .update_item_custom_fields(MediaKind::Scene, "1", serde_json::Map::new())
         .unwrap_err();
     assert!(matches!(e, Error::Unreachable(_)), "{e:?}");
-    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert_eq!(calls.load(Ordering::SeqCst), 1, "{e:?}");
 }

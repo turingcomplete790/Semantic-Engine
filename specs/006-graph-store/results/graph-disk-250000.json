@@ -1,0 +1,12 @@
+{
+  "command": "disk --dir target/graph-bench/250k",
+  "result": {
+    "bytesPerScenePerGeneration": 5792.669852,
+    "facts": 9794566,
+    "generationBytes": 1448167463,
+    "scenes": 250000,
+    "storeBytes": 2503726079,
+    "storeToGeneration": 1.728892647410626
+  },
+  "scenes": 250000
+}

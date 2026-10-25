@@ -88,8 +88,10 @@ Done 2026-10-20: [specs/003-engine-design-spike/decision-record.md](specs/003-en
       - six distinct failure kinds, and a `MemoryReader` for tests;
       - vocabulary 1.3.0 (Field Mapping, derived measurements).
       Production full read: 177 ms for its 1,215 semantic records, in 8 MB (2026-10-25).
-- [ ] Oxigraph embedded behind an engine-owned interface, its on-disk store on the bundled
-      RocksDB (Oxigraph's default build; never a system RocksDB)
+- [x] Oxigraph embedded behind an engine-owned interface, its on-disk store on the bundled
+      RocksDB (Oxigraph's default build; never a system RocksDB). Done as `engine::graph`
+      (`specs/006-graph-store`): at 250k scenes the open median is 6.3 ms and the query call
+      p95 71.7 ms
 - [ ] Vocabulary from the documents ("The semantic graph is the abstraction boundary" and its
       vocabulary corrections; Milestone 1D): Scene and Image media entities, performers, the six
       flagged tag types plus Variations, reified Role and Action instances, tag categories and
@@ -100,8 +102,10 @@ Done 2026-10-20: [specs/003-engine-design-spike/decision-record.md](specs/003-en
 - [ ] Bounded, flag-filtered discovery (constitution Principle VII)
 - [ ] Incremental build with progress and cancellation; store rebuilt when missing, damaged, or
       from an older format
-- [ ] Store with published snapshot generations, a single writer, and readers of published
-      generations only (constitution Principle IV; decision record rules 1–3)
+- [x] Store with published snapshot generations, a single writer, and readers of published
+      generations only (constitution Principle IV; decision record rules 1–3). Done in
+      `specs/006-graph-store`: 0 partial reads in 16,492 multi-process reads at 250k. A
+      publish there takes about 3.8 s, to measure again for incremental updates
 - [ ] Compatibility fixtures: a plugin-tagged library produces the documented graph
 
 ## Phase 3: Query operations (Milestone 2)

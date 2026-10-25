@@ -44,3 +44,19 @@ pub fn one_second_earlier(stamp: &str) -> Option<String> {
         rem % 60
     ))
 }
+
+/// `t` as UTC RFC 3339 text to the second, for example `2026-10-25T08:30:00Z`.
+pub fn rfc3339_utc(t: std::time::SystemTime) -> String {
+    let secs = t
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs() as i64)
+        .unwrap_or(0);
+    let (y, mo, d) = civil_from_days(secs.div_euclid(86_400));
+    let rem = secs.rem_euclid(86_400);
+    format!(
+        "{y:04}-{mo:02}-{d:02}T{:02}:{:02}:{:02}Z",
+        rem / 3600,
+        rem % 3600 / 60,
+        rem % 60
+    )
+}

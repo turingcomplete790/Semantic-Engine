@@ -1,0 +1,13 @@
+{
+  "command": "open --dir target/graph-bench/1k --runs 50",
+  "result": {
+    "openMs": {
+      "max": 9.073926,
+      "median": 5.51121,
+      "min": 4.649643,
+      "p95": 7.940417,
+      "runs": 50
+    }
+  },
+  "scenes": 1000
+}

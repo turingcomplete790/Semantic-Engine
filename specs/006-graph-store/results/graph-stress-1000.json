@@ -1,0 +1,19 @@
+{
+  "command": "stress --dir target/graph-bench/1k --readers 4 --seconds 20",
+  "result": {
+    "errors": 0,
+    "generationsPublished": 85,
+    "partialReads": 0,
+    "publishMs": {
+      "max": 69.88069,
+      "median": 50.923483,
+      "min": 41.504155000000004,
+      "p95": 60.176173999999996,
+      "runs": 85
+    },
+    "readers": 4,
+    "reads": 7969,
+    "seconds": 20
+  },
+  "scenes": 1000
+}
