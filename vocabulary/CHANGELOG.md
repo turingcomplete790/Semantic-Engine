@@ -4,6 +4,46 @@ Release procedure: bump `sem:version` in `core.ttl`, add the entry here, run
 `vocab-check --write-terms --write-snapshot`, then `vocab-check`. A removed or renamed term, or an
 incompatible domain or range, needs a higher MAJOR; added terms need a higher MINOR (rule V014).
 
+## 1.3.0 (2026-10-24)
+
+Terms for what the library reader reads (`specs/005-stash-adapter`), from the semantic-tagging
+plugin at `2c04141`.
+
+### Additions
+
+- **Field Mapping:** `FieldMappingRule`, with `hasFieldMapping` (Tag to rule), `mapsToField`,
+  `mappingPriority` (lowest wins) and `mappingVariation`. They describe the tag key
+  `fieldMapping` (`{base?: {field, priority}, variations?: {"<variation>": {field, priority}}}`)
+  from `src/ui/field-mapping.js`. Like Label rules, the rule is described in the graph; the field
+  it sets stays the plugin's write.
+- **Mapping:** `map_fieldMapping`.
+- **Item IRIs:** `{tag}/fieldMapping:base`, and `{tag}/fieldMapping:variation:{n}` where `n` is
+  the variation's index in the sorted variation names.
+
+### Deliberate additions (constitution Principle II)
+
+The plugin's code (`src/ui/matrix.js`, `parseMeasurements` and `DERIVED_PERFORMER_FIELDS`)
+derives four values from a performer's `measurements` text that Label field rules and the
+Matrix's filters can name. No design document describes them, so they are added deliberately and
+noted for the plugin (`specs/005-stash-adapter/plugin-notes.md`):
+
+- `bustSize` (`__derived_bust`), `waist` (`__derived_waist`), `hip` (`__derived_hip`) and
+  `waistToHipRatio` (`__derived_whr`), all with status Derived.
+- **Formula, as at `2c04141`:** the text must start with a band number. The cup letters (DD, DDD
+  and DDDD read as E, F and G) and an optional half cup (`½`, `.5` or `1/2`) give a step on the
+  scale AA 0, A 1, A½ 2, B 3, B½ 4, C 5, C½ 6, D 7, D½ 8, E 9, E½ 10, F 11, G 12, H 13 to L 17.
+  Bust Size is band + step × 2.5 + 2 per inch of waist under 28. Waist and hip are the second
+  and third numbers. The ratio is waist ÷ hip rounded to 2 places, when neither is 0.
+- `pluginFieldName`, an annotation linking each property to the plugin's field name, so a
+  `FieldRule` naming `__derived_bust` resolves to `bustSize`.
+- **Mapping:** `map_measurements`, from the native performer field `measurements`.
+
+### Display data, passed through
+
+- `archetypeGraphPosition` (an Archetype's saved Hierarchy-tab position, `{x, y}`) is read and
+  passed to clients next to the Archetype hierarchy. It is not a graph term (spec 005 FR-002a).
+  It was listed under "Excluded on purpose" before.
+
 ## 1.2.0 (2026-10-21)
 
 Relations, role and relation hierarchies, and auto-apply rules
@@ -89,5 +129,5 @@ its working copy as of 2026-10-14.
 |---|---|
 | Semantic Search Matrix, Quick Pairings, Graph Query Preview | UI behaviour, not graph vocabulary |
 | `hasGeneric` | never a predicate; a Generic is a Performer subclass (Deprecated) |
-| `archetypeRecipe`, `archetypeGraphPosition` | plugin application and layout data, not graph vocabulary |
+| `archetypeRecipe` | plugin application data, not graph vocabulary (`archetypeGraphPosition` is passed through as display data since 1.3.0) |
 | `directTraitVariations`, `inheritedVariations`, `inheritedTraitVariations` | caches computed by the plugin |

@@ -91,49 +91,54 @@ pub fn run(stdin: &[u8]) -> (serde_json::Value, String) {
 /// Like `fake_stash`, but each reply is computed from the request body. Connections that send
 /// no request are ignored, so only real requests count toward `count`.
 pub fn fake_stash_fn(count: usize, handler: fn(&str) -> String) -> (u16, mpsc::Receiver<String>) {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::Arc;
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let port = listener.local_addr().unwrap().port();
     let (tx, rx) = mpsc::channel();
+    let served = Arc::new(AtomicUsize::new(0));
     thread::spawn(move || {
-        let mut served = 0;
-        while served < count {
-            let Ok((stream, _)) = listener.accept() else {
-                return;
-            };
-            let mut reader = BufReader::new(stream.try_clone().unwrap());
-            let mut len = 0usize;
-            // A connection the client opened but never used sends nothing; it must not use up
-            // one of the `count` replies.
-            let mut request_line = String::new();
-            if reader.read_line(&mut request_line).unwrap_or(0) == 0 {
-                continue;
-            }
-            served += 1;
-            loop {
-                let mut h = String::new();
-                if reader.read_line(&mut h).unwrap_or(0) == 0 {
-                    break;
+        for stream in listener.incoming() {
+            let Ok(stream) = stream else { return };
+            let (tx, served) = (tx.clone(), served.clone());
+            // Each connection on its own thread: a connection the client opened but never used
+            // must neither block the real request nor use up one of the `count` replies.
+            thread::spawn(move || {
+                let mut reader = BufReader::new(stream.try_clone().unwrap());
+                let mut request_line = String::new();
+                if reader.read_line(&mut request_line).unwrap_or(0) == 0 {
+                    return;
                 }
-                let h = h.trim_end();
-                if h.is_empty() {
-                    break;
+                if served.fetch_add(1, Ordering::SeqCst) >= count {
+                    return; // more requests than the test expects: no reply
                 }
-                if let Some(v) = h.to_ascii_lowercase().strip_prefix("content-length:") {
-                    len = v.trim().parse().unwrap();
+                let mut len = 0usize;
+                loop {
+                    let mut h = String::new();
+                    if reader.read_line(&mut h).unwrap_or(0) == 0 {
+                        break;
+                    }
+                    let h = h.trim_end();
+                    if h.is_empty() {
+                        break;
+                    }
+                    if let Some(v) = h.to_ascii_lowercase().strip_prefix("content-length:") {
+                        len = v.trim().parse().unwrap();
+                    }
                 }
-            }
-            let mut body = vec![0; len];
-            let _ = reader.read_exact(&mut body);
-            let body = String::from_utf8_lossy(&body).to_string();
-            let reply = handler(&body);
-            let mut s = stream;
-            let _ = write!(
-                s,
-                "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
-                reply.len(),
-                reply
-            );
-            let _ = tx.send(body);
+                let mut body = vec![0; len];
+                let _ = reader.read_exact(&mut body);
+                let body = String::from_utf8_lossy(&body).to_string();
+                let reply = handler(&body);
+                let _ = tx.send(body);
+                let mut s = stream;
+                let _ = write!(
+                    s,
+                    "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
+                    reply.len(),
+                    reply
+                );
+            });
         }
     });
     (port, rx)

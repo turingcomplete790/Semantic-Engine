@@ -1,0 +1,22 @@
+{
+  "command": "reader-bench ids --runs 5",
+  "engineCommit": null,
+  "result": {
+    "ids": {
+      "image": 1327,
+      "performer": 1107,
+      "scene": 1021,
+      "tag": 64
+    },
+    "ms": {
+      "max": 107.948852,
+      "median": 102.78125,
+      "min": 89.322676,
+      "p95": 107.948852,
+      "runs": 5
+    }
+  },
+  "server": "http://localhost:9998",
+  "stashVersion": "v0.31.1",
+  "takenAt": 1792915873
+}

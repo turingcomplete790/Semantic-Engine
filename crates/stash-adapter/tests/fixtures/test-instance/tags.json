@@ -1,108 +1,271 @@
 [
   {
-    "custom_fields": {
-      "isTrait": 1
-    },
+    "fields": {},
+    "flags": [
+      "trait"
+    ],
     "id": "9",
     "name": "SSV Test Trait",
-    "parents": []
+    "parents": [],
+    "updated_at": "2026-10-17T13:05:17-06:00"
   },
   {
-    "custom_fields": {
-      "plugtag": 1
-    },
+    "fields": {},
+    "flags": [
+      "pluggable"
+    ],
     "id": "10",
     "name": "SSV Test Pluggable",
-    "parents": []
+    "parents": [],
+    "updated_at": "2026-10-17T13:05:17-06:00"
   },
   {
-    "custom_fields": {
-      "isTrait": 0
+    "fields": {
+      "variantOfTagId": {
+        "value": "9"
+      }
     },
-    "id": "12",
-    "name": "SSV Test Cleared Trait",
-    "parents": []
+    "flags": [],
+    "id": "11",
+    "name": "SSV Test Variant",
+    "parents": [],
+    "updated_at": "2026-10-06T14:25:08-06:00"
   },
   {
-    "custom_fields": {
-      "categories": "[\"Dominant\"]",
-      "isRole": 1
+    "fields": {
+      "categories": {
+        "value": [
+          "Dominant"
+        ]
+      }
     },
+    "flags": [
+      "role"
+    ],
     "id": "19",
     "name": "SE-Test Role Dom",
-    "parents": []
+    "parents": [],
+    "updated_at": "2026-10-15T10:03:47-06:00"
   },
   {
-    "custom_fields": {
-      "categories": "[\"Submissive\"]",
-      "isRole": 1
+    "fields": {
+      "categories": {
+        "value": [
+          "Submissive"
+        ]
+      }
     },
+    "flags": [
+      "role"
+    ],
     "id": "20",
     "name": "SE-Test Role Sub",
-    "parents": []
+    "parents": [],
+    "updated_at": "2026-10-15T10:03:47-06:00"
   },
   {
-    "custom_fields": {
-      "isAction": 1,
-      "variations": "[\"making out\", \"peck\"]"
+    "fields": {
+      "variations": {
+        "value": [
+          "making out",
+          "peck"
+        ]
+      }
     },
+    "flags": [
+      "action"
+    ],
     "id": "21",
     "name": "SE-Test Action Kissing",
-    "parents": []
+    "parents": [],
+    "updated_at": "2026-10-15T10:03:47-06:00"
   },
   {
-    "custom_fields": {
-      "plugtag": 1
-    },
+    "fields": {},
+    "flags": [
+      "pluggable"
+    ],
     "id": "22",
     "name": "SE-Test Pluggable Red Hair",
-    "parents": []
+    "parents": [],
+    "updated_at": "2026-10-15T10:03:47-06:00"
   },
   {
-    "custom_fields": {
-      "categories": "[\"Appearance\"]",
-      "isTrait": 1,
-      "variations": "[\"Copper\", \"Auburn\"]"
+    "fields": {
+      "categories": {
+        "value": [
+          "Appearance"
+        ]
+      },
+      "variations": {
+        "value": [
+          "Copper",
+          "Auburn"
+        ]
+      }
     },
+    "flags": [
+      "trait"
+    ],
     "id": "23",
     "name": "SE-Test Trait Hair Colour",
-    "parents": []
+    "parents": [],
+    "updated_at": "2026-10-15T10:03:47-06:00"
   },
   {
-    "custom_fields": {
-      "categories": "[\"Location\"]",
-      "isMiseEnScene": 1,
-      "variations": "[\"sunset\", \"night\"]"
+    "fields": {
+      "categories": {
+        "value": [
+          "Location"
+        ]
+      },
+      "variations": {
+        "value": [
+          "sunset",
+          "night"
+        ]
+      }
     },
+    "flags": [
+      "miseEnScene"
+    ],
     "id": "24",
     "name": "SE-Test Location Beach",
-    "parents": []
+    "parents": [],
+    "updated_at": "2026-10-15T10:03:47-06:00"
   },
   {
-    "custom_fields": {
-      "isAction": 1,
-      "variantOfTagId": "21"
+    "fields": {
+      "variantOfTagId": {
+        "value": "21"
+      }
     },
+    "flags": [
+      "action"
+    ],
     "id": "25",
     "name": "SE-Test Action Smooching",
-    "parents": []
+    "parents": [],
+    "updated_at": "2026-10-15T10:03:47-06:00"
   },
   {
-    "custom_fields": {
-      "isLabel": 1,
-      "labelFormula": "{\"threshold\": 100, \"traitRules\": [{\"id\": \"r1\", \"tagId\": \"23\", \"tagName\": \"SE-Test Trait Hair Colour\", \"recursive\": false, \"variationMatch\": \"Copper\", \"weight\": 100}], \"fieldRules\": [{\"id\": \"r2\", \"field\": \"gender\", \"modifier\": \"EQUALS\", \"value\": \"FEMALE\", \"weight\": 10}], \"labelRules\": [], \"pluggableRules\": [{\"id\": \"r3\", \"pluggableTagId\": \"22\", \"weight\": 50}]}"
+    "fields": {
+      "labelFormula": {
+        "value": {
+          "fieldRules": [
+            {
+              "field": "gender",
+              "id": "r2",
+              "modifier": "EQUALS",
+              "value": "FEMALE",
+              "weight": 10
+            }
+          ],
+          "labelRules": [],
+          "pluggableRules": [
+            {
+              "id": "r3",
+              "pluggableTagId": "22",
+              "weight": 50
+            }
+          ],
+          "threshold": 100,
+          "traitRules": [
+            {
+              "id": "r1",
+              "recursive": false,
+              "tagId": "23",
+              "tagName": "SE-Test Trait Hair Colour",
+              "variationMatch": "Copper",
+              "weight": 100
+            }
+          ]
+        }
+      }
     },
+    "flags": [
+      "label"
+    ],
     "id": "26",
     "name": "SE-Test Label Redhead",
-    "parents": []
+    "parents": [],
+    "updated_at": "2026-10-15T10:03:47-06:00"
   },
   {
-    "custom_fields": {
-      "isVariation": 1,
-      "variationData": "{\"performerId\": \"7\", \"pluggableTagIds\": [\"22\"], \"traitTagIds\": [\"23\"], \"labelTagIds\": [\"26\"]}"
+    "fields": {
+      "variationData": {
+        "value": {
+          "labelTagIds": [
+            "26"
+          ],
+          "performerId": "7",
+          "pluggableTagIds": [
+            "22"
+          ],
+          "traitTagIds": [
+            "23"
+          ]
+        }
+      }
     },
+    "flags": [
+      "variation"
+    ],
     "id": "27",
     "name": "SE-Test Performer A (Redhead)",
-    "parents": []
+    "parents": [],
+    "updated_at": "2026-10-15T10:03:47-06:00"
+  },
+  {
+    "fields": {},
+    "flags": [
+      "action"
+    ],
+    "id": "193",
+    "name": "RecFix Action",
+    "parents": [],
+    "updated_at": "2026-10-24T10:27:55-06:00"
+  },
+  {
+    "fields": {
+      "variantOfTagId": {
+        "value": "193"
+      }
+    },
+    "flags": [],
+    "id": "194",
+    "name": "RecFix Raw Variant",
+    "parents": [],
+    "updated_at": "2026-10-24T10:27:55-06:00"
+  },
+  {
+    "fields": {},
+    "flags": [
+      "pluggable"
+    ],
+    "id": "195",
+    "name": "RecFix Pluggable",
+    "parents": [],
+    "updated_at": "2026-10-24T10:28:07-06:00"
+  },
+  {
+    "fields": {},
+    "flags": [
+      "role"
+    ],
+    "id": "196",
+    "name": "RecFix Role",
+    "parents": [],
+    "updated_at": "2026-10-24T10:27:55-06:00"
+  },
+  {
+    "fields": {},
+    "flags": [
+      "miseEnScene"
+    ],
+    "id": "197",
+    "name": "RecFix MES",
+    "parents": [],
+    "updated_at": "2026-10-24T10:27:55-06:00"
   }
 ]

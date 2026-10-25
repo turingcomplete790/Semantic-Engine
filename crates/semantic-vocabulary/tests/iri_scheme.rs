@@ -1,4 +1,4 @@
-use semantic_vocabulary::iri::{IriError, ItemIris};
+use semantic_vocabulary::iri::{FieldMappingSlot, IriError, ItemIris};
 
 const SERVER: &str = "00000000-0000-4000-8000-000000000001";
 
@@ -79,4 +79,19 @@ fn relation_iris_match_the_scheme() {
     );
     let r = i.tag("45");
     assert_eq!(i.relation_rule(&r, "r1"), format!("{r}/rule:r1"));
+}
+
+#[test]
+fn field_mapping_iris_match_the_scheme() {
+    let i = iris();
+    let t = i.tag("3");
+    assert_eq!(
+        i.field_mapping(&t, FieldMappingSlot::Base),
+        format!("{t}/fieldMapping:base")
+    );
+    // A variation slot is named by its index in the sorted variation names (free text).
+    assert_eq!(
+        i.field_mapping(&t, FieldMappingSlot::Variation(2)),
+        format!("{t}/fieldMapping:variation:2")
+    );
 }

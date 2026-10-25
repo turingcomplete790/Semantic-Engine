@@ -80,9 +80,14 @@ Done 2026-10-20: [specs/003-engine-design-spike/decision-record.md](specs/003-en
 - [x] Relations, role and relation hierarchies, and auto-apply on save, with vocabulary 1.2.0
       and contract 1.1.0 (`specs/004-relations-role-hierarchy`): the save hook records changes and
       a background job applies them; "Re-apply relations" for definition changes
-- [ ] Stash adapter crate: the one place that talks to Stash, using the Cynic GraphQL library
+- [x] Stash adapter crate: the one place that talks to Stash, using the Cynic GraphQL library
       with typed operations generated against a pinned copy of Stash's schema (constitution
-      v1.1.0, Technology & Platform Constraints)
+      v1.1.0, Technology & Platform Constraints). Done as the library reader
+      (`specs/005-stash-adapter`):
+      - a full read with progress and stopping, change reads, and id listings;
+      - six distinct failure kinds, and a `MemoryReader` for tests;
+      - vocabulary 1.3.0 (Field Mapping, derived measurements).
+      Production full read: 177 ms for its 1,215 semantic records, in 8 MB (2026-10-25).
 - [ ] Oxigraph embedded behind an engine-owned interface, its on-disk store on the bundled
       RocksDB (Oxigraph's default build; never a system RocksDB)
 - [ ] Vocabulary from the documents ("The semantic graph is the abstraction boundary" and its
@@ -135,7 +140,10 @@ query it; without it they say clearly that it is missing (constitution Principle
 **Goal:** the documents' query language beyond `SELECT`. Each item extends the one engine.
 
 - [ ] Boolean logic and more SPARQL constructs ("Query Features: Phase 2 and 3")
-- [ ] Label evaluation and "why does this performer have this Label?" explanations
+- [ ] Label evaluation and "why does this performer have this Label?" explanations. The
+      derived measurement fields that field rules can name are already read (005 FR-002b). Still
+      to come: a bounded "performer ids matching this criterion" read for the other field rules,
+      which Stash's own filter resolves (005 research R2).
 - [ ] Archetype inheritance as queries
 - [ ] `CONSTRUCT`: preview derived facts, apply derived tags through Stash GraphQL, record
       provenance

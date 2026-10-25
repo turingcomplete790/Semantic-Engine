@@ -92,14 +92,10 @@ pub struct Definitions {
 }
 
 /// True when a type flag is set: `1` or `true`, as a value or as text (the plugin's own rule,
-/// for example `isActionTagValue` in its `actions.js`).
+/// for example `isActionTagValue` in its `actions.js`). The rule lives in the reader (spec 005).
 pub fn flag_set(cf: &Map<String, Value>, flag: &str) -> bool {
-    match cf.get(flag) {
-        Some(Value::Number(n)) => n.as_i64() == Some(1),
-        Some(Value::String(s)) => matches!(s.trim(), "1" | "true"),
-        Some(Value::Bool(b)) => *b,
-        _ => false,
-    }
+    cf.get(flag)
+        .is_some_and(stash_adapter::reader::field::flag_set)
 }
 
 /// A JSON field: a JSON-encoded string, or the JSON value itself. `None` when absent or not

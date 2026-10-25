@@ -1,13 +1,15 @@
-//! Captures read-only test fixtures of a library's semantic data (spec 002 FR-015).
+//! Captures read-only test fixtures of a library's semantic data (spec 002 FR-015, spec 005
+//! FR-025), through the library reader.
 //!
 //! usage: STASH_URL=http://localhost:9999 STASH_API_KEY=... fixture-capture --out DIR
 //!
-//! Writes tags.json, performers.json, scenes.json, images.json (each a list ordered by id), and
-//! index.json (the queries run, counts, empty sections). Only read queries are sent, and no
-//! credential is ever written or printed.
+//! Writes `library-read.json` (a full `LibraryRead`, which `MemoryReader::from_file` loads), the
+//! same records split into tags.json, performers.json, scenes.json and images.json (each a list
+//! ordered by id), and index.json (counts, empty sections, where the read started, requests).
+//! Only the reader's read requests are sent, and no credential is ever written or printed.
 
 use serde_json::{json, Value};
-use std::collections::BTreeMap;
+use stash_adapter::reader::LibraryReader;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
@@ -45,39 +47,35 @@ fn main() -> ExitCode {
         Err(e) => return fail(&scrub(&e.to_string(), &key)),
     };
     // Capture everything before writing anything, so a failure leaves no partial fixtures.
-    let capture = match client.capture_semantic_fixtures() {
-        Ok(c) => c,
+    let read = match client.full_read(&|| false, &mut |_| {}) {
+        Ok(r) => r,
         Err(e) => return fail(&scrub(&e.to_string(), &key)),
     };
 
-    let sections: [(&str, &BTreeMap<String, Value>); 4] = [
-        ("tags", &capture.tags),
-        ("performers", &capture.performers),
-        ("scenes", &capture.scenes),
-        ("images", &capture.images),
+    let sections: [(&str, Value); 4] = [
+        ("tags", json!(read.tags)),
+        ("performers", json!(read.performers)),
+        ("scenes", json!(read.scenes)),
+        ("images", json!(read.images)),
     ];
-    let mut files: Vec<(String, String)> = Vec::new();
+    let mut files: Vec<(String, String)> = vec![("library-read.json".into(), pretty(&json!(read)))];
     let mut counts = serde_json::Map::new();
     let mut empty = Vec::new();
-    for (name, map) in sections {
-        let mut rows: Vec<&Value> = map.values().collect();
-        rows.sort_by_key(|v| {
-            v["id"]
-                .as_str()
-                .and_then(|s| s.parse::<u64>().ok())
-                .unwrap_or(0)
-        });
-        counts.insert(name.to_string(), json!(rows.len()));
-        if rows.is_empty() {
+    for (name, rows) in sections {
+        let n = rows.as_array().map_or(0, Vec::len);
+        counts.insert(name.to_string(), json!(n));
+        if n == 0 {
             empty.push(name);
         }
-        files.push((format!("{name}.json"), pretty(&json!(rows))));
+        files.push((format!("{name}.json"), pretty(&rows)));
     }
     let index = json!({
-        "source": "fixture-capture (read-only queries; no credentials recorded)",
+        "source": "fixture-capture through the library reader (read-only; no credentials recorded)",
         "counts": counts,
         "empty": empty,
-        "queries": capture.queries,
+        "start": read.start,
+        "missing": read.missing,
+        "requests": read.requests,
     });
     files.push(("index.json".to_string(), pretty(&index)));
 

@@ -103,3 +103,36 @@ fn unreachable_stash_is_reported() {
     ));
     assert_eq!(env["error"]["code"], "STASH_UNREACHABLE");
 }
+
+#[test]
+fn each_adapter_failure_maps_to_a_contract_code() {
+    use engine::ErrorCode;
+    use plugin::relations::stash_error;
+    use stash_adapter::Error as E;
+    let cases = [
+        (
+            E::Unreachable("refused".into()),
+            ErrorCode::StashUnreachable,
+        ),
+        (E::TimedOut("60 s".into()), ErrorCode::StashUnreachable),
+        (
+            E::UnsupportedVersion {
+                found: "v0.30.0".into(),
+                minimum: "v0.31.1".into(),
+            },
+            ErrorCode::StashTooOld,
+        ),
+        (E::NotAuthorized, ErrorCode::Internal),
+        (E::Graphql("bad".into()), ErrorCode::Internal),
+        (
+            E::UnexpectedResponse("HTTP 418".into()),
+            ErrorCode::Internal,
+        ),
+        (E::Setup("tls".into()), ErrorCode::Internal),
+        (E::Stopped, ErrorCode::Internal),
+    ];
+    for (e, code) in cases {
+        assert_eq!(stash_error(&e), code, "{e}");
+        assert!(!e.to_string().is_empty(), "the message names the kind");
+    }
+}

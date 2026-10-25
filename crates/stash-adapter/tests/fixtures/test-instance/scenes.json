@@ -1,22 +1,140 @@
 [
   {
-    "custom_fields": {
-      "actionAssignments": "{\"7\": [{\"actionTagId\": \"21\", \"variations\": [\"making out\"]}], \"8\": [{\"actionTagId\": \"21\", \"variations\": []}]}",
-      "actionPairings": "[{\"a\": {\"performer\": \"7\", \"actionTagId\": \"21\"}, \"b\": {\"performer\": \"8\", \"actionTagId\": \"21\"}, \"direction\": \"bidirectional\", \"pairingId\": \"se-pair-1\"}]",
-      "pluggableAssignments": "{\"7\": [\"22\"]}",
-      "roleTagAssignments": "{\"7\": [\"19\"], \"8\": [\"20\"]}",
-      "roleTagPairings": "[{\"a\": {\"performer\": \"7\", \"roleTagId\": \"19\"}, \"b\": {\"performer\": \"8\", \"roleTagId\": \"20\"}, \"pairingId\": \"se-pair-2\"}]",
-      "timeline": "[{\"id\": \"se-stage-1\", \"type\": \"stage\", \"miseEnScenePicks\": [{\"tagId\": \"24\", \"tagName\": \"SE-Test Location Beach\", \"variation\": \"sunset\"}]}, {\"id\": \"se-slot-1\", \"ref\": {\"kind\": \"action-instance\", \"performerId\": \"7\", \"actionTagId\": \"21\"}, \"seconds\": 30}, {\"id\": \"se-slot-2\", \"ref\": {\"kind\": \"role-instance\", \"performerId\": \"8\", \"roleTagId\": \"20\"}, \"seconds\": 45}, {\"id\": \"se-stage-2\", \"type\": \"stage\", \"miseEnScenePicks\": [{\"tagId\": \"24\", \"tagName\": \"SE-Test Location Beach\", \"variation\": \"night\"}]}, {\"id\": \"se-slot-3\", \"ref\": {\"kind\": \"action-pairing\", \"pairingId\": \"se-pair-1\"}, \"seconds\": 90}]"
+    "fields": {
+      "actionAssignments": {
+        "value": {
+          "7": [
+            {
+              "actionTagId": "21",
+              "variations": [
+                "making out"
+              ]
+            }
+          ],
+          "8": [
+            {
+              "actionTagId": "21",
+              "variations": []
+            }
+          ]
+        }
+      },
+      "actionPairings": {
+        "value": [
+          {
+            "a": {
+              "actionTagId": "21",
+              "performer": "7"
+            },
+            "b": {
+              "actionTagId": "21",
+              "performer": "8"
+            },
+            "direction": "bidirectional",
+            "pairingId": "se-pair-1"
+          }
+        ]
+      },
+      "pluggableAssignments": {
+        "value": {
+          "7": [
+            "22"
+          ]
+        }
+      },
+      "roleTagAssignments": {
+        "value": {
+          "7": [
+            "19"
+          ],
+          "8": [
+            "20"
+          ]
+        }
+      },
+      "roleTagPairings": {
+        "value": [
+          {
+            "a": {
+              "performer": "7",
+              "roleTagId": "19"
+            },
+            "b": {
+              "performer": "8",
+              "roleTagId": "20"
+            },
+            "pairingId": "se-pair-2"
+          }
+        ]
+      },
+      "timeline": {
+        "value": [
+          {
+            "id": "se-stage-1",
+            "miseEnScenePicks": [
+              {
+                "tagId": "24",
+                "tagName": "SE-Test Location Beach",
+                "variation": "sunset"
+              }
+            ],
+            "type": "stage"
+          },
+          {
+            "id": "se-slot-1",
+            "ref": {
+              "actionTagId": "21",
+              "kind": "action-instance",
+              "performerId": "7"
+            },
+            "seconds": 30
+          },
+          {
+            "id": "se-slot-2",
+            "ref": {
+              "kind": "role-instance",
+              "performerId": "8",
+              "roleTagId": "20"
+            },
+            "seconds": 45
+          },
+          {
+            "id": "se-stage-2",
+            "miseEnScenePicks": [
+              {
+                "tagId": "24",
+                "tagName": "SE-Test Location Beach",
+                "variation": "night"
+              }
+            ],
+            "type": "stage"
+          },
+          {
+            "id": "se-slot-3",
+            "ref": {
+              "kind": "action-pairing",
+              "pairingId": "se-pair-1"
+            },
+            "seconds": 90
+          }
+        ]
+      }
     },
     "id": "2",
+    "kind": "scene",
     "performers": [
-      {
-        "id": "7"
-      },
-      {
-        "id": "8"
-      }
+      "7",
+      "8",
+      "581",
+      "796",
+      "1034"
     ],
-    "title": ""
+    "tags": [
+      "194",
+      "195",
+      "196",
+      "197"
+    ],
+    "updated_at": "2026-10-24T10:27:55-06:00"
   }
 ]

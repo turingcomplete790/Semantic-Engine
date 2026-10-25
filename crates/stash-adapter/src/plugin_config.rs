@@ -51,7 +51,7 @@ impl Client {
         let op = PluginSettingsQuery::build(PluginSettingsVars {
             include: Some(vec![cynic::Id::new(plugin_id)]),
         });
-        let all = as_map(self.run(op)?.configuration.plugins.0);
+        let all = as_map(self.run_read(op)?.configuration.plugins.0);
         Ok(all.get(plugin_id).cloned().map(as_map).unwrap_or_default())
     }
 

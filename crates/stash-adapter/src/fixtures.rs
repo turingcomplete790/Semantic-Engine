@@ -49,7 +49,7 @@ pub enum CriterionModifier {
     NotBetween,
 }
 
-#[derive(cynic::InputObject, Debug)]
+#[derive(cynic::InputObject, Debug, Clone)]
 #[cynic(graphql_type = "CustomFieldCriterionInput")]
 pub struct CustomFieldCriterion {
     pub field: String,
@@ -254,7 +254,7 @@ impl Client {
 
         for flag in TAG_FLAGS {
             let rows = self
-                .run(TagsQuery::build(TagsVars {
+                .run_read(TagsQuery::build(TagsVars {
                     filter: Some(TagFilter {
                         custom_fields: Some(not_null(flag)),
                     }),
@@ -273,7 +273,7 @@ impl Client {
         let mut performer_ids: Vec<cynic::Id> = Vec::new();
         for key in MEDIA_KEYS {
             let scenes = self
-                .run(ScenesQuery::build(ScenesVars {
+                .run_read(ScenesQuery::build(ScenesVars {
                     filter: Some(SceneFilter {
                         custom_fields: Some(not_null(key)),
                     }),
@@ -289,7 +289,7 @@ impl Client {
                 add(&mut c.scenes, &s.id, s);
             }
             let images = self
-                .run(ImagesQuery::build(ImagesVars {
+                .run_read(ImagesQuery::build(ImagesVars {
                     filter: Some(ImageFilter {
                         custom_fields: Some(not_null(key)),
                     }),
@@ -308,7 +308,7 @@ impl Client {
 
         for flag in PERFORMER_FLAGS {
             let rows = self
-                .run(PerformersQuery::build(PerformersVars {
+                .run_read(PerformersQuery::build(PerformersVars {
                     filter: Some(PerformerFilter {
                         custom_fields: Some(not_null(flag)),
                     }),
@@ -331,7 +331,7 @@ impl Client {
         if !performer_ids.is_empty() {
             let n = performer_ids.len();
             let rows = self
-                .run(PerformersQuery::build(PerformersVars {
+                .run_read(PerformersQuery::build(PerformersVars {
                     filter: None,
                     ids: Some(performer_ids),
                 }))?

@@ -1,30 +1,14 @@
-//! T038 / FR-015 / SC-006: the fixture tool only reads, writes the expected files, reports empty
-//! sections, and never writes a credential.
+//! T038 / FR-015 / SC-006 (spec 002) and spec 005 FR-025: the fixture tool captures through the
+//! library reader, only reads, writes the expected files, and never writes a credential.
 
 mod common;
 use std::process::Command;
 
 const KEY: &str = "secret-api-key-123";
 
-fn reply(body: &str) -> String {
-    let v: serde_json::Value = serde_json::from_str(body).unwrap();
-    let q = v["query"].as_str().unwrap();
-    if q.contains("findTags") {
-        r#"{"data":{"findTags":{"count":1,"tags":[{"id":"19","name":"Role Dom","parents":[],"custom_fields":{"isRole":1}}]}}}"#.into()
-    } else if q.contains("findScenes") {
-        r#"{"data":{"findScenes":{"count":1,"scenes":[{"id":"2","title":"S","performers":[{"id":"7"}],"custom_fields":{"timeline":"[]"}}]}}}"#.into()
-    } else if q.contains("findImages") {
-        r#"{"data":{"findImages":{"count":0,"images":[]}}}"#.into()
-    } else if q.contains("findPerformers") {
-        r#"{"data":{"findPerformers":{"count":1,"performers":[{"id":"7","name":"P","tags":[],"custom_fields":{}}]}}}"#.into()
-    } else {
-        r#"{"errors":[{"message":"unexpected query"}]}"#.into()
-    }
-}
-
 #[test]
 fn captures_read_only_without_credentials() {
-    let (port, rx) = common::fake_stash(200, reply);
+    let (port, rx) = common::serve(common::library_handler(common::library("library.json")));
     let out_dir = std::env::temp_dir().join(format!("se-fixtures-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&out_dir);
     let out = Command::new(env!("CARGO_BIN_EXE_fixture-capture"))
@@ -53,11 +37,23 @@ fn captures_read_only_without_credentials() {
             .to_string();
         assert!(q.starts_with("query"), "non-query operation sent: {q}");
         assert!(!q.contains("mutation"), "{q}");
-        // Every entity query is bounded by a custom_fields filter or explicit ids.
-        assert!(q.contains("custom_fields"), "{q}");
+        // Every query is bounded: the version, a newest-first single row, a "key is not
+        // null" filter, a tag or measurements criterion, or explicit ids.
+        let v: serde_json::Value = serde_json::from_str(b).unwrap();
+        let vars = v["variables"].as_object().cloned().unwrap_or_default();
+        let bounded = q.contains("version")
+            || q.contains("per_page: 1,")
+            || vars.values().any(|x| {
+                x.is_array()
+                    || x["custom_fields"][0]["modifier"] == "NOT_NULL"
+                    || x["tags"]["modifier"] == "INCLUDES"
+                    || x["measurements"]["modifier"] == "NOT_NULL"
+            });
+        assert!(bounded, "unbounded query: {b}");
     }
 
     for f in [
+        "library-read.json",
         "tags.json",
         "performers.json",
         "scenes.json",
@@ -76,16 +72,15 @@ fn captures_read_only_without_credentials() {
     let index: serde_json::Value =
         serde_json::from_str(&std::fs::read_to_string(out_dir.join("index.json")).unwrap())
             .unwrap();
-    assert_eq!(index["counts"]["tags"], 1);
-    assert_eq!(index["counts"]["scenes"], 1);
-    assert_eq!(index["counts"]["performers"], 1);
-    assert_eq!(index["counts"]["images"], 0);
-    assert!(index["empty"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .any(|e| e == "images"));
-    assert!(index["queries"].as_array().unwrap().len() >= 4);
+    assert_eq!(index["counts"]["tags"], 6);
+    assert_eq!(index["counts"]["scenes"], 3);
+    assert_eq!(index["counts"]["images"], 2);
+    let read = stash_adapter::reader::MemoryReader::from_file(&out_dir.join("library-read.json"));
+    assert!(read.is_ok(), "library-read.json loads into MemoryReader");
+    assert_eq!(index["counts"]["performers"], 4);
+    assert_eq!(index["empty"], serde_json::json!([]));
+    assert!(index["requests"].as_u64().unwrap() >= 30);
+    assert_eq!(index["start"]["scene"], "2026-10-24T10:27:55-06:00");
     std::fs::remove_dir_all(&out_dir).unwrap();
 }
 

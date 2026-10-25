@@ -1,0 +1,660 @@
+{
+  "terms": {
+    "Action": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "ActionInstance": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "ActionPairing": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Archetype": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "FieldMappingRule": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "FieldRule": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Generic": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Image": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Label": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "LabelDependencyRule": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "LabelRule": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Look": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Mapping": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Marker": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "MediaEntity": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "MediaScoped": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "MiseEnScene": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "MiseEnSceneInstance": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Pairing": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Performer": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Placeable": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Pluggable": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "PluggableInstance": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "PluggableRule": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Relation": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "RelationInstance": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "RelationRule": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "RetiredField": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Role": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "RoleInstance": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "RolePairing": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Scene": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Scope": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Slot": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Stage": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "StagePick": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Status": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Tag": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "TagAssignment": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "TagReference": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Timeline": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "TimelineEntry": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Trait": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "TraitRule": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "Variation": {
+      "domain": "",
+      "kind": "class",
+      "range": ""
+    },
+    "allowedValues": {
+      "domain": "sem:Mapping",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "appliedAutomatically": {
+      "domain": "sem:RelationInstance",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#boolean"
+    },
+    "appliedByRule": {
+      "domain": "sem:RelationInstance",
+      "kind": "property",
+      "range": "sem:RelationRule"
+    },
+    "atEndA": {
+      "domain": "sem:RelationInstance",
+      "kind": "property",
+      "range": "sem:Performer"
+    },
+    "atEndB": {
+      "domain": "sem:RelationInstance",
+      "kind": "property",
+      "range": "sem:Performer"
+    },
+    "atTime": {
+      "domain": "sem:TagAssignment",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#decimal"
+    },
+    "broaderRelation": {
+      "domain": "sem:Relation",
+      "kind": "property",
+      "range": "sem:Relation"
+    },
+    "broaderRole": {
+      "domain": "sem:Role",
+      "kind": "property",
+      "range": "sem:Role"
+    },
+    "bustSize": {
+      "domain": "sem:Performer",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#decimal"
+    },
+    "endALabel": {
+      "domain": "sem:RelationRule",
+      "kind": "property",
+      "range": "sem:Label"
+    },
+    "endARole": {
+      "domain": "sem:Relation",
+      "kind": "property",
+      "range": "sem:Role"
+    },
+    "endARoleCondition": {
+      "domain": "sem:RelationRule",
+      "kind": "property",
+      "range": "sem:Role"
+    },
+    "endBLabel": {
+      "domain": "sem:RelationRule",
+      "kind": "property",
+      "range": "sem:Label"
+    },
+    "endBRole": {
+      "domain": "sem:Relation",
+      "kind": "property",
+      "range": "sem:Role"
+    },
+    "endBRoleCondition": {
+      "domain": "sem:RelationRule",
+      "kind": "property",
+      "range": "sem:Role"
+    },
+    "entryId": {
+      "domain": "sem:TimelineEntry",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "forPerformer": {
+      "domain": "sem:TagAssignment",
+      "kind": "property",
+      "range": "sem:Performer"
+    },
+    "fromEntity": {
+      "domain": "sem:Mapping",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "fromField": {
+      "domain": "sem:Mapping",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "fromPick": {
+      "domain": "sem:MiseEnSceneInstance",
+      "kind": "property",
+      "range": "sem:StagePick"
+    },
+    "hasAction": {
+      "domain": "sem:Performer",
+      "kind": "property",
+      "range": "sem:ActionInstance"
+    },
+    "hasArchetype": {
+      "domain": "sem:Performer",
+      "kind": "property",
+      "range": "sem:Archetype"
+    },
+    "hasAssignment": {
+      "domain": "sem:Performer",
+      "kind": "property",
+      "range": "sem:TagAssignment"
+    },
+    "hasCategory": {
+      "domain": "sem:Tag",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "hasEntry": {
+      "domain": "sem:Timeline",
+      "kind": "property",
+      "range": "sem:TimelineEntry"
+    },
+    "hasField": {
+      "domain": "sem:FieldRule",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "hasFieldMapping": {
+      "domain": "sem:Tag",
+      "kind": "property",
+      "range": "sem:FieldMappingRule"
+    },
+    "hasLabel": {
+      "domain": "sem:Performer",
+      "kind": "property",
+      "range": "sem:Label"
+    },
+    "hasLook": {
+      "domain": "sem:Performer",
+      "kind": "property",
+      "range": "sem:Look"
+    },
+    "hasMiseEnScene": {
+      "domain": "sem:MediaEntity",
+      "kind": "property",
+      "range": "sem:MiseEnSceneInstance"
+    },
+    "hasModifier": {
+      "domain": "sem:FieldRule",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "hasPerformer": {
+      "domain": "sem:MediaEntity",
+      "kind": "property",
+      "range": "sem:Performer"
+    },
+    "hasPerformerVariation": {
+      "domain": "sem:Performer",
+      "kind": "property",
+      "range": "sem:Variation"
+    },
+    "hasPick": {
+      "domain": "sem:Stage",
+      "kind": "property",
+      "range": "sem:StagePick"
+    },
+    "hasPluggable": {
+      "domain": "sem:Performer",
+      "kind": "property",
+      "range": "sem:PluggableInstance"
+    },
+    "hasRelationRule": {
+      "domain": "sem:Relation",
+      "kind": "property",
+      "range": "sem:RelationRule"
+    },
+    "hasRole": {
+      "domain": "sem:Performer",
+      "kind": "property",
+      "range": "sem:RoleInstance"
+    },
+    "hasRule": {
+      "domain": "sem:Label",
+      "kind": "property",
+      "range": "sem:LabelRule"
+    },
+    "hasTag": {
+      "domain": "sem:MediaEntity",
+      "kind": "property",
+      "range": "sem:Tag"
+    },
+    "hasTagVariation": {
+      "domain": "sem:Tag",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "hasThreshold": {
+      "domain": "sem:Label",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#decimal"
+    },
+    "hasTimeline": {
+      "domain": "sem:MediaEntity",
+      "kind": "property",
+      "range": "sem:Timeline"
+    },
+    "hasTrait": {
+      "domain": "sem:Performer",
+      "kind": "property",
+      "range": "sem:Trait"
+    },
+    "hasValue": {
+      "domain": "sem:FieldRule",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "hasValue2": {
+      "domain": "sem:FieldRule",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "hasVariation": {
+      "domain": "sem:TagReference",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "hasVariationLabel": {
+      "domain": "sem:Variation",
+      "kind": "property",
+      "range": "sem:Label"
+    },
+    "hasVariationPluggable": {
+      "domain": "sem:Variation",
+      "kind": "property",
+      "range": "sem:Pluggable"
+    },
+    "hasWeight": {
+      "domain": "sem:LabelRule",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#decimal"
+    },
+    "hip": {
+      "domain": "sem:Performer",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "inMedia": {
+      "domain": "sem:MediaScoped",
+      "kind": "property",
+      "range": "sem:MediaEntity"
+    },
+    "inStage": {
+      "domain": "sem:Slot",
+      "kind": "property",
+      "range": "sem:Stage"
+    },
+    "isRecursive": {
+      "domain": "sem:TraitRule",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#boolean"
+    },
+    "linkedMarker": {
+      "domain": "sem:Slot",
+      "kind": "property",
+      "range": "sem:Marker"
+    },
+    "linkingAction": {
+      "domain": "sem:RelationRule",
+      "kind": "property",
+      "range": "sem:Action"
+    },
+    "mappingPriority": {
+      "domain": "sem:FieldMappingRule",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "mappingVariation": {
+      "domain": "sem:FieldMappingRule",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "mapsToField": {
+      "domain": "sem:FieldMappingRule",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "ofRelation": {
+      "domain": "sem:RelationInstance",
+      "kind": "property",
+      "range": "sem:Relation"
+    },
+    "ofTag": {
+      "domain": "sem:TagReference",
+      "kind": "property",
+      "range": "sem:Tag"
+    },
+    "pairingDirection": {
+      "domain": "sem:Pairing",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "pairingId": {
+      "domain": "sem:Pairing",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "pairs": {
+      "domain": "sem:Pairing",
+      "kind": "property",
+      "range": "sem:TagAssignment"
+    },
+    "parentArchetype": {
+      "domain": "sem:Archetype",
+      "kind": "property",
+      "range": "sem:Archetype"
+    },
+    "parentTag": {
+      "domain": "sem:Tag",
+      "kind": "property",
+      "range": "sem:Tag"
+    },
+    "places": {
+      "domain": "sem:Slot",
+      "kind": "property",
+      "range": "sem:Placeable"
+    },
+    "pluginFieldName": {
+      "domain": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "position": {
+      "domain": "sem:TimelineEntry",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+    },
+    "produces": {
+      "domain": "sem:Mapping",
+      "kind": "property",
+      "range": "http://www.w3.org/2000/01/rdf-schema#Resource"
+    },
+    "references": {
+      "domain": "http://www.w3.org/2000/01/rdf-schema#Class",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "relationRuleId": {
+      "domain": "sem:RelationRule",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "replacedBy": {
+      "domain": "http://www.w3.org/2000/01/rdf-schema#Resource",
+      "kind": "property",
+      "range": "http://www.w3.org/2000/01/rdf-schema#Resource"
+    },
+    "retiredNote": {
+      "domain": "http://www.w3.org/2000/01/rdf-schema#Resource",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "ruleId": {
+      "domain": "sem:LabelRule",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "scope": {
+      "domain": "http://www.w3.org/2000/01/rdf-schema#Resource",
+      "kind": "property",
+      "range": "sem:Scope"
+    },
+    "serverIdentifier": {
+      "domain": "http://www.w3.org/2000/01/rdf-schema#Resource",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "since": {
+      "domain": "http://www.w3.org/2000/01/rdf-schema#Resource",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "slotSeconds": {
+      "domain": "sem:Slot",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#decimal"
+    },
+    "source": {
+      "domain": "http://www.w3.org/2000/01/rdf-schema#Resource",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "sourceRevision": {
+      "domain": "http://www.w3.org/2000/01/rdf-schema#Resource",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "status": {
+      "domain": "http://www.w3.org/2000/01/rdf-schema#Resource",
+      "kind": "property",
+      "range": "sem:Status"
+    },
+    "variantOfTag": {
+      "domain": "sem:Tag",
+      "kind": "property",
+      "range": "sem:Tag"
+    },
+    "variationOf": {
+      "domain": "sem:Variation",
+      "kind": "property",
+      "range": "sem:Performer"
+    },
+    "version": {
+      "domain": "http://www.w3.org/2000/01/rdf-schema#Resource",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "waist": {
+      "domain": "sem:Performer",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#integer"
+    },
+    "waistToHipRatio": {
+      "domain": "sem:Performer",
+      "kind": "property",
+      "range": "http://www.w3.org/2001/XMLSchema#decimal"
+    }
+  },
+  "version": "1.3.0"
+}

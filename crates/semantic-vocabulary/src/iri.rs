@@ -141,4 +141,21 @@ impl ItemIris {
     pub fn relation_rule(&self, relation: &str, rule_id: &str) -> String {
         format!("{relation}/rule:{}", check_id(rule_id).expect("valid"))
     }
+    /// One Field Mapping slot of a Trait, Label or Variation tag (since 1.3.0).
+    pub fn field_mapping(&self, tag: &str, slot: FieldMappingSlot) -> String {
+        match slot {
+            FieldMappingSlot::Base => format!("{tag}/fieldMapping:base"),
+            FieldMappingSlot::Variation(n) => format!("{tag}/fieldMapping:variation:{n}"),
+        }
+    }
+}
+
+/// Which Field Mapping slot of a tag an IRI names (since 1.3.0).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FieldMappingSlot {
+    /// The tag's own slot.
+    Base,
+    /// A Trait's slot for one declared variation, by the variation's index in the sorted
+    /// variation names: names are free text and not valid IRI ids.
+    Variation(usize),
 }

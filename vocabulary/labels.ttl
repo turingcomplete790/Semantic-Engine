@@ -150,3 +150,57 @@ sem:hasValue2 a rdf:Property ;
     sem:scope sem:Global ;
     sem:status sem:Active ;
     sem:since "1.0.0" .
+
+# Field Mapping (vocabulary 1.3.0, spec 005)
+
+sem:FieldMappingRule a rdfs:Class ;
+    rdfs:label "Field Mapping rule"@en ;
+    rdfs:comment "One Field Mapping slot of a Trait, Label or Variation tag: a performer who carries the tag (and, for a Trait, optionally one of its declared variations) gets a native performer field set to the tag's name. The plugin applies it; the graph only describes it." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Field Mapping); src/ui/field-mapping.js" ;
+    sem:sourceRevision "2c04141, read 2026-10-24" ;
+    sem:status sem:Active ;
+    sem:since "1.3.0" .
+
+sem:hasFieldMapping a rdf:Property ;
+    rdfs:domain sem:Tag ;
+    rdfs:range sem:FieldMappingRule ;
+    rdfs:label "has field mapping"@en ;
+    rdfs:comment "One of the tag's Field Mapping slots." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Field Mapping); src/ui/field-mapping.js" ;
+    sem:sourceRevision "2c04141, read 2026-10-24" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.3.0" .
+
+sem:mapsToField a rdf:Property ;
+    rdfs:domain sem:FieldMappingRule ;
+    rdfs:range xsd:string ;
+    rdfs:label "maps to field"@en ;
+    rdfs:comment "The native performer field the slot sets, for example hair_color." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Field Mapping); src/ui/field-mapping.js" ;
+    sem:sourceRevision "2c04141, read 2026-10-24" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.3.0" .
+
+sem:mappingPriority a rdf:Property ;
+    rdfs:domain sem:FieldMappingRule ;
+    rdfs:range xsd:integer ;
+    rdfs:label "mapping priority"@en ;
+    rdfs:comment "When several slots set the same field for one performer, the lowest number wins." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Field Mapping); src/ui/field-mapping.js" ;
+    sem:sourceRevision "2c04141, read 2026-10-24" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.3.0" .
+
+sem:mappingVariation a rdf:Property ;
+    rdfs:domain sem:FieldMappingRule ;
+    rdfs:range xsd:string ;
+    rdfs:label "mapping variation"@en ;
+    rdfs:comment "For a Trait's variation slot: the declared variation it applies to. Absent for the base slot." ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Field Mapping); src/ui/field-mapping.js" ;
+    sem:sourceRevision "2c04141, read 2026-10-24" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.3.0" .

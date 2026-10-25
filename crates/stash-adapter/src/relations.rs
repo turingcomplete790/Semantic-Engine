@@ -31,9 +31,7 @@ pub struct TagRecord {
     pub custom_fields: Map<String, Value>,
 }
 
-fn id_order(id: &str) -> (u64, String) {
-    (id.parse().unwrap_or(u64::MAX), id.to_string())
-}
+use crate::reader::records::id_order;
 
 impl Client {
     /// Every tag carrying one of [`DEFINITION_FLAGS`], merged by id and sorted by id. One
@@ -44,7 +42,7 @@ impl Client {
         let mut by_id: BTreeMap<(u64, String), TagRecord> = BTreeMap::new();
         for flag in DEFINITION_FLAGS {
             let rows = self
-                .run(TagsQuery::build(TagsVars {
+                .run_read(TagsQuery::build(TagsVars {
                     filter: Some(TagFilter {
                         custom_fields: Some(not_null(flag)),
                     }),
@@ -68,29 +66,8 @@ impl Client {
     }
 }
 
-/// Scenes and images, the two media kinds relations apply to.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum MediaKind {
-    Scene,
-    Image,
-}
-
-impl MediaKind {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            MediaKind::Scene => "scene",
-            MediaKind::Image => "image",
-        }
-    }
-    pub fn parse(s: &str) -> Option<MediaKind> {
-        match s.to_ascii_lowercase().as_str() {
-            "scene" => Some(MediaKind::Scene),
-            "image" => Some(MediaKind::Image),
-            _ => None,
-        }
-    }
-}
+/// Scenes and images, the two media kinds relations apply to (now defined by the reader).
+pub use crate::reader::records::MediaKind;
 
 /// One scene or image as auto-apply needs it.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -113,20 +90,11 @@ pub struct PerformerRecord {
 
 // ---- Scenes and images, performers, writes (spec 004 research R8)
 
-use crate::fixtures::{CriterionModifier, CustomFieldCriterion, IdOnlyPerformer, IdOnlyTag};
+use crate::fixtures::{IdOnlyPerformer, IdOnlyTag};
+pub use crate::reader::queries::StashTime;
+use crate::reader::queries::{IdOnlyImage, IdOnlyScene, TimestampCriterion};
+use crate::reader::records::sorted_ids;
 use crate::{schema, JsonMap};
-
-/// Stash's `Time` scalar, kept exactly as Stash sends it (server-local RFC 3339 text).
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct StashTime(pub Value);
-cynic::impl_scalar!(StashTime, schema::Time);
-
-impl StashTime {
-    fn text(&self) -> String {
-        self.0.as_str().unwrap_or_default().to_string()
-    }
-}
 
 /// How many items one request reads (research R8).
 pub const BATCH: usize = 100;
@@ -204,121 +172,6 @@ pub struct PerformerTags {
     pub tags: Vec<IdOnlyTag>,
 }
 
-#[derive(cynic::InputObject, Debug)]
-#[cynic(graphql_type = "TimestampCriterionInput")]
-pub struct TimestampCriterion {
-    pub value: String,
-    #[cynic(skip_serializing_if = "Option::is_none")]
-    pub value2: Option<String>,
-    pub modifier: CriterionModifier,
-}
-
-#[derive(cynic::InputObject, Debug, Default)]
-#[cynic(graphql_type = "SceneFilterType")]
-pub struct SceneItemFilter {
-    #[cynic(rename = "updated_at", skip_serializing_if = "Option::is_none")]
-    pub updated_at: Option<TimestampCriterion>,
-    #[cynic(rename = "custom_fields", skip_serializing_if = "Option::is_none")]
-    pub custom_fields: Option<Vec<CustomFieldCriterion>>,
-}
-
-#[derive(cynic::InputObject, Debug, Default)]
-#[cynic(graphql_type = "ImageFilterType")]
-pub struct ImageItemFilter {
-    #[cynic(rename = "updated_at", skip_serializing_if = "Option::is_none")]
-    pub updated_at: Option<TimestampCriterion>,
-    #[cynic(rename = "custom_fields", skip_serializing_if = "Option::is_none")]
-    pub custom_fields: Option<Vec<CustomFieldCriterion>>,
-}
-
-#[derive(cynic::QueryVariables, Debug)]
-pub struct SceneFilterVars {
-    pub filter: Option<SceneItemFilter>,
-}
-
-#[derive(cynic::QueryVariables, Debug)]
-pub struct ImageFilterVars {
-    pub filter: Option<ImageItemFilter>,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(graphql_type = "Query", variables = "SceneFilterVars")]
-pub struct SceneIdsQuery {
-    #[arguments(scene_filter: $filter, filter: { per_page: -1 })]
-    pub find_scenes: SceneIdsPage,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(graphql_type = "FindScenesResultType")]
-pub struct SceneIdsPage {
-    pub scenes: Vec<SceneIdOnly>,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(graphql_type = "Scene")]
-pub struct SceneIdOnly {
-    pub id: cynic::Id,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(graphql_type = "Query", variables = "ImageFilterVars")]
-pub struct ImageIdsQuery {
-    #[arguments(image_filter: $filter, filter: { per_page: -1 })]
-    pub find_images: ImageIdsPage,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(graphql_type = "FindImagesResultType")]
-pub struct ImageIdsPage {
-    pub images: Vec<ImageIdOnly>,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(graphql_type = "Image")]
-pub struct ImageIdOnly {
-    pub id: cynic::Id,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(graphql_type = "Query")]
-pub struct LatestScene {
-    #[arguments(filter: { per_page: 1, sort: "updated_at", direction: DESC })]
-    pub find_scenes: LatestScenePage,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(graphql_type = "FindScenesResultType")]
-pub struct LatestScenePage {
-    pub scenes: Vec<SceneTime>,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(graphql_type = "Scene")]
-pub struct SceneTime {
-    #[cynic(rename = "updated_at")]
-    pub updated_at: StashTime,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(graphql_type = "Query")]
-pub struct LatestImage {
-    #[arguments(filter: { per_page: 1, sort: "updated_at", direction: DESC })]
-    pub find_images: LatestImagePage,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(graphql_type = "FindImagesResultType")]
-pub struct LatestImagePage {
-    pub images: Vec<ImageTime>,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(graphql_type = "Image")]
-pub struct ImageTime {
-    #[cynic(rename = "updated_at")]
-    pub updated_at: StashTime,
-}
-
 /// `CustomFieldsInput` with only `partial`: never replaces or removes other keys.
 #[derive(cynic::InputObject, Debug)]
 #[cynic(graphql_type = "CustomFieldsInput")]
@@ -352,7 +205,7 @@ pub struct SceneUpdateVars {
 #[cynic(graphql_type = "Mutation", variables = "SceneUpdateVars")]
 pub struct SceneCustomFieldsMutation {
     #[arguments(input: $input)]
-    pub scene_update: Option<SceneIdOnly>,
+    pub scene_update: Option<IdOnlyScene>,
 }
 
 #[derive(cynic::QueryVariables, Debug)]
@@ -364,7 +217,7 @@ pub struct ImageUpdateVars {
 #[cynic(graphql_type = "Mutation", variables = "ImageUpdateVars")]
 pub struct ImageCustomFieldsMutation {
     #[arguments(input: $input)]
-    pub image_update: Option<ImageIdOnly>,
+    pub image_update: Option<IdOnlyImage>,
 }
 
 #[derive(cynic::QueryVariables, Debug)]
@@ -391,12 +244,6 @@ fn object(v: JsonMap) -> Map<String, Value> {
     }
 }
 
-fn id_list(mut v: Vec<String>) -> Vec<String> {
-    v.sort_by_key(|s| id_order(s));
-    v.dedup();
-    v
-}
-
 impl Client {
     /// Scenes or images by id, read [`BATCH`] at a time.
     pub fn items_by_ids(&self, kind: MediaKind, list: &[String]) -> Result<Vec<ItemRecord>, Error> {
@@ -406,7 +253,7 @@ impl Client {
             let vars = ItemIdsVars { ids: ids(chunk) };
             match kind {
                 MediaKind::Scene => {
-                    for s in self.run(ScenesByIds::build(vars))?.find_scenes.scenes {
+                    for s in self.run_read(ScenesByIds::build(vars))?.find_scenes.scenes {
                         out.push(ItemRecord {
                             kind,
                             id: s.id.inner().to_string(),
@@ -421,7 +268,7 @@ impl Client {
                     }
                 }
                 MediaKind::Image => {
-                    for i in self.run(ImagesByIds::build(vars))?.find_images.images {
+                    for i in self.run_read(ImagesByIds::build(vars))?.find_images.images {
                         out.push(ItemRecord {
                             kind,
                             id: i.id.inner().to_string(),
@@ -445,7 +292,7 @@ impl Client {
         use cynic::QueryBuilder;
         let mut out = Vec::new();
         for chunk in list.chunks(BATCH) {
-            let page = self.run(PerformersByIds::build(ItemIdsVars { ids: ids(chunk) }))?;
+            let page = self.run_read(PerformersByIds::build(ItemIdsVars { ids: ids(chunk) }))?;
             out.extend(
                 page.find_performers
                     .performers
@@ -459,51 +306,12 @@ impl Client {
         Ok(out)
     }
 
-    fn item_ids(
-        &self,
-        kind: MediaKind,
-        updated_at: Option<TimestampCriterion>,
-        cf: Option<Vec<CustomFieldCriterion>>,
-    ) -> Result<Vec<String>, Error> {
-        use cynic::QueryBuilder;
-        Ok(match kind {
-            MediaKind::Scene => self
-                .run(SceneIdsQuery::build(SceneFilterVars {
-                    filter: Some(SceneItemFilter {
-                        updated_at,
-                        custom_fields: cf,
-                    }),
-                }))?
-                .find_scenes
-                .scenes
-                .into_iter()
-                .map(|s| s.id.inner().to_string())
-                .collect(),
-            MediaKind::Image => self
-                .run(ImageIdsQuery::build(ImageFilterVars {
-                    filter: Some(ImageItemFilter {
-                        updated_at,
-                        custom_fields: cf,
-                    }),
-                }))?
-                .find_images
-                .images
-                .into_iter()
-                .map(|i| i.id.inner().to_string())
-                .collect(),
-        })
-    }
-
     /// Ids of items with `updated_at` after `threshold`. Stash compares the value as text to
     /// the second, so `threshold` must be in the server's own local-time form; ids are never
-    /// sent with it, because Stash then ignores the filter (003 findings).
+    /// sent with it, because Stash then ignores the filter (003 findings). The reader's change
+    /// read (spec 005).
     pub fn changed_since(&self, kind: MediaKind, threshold: &str) -> Result<Vec<String>, Error> {
-        let c = TimestampCriterion {
-            value: threshold.to_string(),
-            value2: None,
-            modifier: CriterionModifier::GreaterThan,
-        };
-        self.item_ids(kind, Some(c), None).map(id_list)
+        self.media_ids(kind, None, Some(TimestampCriterion::after(threshold)))
     }
 
     /// Ids of items that can hold relations: those with action pairings or relation instances.
@@ -511,28 +319,14 @@ impl Client {
     pub fn ids_with_relation_data(&self, kind: MediaKind) -> Result<Vec<String>, Error> {
         let mut out = Vec::new();
         for key in ["actionPairings", "relationAssignments"] {
-            out.extend(self.item_ids(kind, None, Some(not_null(key)))?);
+            out.extend(self.media_ids(kind, Some(not_null(key)), None)?);
         }
-        Ok(id_list(out))
+        Ok(sorted_ids(out))
     }
 
-    /// The newest `updated_at` of the kind, exactly as Stash stores it.
+    /// The newest `updated_at` of the kind, exactly as Stash stores it (the reader's, spec 005).
     pub fn latest_updated_at(&self, kind: MediaKind) -> Result<Option<String>, Error> {
-        use cynic::QueryBuilder;
-        Ok(match kind {
-            MediaKind::Scene => self
-                .run(LatestScene::build(()))?
-                .find_scenes
-                .scenes
-                .first()
-                .map(|s| s.updated_at.text()),
-            MediaKind::Image => self
-                .run(LatestImage::build(()))?
-                .find_images
-                .images
-                .first()
-                .map(|i| i.updated_at.text()),
-        })
+        self.latest(kind.into())
     }
 
     /// Writes the keys in `partial` to one item's custom fields; other keys are untouched.
@@ -626,11 +420,11 @@ impl Client {
         };
         let tags = match kind {
             MediaKind::Scene => self
-                .run(SceneNativeTags::build(vars()))?
+                .run_read(SceneNativeTags::build(vars()))?
                 .find_scene
                 .map(|s| s.tags),
             MediaKind::Image => self
-                .run(ImageNativeTags::build(vars()))?
+                .run_read(ImageNativeTags::build(vars()))?
                 .find_image
                 .map(|i| i.tags),
         };

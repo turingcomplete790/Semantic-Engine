@@ -122,3 +122,14 @@ prop atEndA core.ttl SceneScoped
 prop atEndB core.ttl SceneScoped
 prop appliedAutomatically core.ttl SceneScoped
 prop appliedByRule core.ttl SceneScoped
+# 1.3.0 (spec 005): Field Mapping, derived measurements
+class FieldMappingRule labels.ttl
+prop hasFieldMapping labels.ttl Global
+prop mapsToField labels.ttl Global
+prop mappingPriority labels.ttl Global
+prop mappingVariation labels.ttl Global
+prop pluginFieldName core.ttl Global
+prop bustSize core.ttl Global
+prop waist core.ttl Global
+prop hip core.ttl Global
+prop waistToHipRatio core.ttl Global

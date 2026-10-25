@@ -321,7 +321,7 @@ terms yet.
 |---|---|
 | `INVALID_INPUT` | Stash's input to the plugin was missing, not JSON, or had no connection details |
 | `UNKNOWN_OPERATION` | `args.op` is missing or not an operation; `error.details.known` lists the names |
-| `STASH_UNREACHABLE` | the plugin could not call back into Stash's GraphQL API |
+| `STASH_UNREACHABLE` | the plugin could not call back into Stash's GraphQL API, or Stash did not answer in time |
 | `STASH_TOO_OLD` | the server is older than the minimum supported Stash version |
 | `SERVER_ID_NOT_GENERATED` | the server has no identifier yet |
 | `SERVER_ID_INVALID` | the stored identifier is not a lower-case hyphenated UUID |
@@ -338,6 +338,16 @@ terms yet.
 - `status` reports `contractVersion`, so a client can check it before relying on newer features.
 
 ## Changes
+
+### No contract change (spec 005)
+
+Spec 005 rebuilt the engine's Stash reads (the library reader) and released vocabulary 1.3.0.
+It adds no operation, argument, result field or error code, so the contract stays 1.1.0. The
+new failure kinds the reader tells apart map onto existing codes:
+- `STASH_UNREACHABLE` now also covers a Stash that does not answer in time.
+- `STASH_TOO_OLD` is returned where a read meets an old server.
+- Rejected credentials, errors reported by Stash, and unexpected responses are `INTERNAL`, and
+  the message names the kind.
 
 ### 1.1.0 (in progress, spec 004)
 

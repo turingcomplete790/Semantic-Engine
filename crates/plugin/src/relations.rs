@@ -7,11 +7,16 @@ use engine::relations::{describe, Model, UnknownTag};
 use engine::ErrorCode;
 use serde_json::Value;
 
-/// The error code for a failed Stash call.
+/// The error code for a failed Stash call (spec 005 contracts/reader-interface.md). The adapter's
+/// message, which names the kind, goes with it; no new code is added, so contract 1.1.0 holds.
 pub fn stash_error(e: &stash_adapter::Error) -> ErrorCode {
+    use stash_adapter::Error as E;
     match e {
-        stash_adapter::Error::Unreachable(_) => ErrorCode::StashUnreachable,
-        _ => ErrorCode::Internal,
+        E::Unreachable(_) | E::TimedOut(_) => ErrorCode::StashUnreachable,
+        E::UnsupportedVersion { .. } => ErrorCode::StashTooOld,
+        E::NotAuthorized | E::Graphql(_) | E::UnexpectedResponse(_) | E::Setup(_) | E::Stopped => {
+            ErrorCode::Internal
+        }
     }
 }
 

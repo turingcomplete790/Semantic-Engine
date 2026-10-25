@@ -365,3 +365,24 @@ sem:retired_legacyMiseRef a sem:RetiredField ;
     sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;
     sem:status sem:Deprecated ;
     sem:since "1.0.0" .
+
+sem:map_fieldMapping a sem:Mapping ;
+    sem:fromEntity "Tag (Trait, Label, Variation)" ;
+    sem:fromField "custom_fields.fieldMapping" ;
+    sem:allowedValues "JSON {base?: {field, priority}, variations?: {\"<variation>\": {field, priority}}}; Labels and Variations use base only" ;
+    sem:produces sem:FieldMappingRule ;
+    sem:source "semantic-query-engine-roadmap.md § Milestone 1D (Field Mapping); src/ui/field-mapping.js" ;
+    sem:sourceRevision "2c04141, read 2026-10-24" ;
+    sem:status sem:Active ;
+    sem:since "1.3.0" .
+
+sem:map_measurements a sem:Mapping ;
+    sem:fromEntity "Performer" ;
+    sem:fromField "measurements" ;
+    sem:allowedValues "free text such as 34D-26-35; derived as in spec 005 FR-002b" ;
+    sem:produces sem:bustSize ;
+    rdfs:comment "Also produces sem:waist, sem:hip and sem:waistToHipRatio. A value that cannot be derived is absent." ;
+    sem:source "src/ui/matrix.js parseMeasurements, DERIVED_PERFORMER_FIELDS (not in the design documents)" ;
+    sem:sourceRevision "2c04141, read 2026-10-24" ;
+    sem:status sem:Active ;
+    sem:since "1.3.0" .

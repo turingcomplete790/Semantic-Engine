@@ -65,7 +65,7 @@ struct StashSettings(stash_adapter::Client);
 
 fn store_error(e: stash_adapter::Error) -> StoreError {
     StoreError {
-        unreachable: matches!(e, stash_adapter::Error::Unreachable(_)),
+        unreachable: e.is_transient(),
         message: e.to_string(),
     }
 }

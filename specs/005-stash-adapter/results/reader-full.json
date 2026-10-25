@@ -1,0 +1,27 @@
+{
+  "command": "reader-bench full --runs 5",
+  "engineCommit": null,
+  "result": {
+    "ms": {
+      "max": 877.5190269999999,
+      "median": 824.2120950000001,
+      "min": 778.584523,
+      "p95": 877.5190269999999,
+      "runs": 5
+    },
+    "msPerRecord": 0.2502921636805345,
+    "peakKiB": 27148,
+    "readBytes": 819992,
+    "records": {
+      "images": 1327,
+      "performers": 886,
+      "scenes": 1021,
+      "tags": 59,
+      "total": 3293
+    },
+    "requests": 49
+  },
+  "server": "http://localhost:9998",
+  "stashVersion": "v0.31.1",
+  "takenAt": 1792917078
+}

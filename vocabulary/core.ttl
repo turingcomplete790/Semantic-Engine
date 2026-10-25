@@ -7,7 +7,7 @@
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
 
 # Vocabulary identity
-<urn:semantic-stash:vocab:> sem:version "1.2.0" .
+<urn:semantic-stash:vocab:> sem:version "1.3.0" .
 
 # ---- Vocabulary metadata (FR-017)
 
@@ -1041,3 +1041,64 @@ sem:appliedByRule a rdf:Property ;
     sem:scope sem:SceneScoped ;
     sem:status sem:Active ;
     sem:since "1.2.0" .
+
+# Derived measurements and plugin field names (vocabulary 1.3.0, spec 005)
+
+sem:pluginFieldName a rdf:Property ;
+    rdfs:domain rdf:Property ;
+    rdfs:range xsd:string ;
+    rdfs:label "plugin field name"@en ;
+    rdfs:comment "The name the semantic-tagging plugin's Label field rules and Matrix filters use for this property, so a FieldRule naming it resolves to the property." ;
+    sem:source "src/ui/matrix.js parseMeasurements, DERIVED_PERFORMER_FIELDS (not in the design documents)" ;
+    sem:sourceRevision "2c04141, read 2026-10-24" ;
+    sem:scope sem:Global ;
+    sem:status sem:Active ;
+    sem:since "1.3.0" .
+
+sem:bustSize a rdf:Property ;
+    rdfs:domain sem:Performer ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "bust size"@en ;
+    rdfs:comment "Bust Size from Measurements: band, plus the cup step on the half-cup scale AA to L times 2.5, plus 2 for each inch of waist under 28. DD, DDD and DDDD read as E, F and G. Not literal inches." ;
+    sem:pluginFieldName "__derived_bust" ;
+    sem:source "src/ui/matrix.js parseMeasurements, DERIVED_PERFORMER_FIELDS (not in the design documents)" ;
+    sem:sourceRevision "2c04141, read 2026-10-24" ;
+    sem:scope sem:Global ;
+    sem:status sem:Derived ;
+    sem:since "1.3.0" .
+
+sem:waist a rdf:Property ;
+    rdfs:domain sem:Performer ;
+    rdfs:range xsd:integer ;
+    rdfs:label "waist"@en ;
+    rdfs:comment "Waist from Measurements: the second number, when present." ;
+    sem:pluginFieldName "__derived_waist" ;
+    sem:source "src/ui/matrix.js parseMeasurements, DERIVED_PERFORMER_FIELDS (not in the design documents)" ;
+    sem:sourceRevision "2c04141, read 2026-10-24" ;
+    sem:scope sem:Global ;
+    sem:status sem:Derived ;
+    sem:since "1.3.0" .
+
+sem:hip a rdf:Property ;
+    rdfs:domain sem:Performer ;
+    rdfs:range xsd:integer ;
+    rdfs:label "hip"@en ;
+    rdfs:comment "Hip from Measurements: the third number, when present." ;
+    sem:pluginFieldName "__derived_hip" ;
+    sem:source "src/ui/matrix.js parseMeasurements, DERIVED_PERFORMER_FIELDS (not in the design documents)" ;
+    sem:sourceRevision "2c04141, read 2026-10-24" ;
+    sem:scope sem:Global ;
+    sem:status sem:Derived ;
+    sem:since "1.3.0" .
+
+sem:waistToHipRatio a rdf:Property ;
+    rdfs:domain sem:Performer ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "waist-to-hip ratio"@en ;
+    rdfs:comment "Waist divided by hip, rounded to 2 places, when both are present and neither is 0." ;
+    sem:pluginFieldName "__derived_whr" ;
+    sem:source "src/ui/matrix.js parseMeasurements, DERIVED_PERFORMER_FIELDS (not in the design documents)" ;
+    sem:sourceRevision "2c04141, read 2026-10-24" ;
+    sem:scope sem:Global ;
+    sem:status sem:Derived ;
+    sem:since "1.3.0" .

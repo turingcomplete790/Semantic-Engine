@@ -1,15 +1,56 @@
 [
   {
-    "custom_fields": {
-      "roleTagAssignments": "{\"7\": [\"19\"], \"8\": [\"20\"]}",
-      "timeline": "[{\"id\": \"se-stage-1\", \"type\": \"stage\", \"miseEnScenePicks\": [{\"tagId\": \"24\", \"tagName\": \"SE-Test Location Beach\", \"variation\": \"sunset\"}]}, {\"id\": \"se-slot-1\", \"ref\": {\"kind\": \"action-instance\", \"performerId\": \"7\", \"actionTagId\": \"21\"}, \"seconds\": 30}]"
+    "fields": {
+      "roleTagAssignments": {
+        "value": {
+          "7": [
+            "19"
+          ],
+          "8": [
+            "20"
+          ]
+        }
+      },
+      "timeline": {
+        "value": [
+          {
+            "id": "se-stage-1",
+            "miseEnScenePicks": [
+              {
+                "tagId": "24",
+                "tagName": "SE-Test Location Beach",
+                "variation": "sunset"
+              }
+            ],
+            "type": "stage"
+          },
+          {
+            "id": "se-slot-1",
+            "ref": {
+              "actionTagId": "21",
+              "kind": "action-instance",
+              "performerId": "7"
+            },
+            "seconds": 30
+          }
+        ]
+      }
     },
     "id": "15",
+    "kind": "image",
     "performers": [
-      {
-        "id": "7"
-      }
+      "7",
+      "12",
+      "13",
+      "14",
+      "16",
+      "562",
+      "625",
+      "714"
     ],
-    "title": ""
+    "tags": [
+      "6"
+    ],
+    "updated_at": "2026-10-22T13:26:49-06:00"
   }
 ]

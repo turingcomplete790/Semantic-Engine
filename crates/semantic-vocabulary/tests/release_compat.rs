@@ -46,7 +46,7 @@ fn removed_term_without_major_bump_fails_naming_the_term() {
     let start = l.find("sem:hasValue2 a rdf:Property").unwrap();
     let end = l[start..].find(" .\n").unwrap() + start + 3;
     common::write(&dir, "labels.ttl", &format!("{}{}", &l[..start], &l[end..]));
-    set_version(&dir, "1.2.0");
+    set_version(&dir, "1.3.0");
     let v = load(&dir).unwrap();
     let viol = v.check();
     let hit = viol
