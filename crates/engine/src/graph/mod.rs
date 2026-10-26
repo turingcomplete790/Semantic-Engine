@@ -30,6 +30,7 @@ mod writer;
 pub use error::{GraphError, Health, RebuildReason};
 pub use layout::Generation;
 pub use reader::Reader;
+pub(crate) use term::from_ox_triple;
 pub use term::{round_trip, validate, Fact, Pattern, Solutions, Term};
 pub use writer::Writer;
 
@@ -110,6 +111,20 @@ impl GraphStore {
         }
         let lock = writer::try_lock(&self.dir)?;
         Writer::open(&self.dir, &self.server_id, lock)
+    }
+
+    /// Like [`GraphStore::writer`], but starting from an empty working store, for a full
+    /// rebuild (spec 007 research R3). The published generations are untouched until
+    /// `publish()`; a writer dropped before then leaves the store dirty, so the next writer
+    /// starts again from the current generation.
+    pub fn rebuild_writer(&self) -> Result<Writer, GraphError> {
+        self.need_server_id()?;
+        match health::inspect(&self.dir, &self.server_id) {
+            Inspection::NeedsRebuild(r) => return Err(GraphError::NeedsRebuild(r)),
+            Inspection::Ready(..) | Inspection::NotBuilt => {}
+        }
+        let lock = writer::try_lock(&self.dir)?;
+        Writer::open_empty(&self.dir, &self.server_id, lock)
     }
 
     /// Empties the store, whatever its state, and stamps it for this server and format

@@ -1,0 +1,148 @@
+[
+ {
+  "kind": "tag",
+  "id": "15",
+  "key": "categories",
+  "reason": "tagWrongType"
+ },
+ {
+  "kind": "tag",
+  "id": "15",
+  "key": "labelFormula",
+  "entry": "traitRules/0",
+  "reason": "badShape"
+ },
+ {
+  "kind": "tag",
+  "id": "16",
+  "key": "variations",
+  "reason": "unreadable"
+ },
+ {
+  "kind": "tag",
+  "id": "16",
+  "key": "variantOfTagId",
+  "reason": "invalidId"
+ },
+ {
+  "kind": "performer",
+  "id": "30",
+  "key": "archetypeParents",
+  "reason": "tagWrongType"
+ },
+ {
+  "kind": "performer",
+  "id": "31",
+  "key": "archetypeParents",
+  "reason": "unreadable"
+ },
+ {
+  "kind": "scene",
+  "id": "300",
+  "key": "roleTagAssignments",
+  "reason": "unreadable"
+ },
+ {
+  "kind": "scene",
+  "id": "301",
+  "key": "roleTagAssignments",
+  "entry": "x7",
+  "reason": "invalidId"
+ },
+ {
+  "kind": "scene",
+  "id": "301",
+  "key": "roleTagAssignments",
+  "entry": "7",
+  "reason": "invalidId"
+ },
+ {
+  "kind": "scene",
+  "id": "301",
+  "key": "roleTagAssignments",
+  "entry": "7",
+  "reason": "tagWrongType"
+ },
+ {
+  "kind": "scene",
+  "id": "301",
+  "key": "roleTagAssignments",
+  "entry": "7",
+  "reason": "tagMissing"
+ },
+ {
+  "kind": "scene",
+  "id": "301",
+  "key": "autoRoleAssignments",
+  "entry": "8",
+  "reason": "notRecordedRole"
+ },
+ {
+  "kind": "scene",
+  "id": "301",
+  "key": "actionAssignments",
+  "entry": "9",
+  "reason": "performerNotInMedia"
+ },
+ {
+  "kind": "scene",
+  "id": "301",
+  "key": "actionPairings",
+  "entry": "0",
+  "reason": "danglingRef"
+ },
+ {
+  "kind": "scene",
+  "id": "301",
+  "key": "actionPairings",
+  "entry": "1",
+  "reason": "badShape"
+ },
+ {
+  "kind": "scene",
+  "id": "301",
+  "key": "actionPairings",
+  "entry": "2",
+  "reason": "invalidId"
+ },
+ {
+  "kind": "scene",
+  "id": "301",
+  "key": "timeline",
+  "entry": "t1",
+  "reason": "unknownKind"
+ },
+ {
+  "kind": "scene",
+  "id": "301",
+  "key": "timeline",
+  "entry": "t2",
+  "reason": "retired"
+ },
+ {
+  "kind": "scene",
+  "id": "301",
+  "key": "timeline",
+  "entry": "2",
+  "reason": "badShape"
+ },
+ {
+  "kind": "scene",
+  "id": "301",
+  "key": "timeline",
+  "entry": "t5",
+  "reason": "danglingRef"
+ },
+ {
+  "kind": "scene",
+  "id": "302",
+  "key": "actionAssignments",
+  "reason": "unreadable"
+ },
+ {
+  "kind": "scene",
+  "id": "302",
+  "key": "timeline",
+  "reason": "unreadable"
+ }
+]

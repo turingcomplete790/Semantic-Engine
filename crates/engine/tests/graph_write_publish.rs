@@ -188,3 +188,47 @@ fn invalid_facts_are_refused_before_any_change() {
     let bad = engine::graph::Fact::new(lit("not a subject"), iri("p"), lit("v"));
     assert!(matches!(w.add(&[bad]), Err(GraphError::InvalidFact { .. })));
 }
+
+// spec 007 T008: a full rebuild starts from an empty working store, and the published
+// generations stay current until it publishes (research R3).
+#[test]
+fn rebuild_writer_starts_empty_and_keeps_the_current_generation() {
+    let (dir, store) = cleared("rebuild-writer");
+    let old = sample_facts(3);
+    publish(&store, &old);
+    let new = fact("scene/new", "title", lit("rebuilt"));
+    let mut w = store.rebuild_writer().unwrap();
+    {
+        let r = store.reader().unwrap();
+        assert_eq!(r.generation().number, 1, "generation 1 stays current");
+        assert!(r.contains(&old[0]).unwrap());
+    }
+    assert!(matches!(store.rebuild_writer(), Err(GraphError::Busy)));
+    assert!(matches!(store.writer(), Err(GraphError::Busy)));
+    w.add(std::slice::from_ref(&new)).unwrap();
+    let g = w.publish().unwrap();
+    assert_eq!((g.number, g.facts), (2, 1), "only the new facts");
+    let r = store.reader().unwrap();
+    assert!(r.contains(&new).unwrap());
+    assert!(!r.contains(&old[0]).unwrap());
+    drop(r);
+
+    std::fs::write(dir.join("store.json"), "{not json").unwrap();
+    assert!(matches!(
+        store.rebuild_writer(),
+        Err(GraphError::NeedsRebuild(_))
+    ));
+}
+
+#[test]
+fn a_dropped_rebuild_writer_leaves_the_previous_generation() {
+    let (_, store) = cleared("rebuild-dropped");
+    let old = sample_facts(2);
+    publish(&store, &old);
+    let w = store.rebuild_writer().unwrap();
+    drop(w);
+    let mut w = store.writer().unwrap();
+    w.add(&[fact("scene/z", "title", lit("z"))]).unwrap();
+    let g = w.publish().unwrap();
+    assert_eq!(g.facts, old.len() as u64 + 1, "reset from generation 1");
+}

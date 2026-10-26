@@ -27,6 +27,10 @@ impl GraphStore {
     /// publishing, it first resets the working store to the current generation (R3).
     pub fn writer(&self) -> Result<Writer, GraphError>;
 
+    /// Added by spec 007 (research R3): the same as `writer()`, but starting from an empty
+    /// working store, for a full rebuild. Published generations stay current until `publish()`.
+    pub fn rebuild_writer(&self) -> Result<Writer, GraphError>;
+
     /// Empties a store that needs a rebuild, or any store, and stamps it for this server and
     /// format (FR-016). It takes the writer lock, so it gives `Busy` while a writer works.
     pub fn clear_for_rebuild(&self) -> Result<(), GraphError>;
@@ -76,8 +80,9 @@ impl Writer {
 
 ## Who calls what (this feature and the next)
 
-- **Graph builder (next Phase 2 item):** `writer()`, then `clear()` or `remove_matching`, then
-  `add`, then `publish`. On `NeedsRebuild` it calls `clear_for_rebuild()` first.
+- **Graph builder (spec 007):** a full build calls `rebuild_writer()`, then `add`, then
+  `publish`. On `NeedsRebuild` it calls `clear_for_rebuild()` first. Incremental updates (the
+  next item) use `writer()`, then `remove_matching`, then `add`, then `publish`.
 - **Query operations (Phase 3):** `reader()`, then `select`.
 - **`status` (Phase 3 item):** `summary()`. In this feature it is used only by `graph-bench` and
   by tests.

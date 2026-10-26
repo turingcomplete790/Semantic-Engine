@@ -8,8 +8,8 @@ use serde::{Deserialize, Serialize};
 const XSD_STRING: &str = "http://www.w3.org/2001/XMLSchema#string";
 const RDF_LANG_STRING: &str = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
 
-/// One RDF term.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// One RDF term. The order is only for sorting sets of facts (spec 007 research R9).
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum Term {
     /// An absolute IRI.
     Iri(String),
@@ -42,10 +42,40 @@ impl Term {
             language: None,
         }
     }
+
+    /// The term in N-Triples form. A plain string is written without a datatype.
+    pub fn to_ntriples(&self) -> String {
+        match self {
+            Term::Iri(i) => format!("<{i}>"),
+            Term::Blank(b) => format!("_:{b}"),
+            Term::Literal {
+                value,
+                datatype,
+                language,
+            } => {
+                let mut out = String::from("\"");
+                for c in value.chars() {
+                    match c {
+                        '"' => out.push_str("\\\""),
+                        '\\' => out.push_str("\\\\"),
+                        '\n' => out.push_str("\\n"),
+                        '\r' => out.push_str("\\r"),
+                        _ => out.push(c),
+                    }
+                }
+                out.push('"');
+                match (datatype, language) {
+                    (_, Some(lang)) => format!("{out}@{lang}"),
+                    (Some(dt), None) if dt != XSD_STRING => format!("{out}^^<{dt}>"),
+                    _ => out,
+                }
+            }
+        }
+    }
 }
 
 /// One statement in the store's default graph.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct Fact {
     /// `Iri` or `Blank` only.
     pub subject: Term,
@@ -61,6 +91,16 @@ impl Fact {
             predicate,
             object,
         }
+    }
+
+    /// One N-Triples line, without the line break.
+    pub fn to_ntriples(&self) -> String {
+        format!(
+            "{} {} {} .",
+            self.subject.to_ntriples(),
+            self.predicate.to_ntriples(),
+            self.object.to_ntriples()
+        )
     }
 }
 
@@ -196,6 +236,17 @@ pub(crate) fn from_ox_quad(q: &ox::Quad) -> Fact {
     }
 }
 
+/// A parsed RDF triple as a fact. The vocabulary crate parses with the same RDF model Oxigraph
+/// uses, so its triples convert here, inside the graph module (rule G9; spec 007 research R7).
+pub(crate) fn from_ox_triple(t: &ox::Triple) -> Fact {
+    from_ox_quad(&ox::Quad::new(
+        t.subject.clone(),
+        t.predicate.clone(),
+        t.object.clone(),
+        ox::GraphName::DefaultGraph,
+    ))
+}
+
 /// Checks a fact without storing it (used by tests and by callers that validate early).
 pub fn validate(f: &Fact) -> Result<(), GraphError> {
     to_ox_quad(f).map(|_| ())
@@ -204,4 +255,29 @@ pub fn validate(f: &Fact) -> Result<(), GraphError> {
 /// Converts a fact to the store's form and back; used by tests of the conversion.
 pub fn round_trip(f: &Fact) -> Result<Fact, GraphError> {
     Ok(from_ox_quad(&to_ox_quad(f)?))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ntriples_escapes_literals_and_writes_datatypes() {
+        let f = Fact::new(
+            Term::iri("urn:x:s"),
+            Term::iri("urn:x:p"),
+            Term::string("a \"b\" \\ c\nd"),
+        );
+        assert_eq!(
+            f.to_ntriples(),
+            r#"<urn:x:s> <urn:x:p> "a \"b\" \\ c\nd" ."#
+        );
+        let t = Term::typed("1.5", "http://www.w3.org/2001/XMLSchema#decimal");
+        assert_eq!(
+            t.to_ntriples(),
+            "\"1.5\"^^<http://www.w3.org/2001/XMLSchema#decimal>"
+        );
+        assert_eq!(Term::typed("x", XSD_STRING).to_ntriples(), "\"x\"");
+        assert_eq!(Term::Blank("b1".into()).to_ntriples(), "_:b1");
+    }
 }

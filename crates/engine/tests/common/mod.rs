@@ -64,4 +64,5 @@ pub fn apply_patch(
     out
 }
 
+pub mod build;
 pub mod graph;

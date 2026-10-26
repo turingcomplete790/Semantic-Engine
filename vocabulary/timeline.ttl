@@ -159,7 +159,7 @@ sem:inStage a rdf:Property ;
     rdfs:domain sem:Slot ;
     rdfs:range sem:Stage ;
     rdfs:label "in stage"@en ;
-    rdfs:comment "The Stage governing this slot: the nearest preceding Stage by position. A rule over order, not stored." ;
+    rdfs:comment "The Stage governing this slot: the nearest preceding Stage by position. A rule over order. Not stored." ;
     sem:source "README.md § Features (Timeline)" ;
     sem:source "src/ui/timeline.js (read as implementation evidence, documents win)" ;
     sem:sourceRevision "3c82c85 plus working copy, read 2026-10-14" ;

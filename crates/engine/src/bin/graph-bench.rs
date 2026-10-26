@@ -4,6 +4,7 @@
 //! usage: graph-bench build  --scenes N --dir DIR
 //!        graph-bench open   --dir DIR [--runs N]
 //!        graph-bench query  --dir DIR [--runs N]
+//!        graph-bench query  --dir DIR --sparql FILE [--server ID]   one SELECT, rows as JSON
 //!        graph-bench disk   --dir DIR
 //!        graph-bench stress --dir DIR [--readers R] [--seconds S]
 //!        [--out DIR]   where results go (default specs/006-graph-store/results)
@@ -361,6 +362,30 @@ fn query(dir: &Path, runs: usize) -> Result<Value, String> {
     Ok(json!({ "queries": per, "allCallsMs": summary(all) }))
 }
 
+/// One `SELECT` from a file against a store, for checks such as spec 007 SC-008. The rows are
+/// printed in N-Triples term form; nothing is written to the results folder.
+fn sparql(dir: &Path, server: &str, file: &Path) -> Result<Value, String> {
+    let q = std::fs::read_to_string(file).map_err(|e| format!("{}: {e}", file.display()))?;
+    let r = GraphStore::new(dir, server)
+        .reader()
+        .map_err(|e| e.to_string())?;
+    let s = r.select(&q).map_err(|e| e.to_string())?;
+    let rows: Vec<Value> = s
+        .rows
+        .iter()
+        .map(|row| {
+            let cells = s.variables.iter().zip(row).map(|(v, t)| {
+                (
+                    v.clone(),
+                    t.as_ref().map_or(Value::Null, |t| json!(t.to_ntriples())),
+                )
+            });
+            Value::Object(cells.collect())
+        })
+        .collect();
+    Ok(json!({ "generation": r.generation().number, "rows": rows }))
+}
+
 fn disk(dir: &Path) -> Result<Value, String> {
     let store = GraphStore::new(dir, SERVER_ID);
     let s = store.summary().map_err(|e| e.to_string())?;
@@ -483,6 +508,7 @@ fn main() -> ExitCode {
     let (mut dir, mut scenes, mut runs, mut readers, mut seconds) =
         (None::<PathBuf>, None::<u64>, 20usize, 4usize, 30u64);
     let mut out = PathBuf::from("specs/006-graph-store/results");
+    let (mut sparql_file, mut server) = (None::<PathBuf>, SERVER_ID.to_string());
     let rest: Vec<String> = args.collect();
     for pair in rest.chunks(2) {
         let value = pair.get(1).cloned();
@@ -494,6 +520,8 @@ fn main() -> ExitCode {
             "--runs" => runs = number.map_or(runs, |n| n as usize),
             "--readers" => readers = number.map_or(readers, |n| n as usize),
             "--seconds" => seconds = number.unwrap_or(seconds),
+            "--sparql" => sparql_file = value.map(PathBuf::from),
+            "--server" => server = value.unwrap_or(server),
             other => return fail(&format!("unknown argument: {other}")),
         }
     }
@@ -502,6 +530,18 @@ fn main() -> ExitCode {
     };
     if command == "stress-reader" {
         return stress_reader(&dir);
+    }
+    if let (true, Some(file)) = (command == "query", &sparql_file) {
+        return match sparql(&dir, &server, file) {
+            Ok(r) => {
+                println!(
+                    "{}",
+                    serde_json::to_string_pretty(&r).expect("JSON serializes")
+                );
+                ExitCode::SUCCESS
+            }
+            Err(e) => fail(&e),
+        };
     }
     let result = match command.as_str() {
         "build" => match scenes {

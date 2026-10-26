@@ -4,6 +4,32 @@ Release procedure: bump `sem:version` in `core.ttl`, add the entry here, run
 `vocab-check --write-terms --write-snapshot`, then `vocab-check`. A removed or renamed term, or an
 incompatible domain or range, needs a higher MAJOR; added terms need a higher MINOR (rule V014).
 
+## 1.4.0 (2026-10-26)
+
+Corrections found while mapping the library into the graph (`specs/007-graph-build`, research
+R6). Terms are only added and comments clarified; no domain or range changes.
+
+### Additions
+
+- **`pairsA` and `pairsB`:** the instances at a pairing's ends A and B, both sub-properties of
+  `pairs`. A directed Action pairing ("A gives to B") needs to know which instance is end A, and
+  RDF facts have no order.
+- **`roleAppliedAutomatically`:** true on a role instance that auto-apply added
+  (`autoRoleAssignments`). `map_autoRoleAssignments` marks automatic roles, but no term could
+  mark a role instance, and `appliedAutomatically` is limited to relation instances.
+
+### Clarifications
+
+- **`pairingDirection`:** the plugin stores `bidirectional`, `give` and `receive`, and treats a
+  missing direction as bidirectional (`src/ui/actions.js`). The comment said "bidirectional or
+  directed". Role pairings carry no direction.
+- **`pairs`:** points to `pairsA` and `pairsB` for the ends.
+- **Status Derived:** now "defined as a rule over other data, not by a Stash key of its own".
+  The four measurement properties are stored by the builder, because their input is not a fact
+  and no query could compute them. `inStage` stays not stored.
+- **Mapping comments:** `map_actionPairings`, `map_roleTagPairings` and
+  `map_autoRoleAssignments` name the terms they also produce.
+
 ## 1.3.0 (2026-10-24)
 
 Terms for what the library reader reads (`specs/005-stash-adapter`), from the semantic-tagging

@@ -1,10 +1,21 @@
-//! Error codes and the contract version (spec 004: contract 1.1.0 adds NOT_FOUND).
+//! Error codes and the contract version (spec 004: 1.1.0 adds NOT_FOUND; spec 007: 1.2.0 adds
+//! BUSY).
 
 use engine::{ErrorCode, CONTRACT_VERSION};
 
 #[test]
-fn contract_is_1_1_0() {
-    assert_eq!(CONTRACT_VERSION, "1.1.0");
+fn contract_is_1_2_0() {
+    assert_eq!(CONTRACT_VERSION, "1.2.0");
+}
+
+#[test]
+fn busy_is_a_contract_error_code() {
+    assert_eq!(ErrorCode::Busy.as_str(), "BUSY");
+    assert!(ErrorCode::ALL.contains(&ErrorCode::Busy));
+    assert_eq!(
+        serde_json::to_value(ErrorCode::Busy).unwrap(),
+        serde_json::json!("BUSY")
+    );
 }
 
 #[test]

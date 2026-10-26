@@ -1,0 +1,33 @@
+{
+  "batchFacts": 50000,
+  "command": "stash",
+  "input": {
+    "stash": "http://localhost:9999/"
+  },
+  "result": {
+    "peakMemoryBytes": 377487360,
+    "report": {
+      "facts": 7460,
+      "generation": 1,
+      "notes": {
+        "mismatches": {},
+        "skipped": {
+          "invalidId": 1
+        }
+      },
+      "phases": {
+        "map": 5,
+        "publish": 4,
+        "read": 201,
+        "write": 63
+      },
+      "records": {
+        "images": 0,
+        "performers": 1161,
+        "scenes": 10,
+        "tags": 49
+      },
+      "seconds": 0.350734299
+    }
+  }
+}

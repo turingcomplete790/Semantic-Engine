@@ -92,13 +92,17 @@ Done 2026-10-20: [specs/003-engine-design-spike/decision-record.md](specs/003-en
       RocksDB (Oxigraph's default build; never a system RocksDB). Done as `engine::graph`
       (`specs/006-graph-store`): at 250k scenes the open median is 6.3 ms and the query call
       p95 71.7 ms
-- [ ] Vocabulary from the documents ("The semantic graph is the abstraction boundary" and its
+- [x] Vocabulary from the documents ("The semantic graph is the abstraction boundary" and its
       vocabulary corrections; Milestone 1D): Scene and Image media entities, performers, the six
       flagged tag types plus Variations, reified Role and Action instances, tag categories and
-      variations, parent tags, Label formulas, archetype parents
-- [ ] Data contract read exactly as documented: per-type flags (`plugtag`, `isAction`, `isRole`,
+      variations, parent tags, Label formulas, archetype parents. Done as `engine::build` and the
+      task "Build semantic graph" (`specs/007-graph-build`, contract 1.2.0, vocabulary 1.4.0):
+      a synthetic library of Production size (50,000 scenes, 29,000 images, 4.3 million facts)
+      builds in 40 s with a 1.6 GB peak
+- [x] Data contract read exactly as documented: per-type flags (`plugtag`, `isAction`, `isRole`,
       `isTrait`, `isLabel`, `isMiseEnScene`, `isVariation`), `variantOfTagId`, scene- and
-      image-scoped assignments, performer-global Traits and Labels
+      image-scoped assignments, performer-global Traits and Labels. Done in `specs/007-graph-build`:
+      every key's facts are in its mapping rules; bad fields are skipped or noted, never fatal
 - [ ] Bounded, flag-filtered discovery (constitution Principle VII)
 - [ ] Incremental build with progress and cancellation; store rebuilt when missing, damaged, or
       from an older format
@@ -106,7 +110,9 @@ Done 2026-10-20: [specs/003-engine-design-spike/decision-record.md](specs/003-en
       generations only (constitution Principle IV; decision record rules 1–3). Done in
       `specs/006-graph-store`: 0 partial reads in 16,492 multi-process reads at 250k. A
       publish there takes about 3.8 s, to measure again for incremental updates
-- [ ] Compatibility fixtures: a plugin-tagged library produces the documented graph
+- [x] Compatibility fixtures: a plugin-tagged library produces the documented graph. Done in
+      `specs/007-graph-build`: a hand-written library and its full expected graph, a check that
+      every active mapping entry is exercised, and the captured test-instance library
 
 ## Phase 3: Query operations (Milestone 2)
 

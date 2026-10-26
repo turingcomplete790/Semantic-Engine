@@ -13,11 +13,13 @@ pub enum ErrorCode {
     ServerIdInvalid,
     /// A scene, image, or tag named in the arguments does not exist (since 1.1.0).
     NotFound,
+    /// Another build, or another writer, holds the graph store (since 1.2.0).
+    Busy,
     Internal,
 }
 
 impl ErrorCode {
-    pub const ALL: [ErrorCode; 8] = [
+    pub const ALL: [ErrorCode; 9] = [
         ErrorCode::InvalidInput,
         ErrorCode::UnknownOperation,
         ErrorCode::StashUnreachable,
@@ -25,6 +27,7 @@ impl ErrorCode {
         ErrorCode::ServerIdNotGenerated,
         ErrorCode::ServerIdInvalid,
         ErrorCode::NotFound,
+        ErrorCode::Busy,
         ErrorCode::Internal,
     ];
 
@@ -37,6 +40,7 @@ impl ErrorCode {
             ErrorCode::ServerIdNotGenerated => "SERVER_ID_NOT_GENERATED",
             ErrorCode::ServerIdInvalid => "SERVER_ID_INVALID",
             ErrorCode::NotFound => "NOT_FOUND",
+            ErrorCode::Busy => "BUSY",
             ErrorCode::Internal => "INTERNAL",
         }
     }

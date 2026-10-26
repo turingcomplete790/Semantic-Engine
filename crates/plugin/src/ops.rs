@@ -24,6 +24,7 @@ pub const REGISTRY: &[(&str, Handler)] = &[
     ("recordChange", crate::relations::record_change),
     ("applyRelations", crate::relations::apply_relations),
     ("reapplyRelations", crate::relations::reapply_relations),
+    ("buildGraph", crate::build::build_graph),
 ];
 
 pub fn names() -> Vec<&'static str> {
@@ -61,7 +62,7 @@ fn local_status() -> Value {
 }
 
 /// This plugin's settings in Stash, through the adapter.
-struct StashSettings(stash_adapter::Client);
+pub(crate) struct StashSettings(pub(crate) stash_adapter::Client);
 
 fn store_error(e: stash_adapter::Error) -> StoreError {
     StoreError {
@@ -81,7 +82,9 @@ impl SettingsStore for StashSettings {
     }
 }
 
-fn settings_store(input: &PluginInput) -> Result<StashSettings, server_id::ServerIdError> {
+pub(crate) fn settings_store(
+    input: &PluginInput,
+) -> Result<StashSettings, server_id::ServerIdError> {
     stash_adapter::Client::from_server_connection(&input.server_connection)
         .map(StashSettings)
         .map_err(|e| server_id::ServerIdError::Store(store_error(e)))

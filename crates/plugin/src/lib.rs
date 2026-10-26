@@ -2,6 +2,7 @@
 //! the result envelope (contracts/operations.md).
 
 pub mod apply;
+pub mod build;
 pub mod envelope;
 pub mod input;
 pub mod journal;

@@ -133,3 +133,7 @@ prop bustSize core.ttl Global
 prop waist core.ttl Global
 prop hip core.ttl Global
 prop waistToHipRatio core.ttl Global
+# 1.4.0 (spec 007): pairing ends, automatic roles
+prop pairsA core.ttl SceneScoped
+prop pairsB core.ttl SceneScoped
+prop roleAppliedAutomatically core.ttl SceneScoped

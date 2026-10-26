@@ -20,6 +20,10 @@ tasks:
     defaultArgs:
       op: reapplyRelations
       scope: all
+  - name: Build semantic graph
+    description: Read the whole library and rebuild the semantic graph from it. The previous graph stays in use until the new one is published.
+    defaultArgs:
+      op: buildGraph
 hooks:
   - name: Apply relations after a save
     description: Records the saved scene or image and starts the "Apply relations" task. Adds only a few milliseconds to the save.

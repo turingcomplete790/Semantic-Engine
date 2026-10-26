@@ -1,0 +1,34 @@
+{
+  "batchFacts": 50000,
+  "command": "synth",
+  "input": {
+    "generateMs": 670,
+    "images": 29000,
+    "peakMemoryAfterGenerateBytes": 950927360,
+    "scenes": 50000
+  },
+  "result": {
+    "peakMemoryBytes": 1614778368,
+    "report": {
+      "facts": 4293495,
+      "generation": 1,
+      "notes": {
+        "mismatches": {},
+        "skipped": {}
+      },
+      "phases": {
+        "map": 4148,
+        "publish": 1163,
+        "read": 0,
+        "write": 34281
+      },
+      "records": {
+        "images": 29000,
+        "performers": 1000,
+        "scenes": 50000,
+        "tags": 48
+      },
+      "seconds": 39.888703296
+    }
+  }
+}

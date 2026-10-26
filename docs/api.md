@@ -1,6 +1,6 @@
 # Semantic Engine API
 
-Contract version: **1.1.0**
+Contract version: **1.2.0**
 
 This is the contract for clients of the Semantic Engine Stash plugin, such as the Semantic Stash
 Viewer and the semantic-tagging plugin. It lists every operation and task, what to send, what
@@ -40,11 +40,11 @@ GraphQL call.
 Every operation returns one JSON object as the value of `runPluginOperation`:
 
 ```json
-{ "ok": true, "op": "status", "contractVersion": "1.1.0", "result": { } }
+{ "ok": true, "op": "status", "contractVersion": "1.2.0", "result": { } }
 ```
 
 ```json
-{ "ok": false, "op": "getServerId", "contractVersion": "1.1.0",
+{ "ok": false, "op": "getServerId", "contractVersion": "1.2.0",
   "error": { "code": "SERVER_ID_NOT_GENERATED", "message": "no server identifier yet; run the \"Generate server identifier\" task" } }
 ```
 
@@ -86,8 +86,8 @@ Reports versions, the server's Stash version, and the server identifier.
 ```json
 {
   "engineVersion": "0.1.0",
-  "contractVersion": "1.1.0",
-  "vocabularyVersion": "1.1.0",
+  "contractVersion": "1.2.0",
+  "vocabularyVersion": "1.4.0",
   "oxigraphVersion": "0.4.11",
   "rocksdbVersion": "10.3.0",
   "rocksdb": { "version": "10.3.0", "available": true },
@@ -287,6 +287,28 @@ scenes.
 - Errors: `INVALID_INPUT`, `STASH_UNREACHABLE`, `INTERNAL`
 - Since: 1.1.0
 
+### Build semantic graph (`buildGraph`)
+
+Reads the whole library and rebuilds the semantic graph from it, then publishes it as a new
+generation. Readers keep using the previous graph until the new one is published. It only reads
+Stash; it writes nothing but the engine's own folder.
+
+- Run with: `runPluginTask(plugin_id: "semantic-engine", task_name: "Build semantic graph")`
+- Log: progress, then a summary line such as `build: generation 4 published; 1215 records (17
+  tags, 886 performers, 300 scenes, 12 images); 41022 facts; skipped 3 (unreadable 1, badShape
+  2); mismatches 5 (tagWrongType 5); 12.4 s`. Up to 1,000 warning lines name fields that were
+  skipped or did not match their documented type, by item, key and reason, never by value.
+- Called as an operation, `args: { op: "buildGraph" }`, it returns
+  `{ "generation", "facts", "records": { "tags", "performers", "scenes", "images" },
+  "cleared"?, "notes": { "skipped", "mismatches" }, "phases", "seconds" }`. `cleared` names why
+  the store had to be rebuilt (`damaged`, `otherFormat` or `otherServer`) when it did.
+- Stopping the job publishes nothing; the previous graph stays in use.
+- Errors: `SERVER_ID_NOT_GENERATED` (run "Generate server identifier" first),
+  `SERVER_ID_INVALID`, `BUSY` (a build is already running; nothing changed),
+  `STASH_UNREACHABLE`, `STASH_TOO_OLD`, `INTERNAL` (including refused credentials; the message
+  says which)
+- Since: 1.2.0
+
 ## The server identifier
 
 Every Stash server gets one identifier, a lower-case hyphenated UUID such as
@@ -326,6 +348,7 @@ terms yet.
 | `SERVER_ID_NOT_GENERATED` | the server has no identifier yet |
 | `SERVER_ID_INVALID` | the stored identifier is not a lower-case hyphenated UUID |
 | `NOT_FOUND` | a scene, image, or tag named in the arguments does not exist (since 1.1.0) |
+| `BUSY` | another build, or another writer, is using the graph store; nothing was changed (since 1.2.0) |
 | `INTERNAL` | an unexpected failure inside the plugin; the message says what failed |
 
 ## Compatibility
@@ -338,6 +361,10 @@ terms yet.
 - `status` reports `contractVersion`, so a client can check it before relying on newer features.
 
 ## Changes
+
+### 1.2.0 (in progress, spec 007)
+
+Task "Build semantic graph" (`buildGraph`); error code `BUSY`. Vocabulary 1.4.0.
 
 ### No contract change (spec 005)
 

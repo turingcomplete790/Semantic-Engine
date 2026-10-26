@@ -1,0 +1,883 @@
+{
+ "start": {
+  "scene": "2026-10-26T10:00:00-06:00",
+  "image": "2026-10-26T10:00:00-06:00",
+  "performer": "2026-10-26T10:00:00-06:00",
+  "tag": "2026-10-26T10:00:00-06:00"
+ },
+ "tags": [
+  {
+   "id": "1",
+   "name": "Dominant",
+   "flags": [
+    "role"
+   ],
+   "parents": [],
+   "fields": {},
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "2",
+   "name": "Dom",
+   "flags": [
+    "role"
+   ],
+   "parents": [
+    "1",
+    "900"
+   ],
+   "fields": {
+    "categories": {
+     "value": [
+      "Dominant"
+     ]
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "3",
+   "name": "Sub",
+   "flags": [
+    "role"
+   ],
+   "parents": [],
+   "fields": {
+    "categories": {
+     "value": [
+      "Submissive"
+     ]
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "4",
+   "name": "Kissing",
+   "flags": [
+    "action"
+   ],
+   "parents": [],
+   "fields": {
+    "variations": {
+     "value": [
+      "peck",
+      "making out"
+     ]
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "5",
+   "name": "Smooching",
+   "flags": [],
+   "parents": [],
+   "fields": {
+    "variantOfTagId": {
+     "value": "4"
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "6",
+   "name": "Red Hair",
+   "flags": [
+    "pluggable"
+   ],
+   "parents": [],
+   "fields": {},
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "7",
+   "name": "Hair Colour",
+   "flags": [
+    "trait"
+   ],
+   "parents": [],
+   "fields": {
+    "categories": {
+     "value": [
+      "Appearance"
+     ]
+    },
+    "variations": {
+     "value": [
+      "Copper",
+      "Auburn"
+     ]
+    },
+    "fieldMapping": {
+     "value": {
+      "base": {
+       "field": "hair_color",
+       "priority": 5
+      },
+      "variations": {
+       "Copper": {
+        "field": "hair_color",
+        "priority": 1
+       },
+       "Auburn": {
+        "field": "hair_color",
+        "priority": 2
+       }
+      }
+     }
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "8",
+   "name": "Redhead",
+   "flags": [
+    "label"
+   ],
+   "parents": [],
+   "fields": {
+    "labelFormula": {
+     "value": {
+      "threshold": 0,
+      "traitRules": [
+       {
+        "id": "r1",
+        "tagId": "7",
+        "tagName": "Hair Colour",
+        "weight": 100,
+        "variationMatch": "Copper",
+        "recursive": false
+       },
+       {
+        "id": "r5",
+        "tagId": "7",
+        "weight": 20,
+        "variationMatch": "__any__",
+        "recursive": true
+       }
+      ],
+      "fieldRules": [
+       {
+        "id": "r2",
+        "field": "__derived_bust",
+        "modifier": "GREATER_THAN",
+        "value": 50,
+        "weight": 10
+       },
+       {
+        "id": "r6",
+        "field": "gender",
+        "modifier": "BETWEEN",
+        "value": "A",
+        "value2": "B",
+        "weight": 5
+       }
+      ],
+      "labelRules": [
+       {
+        "id": "r3",
+        "labelTagId": "13",
+        "weight": 30
+       }
+      ],
+      "pluggableRules": [
+       {
+        "id": "r4",
+        "pluggableTagId": "6",
+        "weight": 50
+       }
+      ]
+     }
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "9",
+   "name": "Beach",
+   "flags": [
+    "miseEnScene"
+   ],
+   "parents": [],
+   "fields": {
+    "categories": {
+     "value": [
+      "Location"
+     ]
+    },
+    "variations": {
+     "value": [
+      "sunset",
+      "night"
+     ]
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "10",
+   "name": "Studio",
+   "flags": [
+    "miseEnScene"
+   ],
+   "parents": [],
+   "fields": {},
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "11",
+   "name": "Performer A (Redhead)",
+   "flags": [
+    "variation"
+   ],
+   "parents": [],
+   "fields": {
+    "variationData": {
+     "value": {
+      "performerId": "7",
+      "pluggableTagIds": [
+       "6"
+      ],
+      "traitTagIds": [
+       "7"
+      ],
+      "labelTagIds": [
+       "8"
+      ]
+     }
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "12",
+   "name": "Care",
+   "flags": [
+    "relation"
+   ],
+   "parents": [
+    "14"
+   ],
+   "fields": {
+    "relationEnds": {
+     "value": {
+      "a": "2",
+      "b": "3"
+     }
+    },
+    "relationRules": {
+     "value": [
+      {
+       "id": "rr1",
+       "a": {
+        "label": "8"
+       },
+       "b": {
+        "role": "3"
+       },
+       "actions": [
+        "4"
+       ]
+      },
+      {
+       "id": "rr2",
+       "a": {
+        "role": "2"
+       },
+       "b": {
+        "role": "3"
+       }
+      }
+     ]
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "13",
+   "name": "Muse",
+   "flags": [
+    "trait",
+    "label"
+   ],
+   "parents": [],
+   "fields": {
+    "labelFormula": {
+     "value": {
+      "threshold": 60
+     }
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "14",
+   "name": "Bond",
+   "flags": [
+    "relation"
+   ],
+   "parents": [],
+   "fields": {},
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "15",
+   "name": "Broken Label",
+   "flags": [
+    "label"
+   ],
+   "parents": [],
+   "fields": {
+    "categories": {
+     "value": [
+      "Unused Category"
+     ]
+    },
+    "labelFormula": {
+     "value": {
+      "threshold": 50,
+      "traitRules": [
+       {
+        "tagId": "7",
+        "tagName": "Hair Colour",
+        "weight": 10
+       }
+      ]
+     }
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "16",
+   "name": "Bad Variant",
+   "flags": [],
+   "parents": [],
+   "fields": {
+    "variantOfTagId": {
+     "value": "abc"
+    },
+    "variations": {
+     "unreadable": {
+      "raw": "[\"Secret Name\"",
+      "reason": "not valid JSON"
+     }
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  }
+ ],
+ "performers": [
+  {
+   "id": "7",
+   "tags": [
+    "7",
+    "8",
+    "11",
+    "500"
+   ],
+   "archetype": false,
+   "archetype_parents": null,
+   "measurements": {
+    "raw": "34D-26-35",
+    "bust_size": 55.5,
+    "waist": 26,
+    "hip": 35,
+    "waist_to_hip_ratio": 0.74
+   },
+   "display": null,
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "8",
+   "tags": [
+    "13"
+   ],
+   "archetype": false,
+   "archetype_parents": null,
+   "measurements": {
+    "raw": "36DD",
+    "bust_size": 58.5,
+    "waist": null,
+    "hip": null,
+    "waist_to_hip_ratio": null
+   },
+   "display": null,
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "20",
+   "tags": [],
+   "archetype": true,
+   "archetype_parents": {
+    "value": [
+     "21",
+     "22"
+    ]
+   },
+   "measurements": null,
+   "display": null,
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "21",
+   "tags": [],
+   "archetype": true,
+   "archetype_parents": {
+    "value": []
+   },
+   "measurements": null,
+   "display": null,
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "22",
+   "tags": [],
+   "archetype": true,
+   "archetype_parents": null,
+   "measurements": null,
+   "display": null,
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "30",
+   "tags": [],
+   "archetype": false,
+   "archetype_parents": {
+    "value": [
+     "31"
+    ]
+   },
+   "measurements": null,
+   "display": null,
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "id": "31",
+   "tags": [],
+   "archetype": true,
+   "archetype_parents": {
+    "unreadable": {
+     "raw": "[31",
+     "reason": "not valid JSON"
+    }
+   },
+   "measurements": null,
+   "display": null,
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  }
+ ],
+ "scenes": [
+  {
+   "kind": "scene",
+   "id": "100",
+   "performers": [
+    "7",
+    "8"
+   ],
+   "tags": [],
+   "fields": {
+    "roleTagAssignments": {
+     "value": {
+      "7": [
+       "2",
+       "2"
+      ],
+      "8": [
+       "3"
+      ]
+     }
+    },
+    "autoRoleAssignments": {
+     "value": {
+      "8": [
+       "3"
+      ]
+     }
+    },
+    "actionAssignments": {
+     "value": {
+      "7": [
+       {
+        "actionTagId": "4",
+        "variations": [
+         "making out"
+        ]
+       },
+       {
+        "actionTagId": "4",
+        "variations": [
+         "peck"
+        ]
+       }
+      ],
+      "8": [
+       {
+        "actionTagId": "4",
+        "variations": []
+       }
+      ]
+     }
+    },
+    "pluggableAssignments": {
+     "value": {
+      "7": [
+       "6"
+      ]
+     }
+    },
+    "actionPairings": {
+     "value": [
+      {
+       "a": {
+        "performer": "7",
+        "actionTagId": "4"
+       },
+       "b": {
+        "performer": "8",
+        "actionTagId": "4"
+       },
+       "pairingId": "p1"
+      },
+      {
+       "a": {
+        "performer": "8",
+        "actionTagId": "4"
+       },
+       "b": {
+        "performer": "7",
+        "actionTagId": "4"
+       },
+       "direction": "give",
+       "pairingId": "p2"
+      }
+     ]
+    },
+    "roleTagPairings": {
+     "value": [
+      {
+       "a": {
+        "performer": "7",
+        "roleTagId": "2"
+       },
+       "b": {
+        "performer": "8",
+        "roleTagId": "3"
+       },
+       "pairingId": "p3"
+      }
+     ]
+    },
+    "relationAssignments": {
+     "value": [
+      {
+       "relationTagId": "12",
+       "a": "7",
+       "b": "8",
+       "auto": true,
+       "ruleId": "rr2"
+      },
+      {
+       "relationTagId": "12",
+       "a": "8",
+       "b": "7"
+      }
+     ]
+    },
+    "timeline": {
+     "value": [
+      {
+       "id": "s1",
+       "type": "stage",
+       "miseEnScenePicks": [
+        {
+         "tagId": "9",
+         "tagName": "Beach",
+         "variation": "sunset"
+        },
+        {
+         "tagId": "10",
+         "tagName": "Studio"
+        }
+       ]
+      },
+      {
+       "id": "e1",
+       "ref": {
+        "kind": "action-instance",
+        "performerId": "7",
+        "actionTagId": "4"
+       },
+       "seconds": 30,
+       "markerId": "55"
+      },
+      {
+       "id": "e2",
+       "ref": {
+        "kind": "role-instance",
+        "performerId": "8",
+        "roleTagId": "3"
+       },
+       "seconds": 45.5
+      },
+      {
+       "id": "s2",
+       "type": "stage",
+       "miseEnScenePicks": [
+        {
+         "tagId": "9",
+         "tagName": "Beach",
+         "variation": "night"
+        }
+       ]
+      },
+      {
+       "id": "e3",
+       "ref": {
+        "kind": "action-pairing",
+        "pairingId": "p1"
+       },
+       "seconds": 90
+      },
+      {
+       "id": "e4",
+       "ref": {
+        "kind": "role-pairing",
+        "pairingId": "p3"
+       },
+       "seconds": 100
+      }
+     ]
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "kind": "scene",
+   "id": "101",
+   "performers": [
+    "7",
+    "9"
+   ],
+   "tags": [],
+   "fields": {
+    "roleTagAssignments": {
+     "value": {
+      "7": [
+       "3"
+      ],
+      "9": [
+       "2"
+      ]
+     }
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "kind": "scene",
+   "id": "300",
+   "performers": [
+    "7"
+   ],
+   "tags": [],
+   "fields": {
+    "roleTagAssignments": {
+     "unreadable": {
+      "raw": "{bad",
+      "reason": "not valid JSON"
+     }
+    },
+    "pluggableAssignments": {
+     "value": {
+      "7": [
+       "6"
+      ]
+     }
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "kind": "scene",
+   "id": "301",
+   "performers": [
+    "7",
+    "8"
+   ],
+   "tags": [],
+   "fields": {
+    "roleTagAssignments": {
+     "value": {
+      "x7": [
+       "2"
+      ],
+      "7": [
+       "7 a",
+       "4",
+       "999"
+      ],
+      "8": [
+       "3"
+      ]
+     }
+    },
+    "autoRoleAssignments": {
+     "value": {
+      "8": [
+       "1"
+      ]
+     }
+    },
+    "actionAssignments": {
+     "value": {
+      "9": [
+       {
+        "actionTagId": "4"
+       }
+      ]
+     }
+    },
+    "actionPairings": {
+     "value": [
+      {
+       "a": {
+        "performer": "7",
+        "actionTagId": "4"
+       },
+       "b": {
+        "performer": "8",
+        "actionTagId": "4"
+       },
+       "pairingId": "q1"
+      },
+      {
+       "a": {
+        "performer": "9",
+        "actionTagId": "4"
+       },
+       "b": {
+        "performer": "9",
+        "actionTagId": "4"
+       },
+       "direction": "sideways",
+       "pairingId": "q2"
+      },
+      {
+       "a": {
+        "performer": "9",
+        "actionTagId": "4"
+       },
+       "b": {
+        "performer": "9",
+        "actionTagId": "4"
+       },
+       "pairingId": "a/b"
+      }
+     ]
+    },
+    "timeline": {
+     "value": [
+      {
+       "id": "t1",
+       "ref": {
+        "kind": "camera-angle"
+       }
+      },
+      {
+       "id": "t2",
+       "ref": {
+        "kind": "mise-en-scene",
+        "tagId": "9"
+       }
+      },
+      {
+       "ref": {
+        "kind": "role-instance",
+        "performerId": "8",
+        "roleTagId": "3"
+       },
+       "seconds": 5
+      },
+      {
+       "id": "t4",
+       "ref": {
+        "kind": "role-instance",
+        "performerId": "8",
+        "roleTagId": "3"
+       },
+       "seconds": 12
+      },
+      {
+       "id": "t5",
+       "ref": {
+        "kind": "action-pairing",
+        "pairingId": "q1"
+       }
+      }
+     ]
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  },
+  {
+   "kind": "scene",
+   "id": "302",
+   "performers": [
+    "8"
+   ],
+   "tags": [],
+   "fields": {
+    "actionAssignments": {
+     "unreadable": {
+      "raw": "{bad",
+      "reason": "not valid JSON"
+     }
+    },
+    "timeline": {
+     "unreadable": {
+      "raw": "[{",
+      "reason": "not valid JSON"
+     }
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  }
+ ],
+ "images": [
+  {
+   "kind": "image",
+   "id": "200",
+   "performers": [
+    "8"
+   ],
+   "tags": [],
+   "fields": {
+    "roleTagAssignments": {
+     "value": {
+      "8": [
+       "2"
+      ]
+     }
+    },
+    "timeline": {
+     "value": [
+      {
+       "id": "i1",
+       "ref": {
+        "kind": "role-instance",
+        "performerId": "8",
+        "roleTagId": "2"
+       }
+      }
+     ]
+    }
+   },
+   "updated_at": "2026-10-26T10:00:00-06:00"
+  }
+ ],
+ "missing": {},
+ "requests": 0
+}

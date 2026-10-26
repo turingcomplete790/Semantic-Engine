@@ -83,6 +83,26 @@ impl Writer {
         })
     }
 
+    /// Opens an empty working store with the lock already held. The dirty marker is written
+    /// first, so a crash before publish makes the next writer reset from the current generation.
+    pub(crate) fn open_empty(
+        dir: &Path,
+        server_id: &str,
+        lock: File,
+    ) -> Result<Writer, GraphError> {
+        fs::write(layout::dirty_path(dir), b"")?;
+        let work = layout::work_dir(dir);
+        layout::remove_if_present(&work)?;
+        let store = Store::open(&work).map_err(storage)?;
+        Ok(Writer {
+            dir: dir.to_path_buf(),
+            server_id: server_id.to_string(),
+            store,
+            dirty: true,
+            _lock: lock,
+        })
+    }
+
     /// Marks the working store as having unpublished changes, before the first one.
     fn touch(&mut self) -> Result<(), GraphError> {
         if !self.dirty {

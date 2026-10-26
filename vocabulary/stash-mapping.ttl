@@ -218,6 +218,7 @@ sem:map_pluggableAssignments a sem:Mapping ;
     sem:since "1.0.0" .
 
 sem:map_actionPairings a sem:Mapping ;
+    rdfs:comment "Also produces sem:pairsA, sem:pairsB and sem:pairingDirection." ;
     sem:fromEntity "Scene, Image" ;
     sem:fromField "custom_fields.actionPairings" ;
     sem:allowedValues "list of {a, b, direction, pairingId}" ;
@@ -228,7 +229,7 @@ sem:map_actionPairings a sem:Mapping ;
     sem:since "1.0.0" .
 
 sem:map_roleTagPairings a sem:Mapping ;
-    rdfs:comment "The documents call this rolePairings in places; the stored key is roleTagPairings." ;
+    rdfs:comment "The documents call this rolePairings in places; the stored key is roleTagPairings. Also produces sem:pairsA, sem:pairsB and sem:pairingDirection." ;
     sem:fromEntity "Scene, Image" ;
     sem:fromField "custom_fields.roleTagPairings" ;
     sem:allowedValues "list of {a, b, direction, pairingId}" ;
@@ -313,7 +314,7 @@ sem:map_relationAssignments a sem:Mapping ;
     sem:since "1.2.0" .
 
 sem:map_autoRoleAssignments a sem:Mapping ;
-    rdfs:comment "Marks which Role assignments auto-apply added as relation end roles; the same roles also appear in roleTagAssignments." ;
+    rdfs:comment "Marks which Role assignments auto-apply added as relation end roles; the same roles also appear in roleTagAssignments. Also produces sem:roleAppliedAutomatically." ;
     sem:fromEntity "Scene, Image" ;
     sem:fromField "custom_fields.autoRoleAssignments" ;
     sem:allowedValues "JSON map of performer id to the Role tag ids auto-apply added" ;

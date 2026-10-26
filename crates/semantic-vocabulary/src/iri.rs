@@ -27,12 +27,16 @@ fn valid_uuid(s: &str) -> bool {
         })
 }
 
-fn check_id(id: &str) -> Result<&str, IriError> {
-    if !id.is_empty()
+/// Whether `id` can be part of an item IRI: non-empty, with only letters, digits, '-' or '_'.
+pub fn valid_id(id: &str) -> bool {
+    !id.is_empty()
         && id
             .bytes()
             .all(|b| b.is_ascii_alphanumeric() || b == b'-' || b == b'_')
-    {
+}
+
+fn check_id(id: &str) -> Result<&str, IriError> {
+    if valid_id(id) {
         Ok(id)
     } else {
         Err(IriError::BadId(id.to_string()))
@@ -158,4 +162,18 @@ pub enum FieldMappingSlot {
     /// A Trait's slot for one declared variation, by the variation's index in the sorted
     /// variation names: names are free text and not valid IRI ids.
     Variation(usize),
+}
+
+#[cfg(test)]
+mod tests {
+    use super::valid_id;
+
+    #[test]
+    fn valid_id_accepts_only_iri_safe_ids() {
+        assert!(!valid_id(""));
+        assert!(!valid_id("a b"));
+        assert!(!valid_id("a/b"));
+        assert!(valid_id("se-pair-1"));
+        assert!(valid_id("r_1"));
+    }
 }

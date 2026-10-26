@@ -1,6 +1,7 @@
 //! Semantic engine library. It holds the engine's logic and calls Stash only through
 //! `stash-adapter` (constitution Principle V).
 
+pub mod build;
 pub mod errors;
 pub mod graph;
 pub mod recommend;

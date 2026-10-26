@@ -31,11 +31,11 @@ jobs:
       - run: cargo clippy --all-targets --locked -- -D warnings
       - run: cargo test --workspace --locked
       # The release package must carry no spike code (spec 003 FR-013) and no development
-      # tools (spec 006: graph-bench; spec 005: reader-bench, fixture-capture).
+      # tools (spec 007: build-bench; spec 006: graph-bench; spec 005: reader-bench, fixture-capture).
       - name: Release package has no spike files or dev tools
         run: |
           scripts/package.sh --out dist
-          if tar -tzf dist/semantic-engine-*.tar.gz | grep -E 'spike-plugin|semantic-engine-spike|graph-bench|reader-bench|fixture-capture'; then
+          if tar -tzf dist/semantic-engine-*.tar.gz | grep -E 'spike-plugin|semantic-engine-spike|graph-bench|build-bench|reader-bench|fixture-capture'; then
             echo "error: the release package contains spike files or development tools" >&2
             exit 1
           fi

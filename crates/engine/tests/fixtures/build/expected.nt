@@ -1,0 +1,460 @@
+# The expected graph of library.json, written by hand from contracts/mapping-rules.md.
+# One fact per line: subject, predicate, object, " .". The test helper expands the short forms
+# (README § Short forms) to full N-Triples and compares the sorted sets. Vocabulary facts are
+# not listed. Grouped by record for review.
+
+# ---- Tag 1: a Role, parent of tag 2
+i:tag:1 a sem:Role .
+i:tag:1 rdfs:label "Dominant" .
+
+# ---- Tag 2: a Role under a Role, and under tag 900, which is not a semantic tag
+i:tag:2 a sem:Role .
+i:tag:2 rdfs:label "Dom" .
+i:tag:2 sem:parentTag i:tag:1 .
+i:tag:2 sem:broaderRole i:tag:1 .
+i:tag:2 sem:parentTag i:tag:900 .
+i:tag:2 sem:hasCategory "Dominant" .
+
+# ---- Tag 3
+i:tag:3 a sem:Role .
+i:tag:3 rdfs:label "Sub" .
+i:tag:3 sem:hasCategory "Submissive" .
+
+# ---- Tag 4: an Action with declared variations
+i:tag:4 a sem:Action .
+i:tag:4 rdfs:label "Kissing" .
+i:tag:4 sem:hasTagVariation "peck" .
+i:tag:4 sem:hasTagVariation "making out" .
+
+# ---- Tag 5: a common variant, no flags
+i:tag:5 a sem:Tag .
+i:tag:5 rdfs:label "Smooching" .
+i:tag:5 sem:variantOfTag i:tag:4 .
+
+# ---- Tag 6
+i:tag:6 a sem:Pluggable .
+i:tag:6 rdfs:label "Red Hair" .
+
+# ---- Tag 7: a Trait with Field Mapping; variation slots by sorted name (Auburn 0, Copper 1)
+i:tag:7 a sem:Trait .
+i:tag:7 rdfs:label "Hair Colour" .
+i:tag:7 sem:hasCategory "Appearance" .
+i:tag:7 sem:hasTagVariation "Copper" .
+i:tag:7 sem:hasTagVariation "Auburn" .
+i:tag:7 sem:hasFieldMapping i:tag:7/fieldMapping:base .
+i:tag:7/fieldMapping:base a sem:FieldMappingRule .
+i:tag:7/fieldMapping:base sem:mapsToField "hair_color" .
+i:tag:7/fieldMapping:base sem:mappingPriority "5"^^xsd:integer .
+i:tag:7 sem:hasFieldMapping i:tag:7/fieldMapping:variation:0 .
+i:tag:7/fieldMapping:variation:0 a sem:FieldMappingRule .
+i:tag:7/fieldMapping:variation:0 sem:mapsToField "hair_color" .
+i:tag:7/fieldMapping:variation:0 sem:mappingPriority "2"^^xsd:integer .
+i:tag:7/fieldMapping:variation:0 sem:mappingVariation "Auburn" .
+i:tag:7 sem:hasFieldMapping i:tag:7/fieldMapping:variation:1 .
+i:tag:7/fieldMapping:variation:1 a sem:FieldMappingRule .
+i:tag:7/fieldMapping:variation:1 sem:mapsToField "hair_color" .
+i:tag:7/fieldMapping:variation:1 sem:mappingPriority "1"^^xsd:integer .
+i:tag:7/fieldMapping:variation:1 sem:mappingVariation "Copper" .
+
+# ---- Tag 8: a Label; threshold 0 gives the default 100; all four rule kinds
+i:tag:8 a sem:Label .
+i:tag:8 rdfs:label "Redhead" .
+i:tag:8 sem:hasThreshold "100"^^xsd:decimal .
+i:tag:8 sem:hasRule i:tag:8/rule:r1 .
+i:tag:8/rule:r1 a sem:TraitRule .
+i:tag:8/rule:r1 sem:ruleId "r1" .
+i:tag:8/rule:r1 sem:hasWeight "100"^^xsd:decimal .
+i:tag:8/rule:r1 sem:ofTag i:tag:7 .
+i:tag:8/rule:r1 sem:hasVariation "Copper" .
+i:tag:8/rule:r1 sem:isRecursive "false"^^xsd:boolean .
+i:tag:8 sem:hasRule i:tag:8/rule:r5 .
+i:tag:8/rule:r5 a sem:TraitRule .
+i:tag:8/rule:r5 sem:ruleId "r5" .
+i:tag:8/rule:r5 sem:hasWeight "20"^^xsd:decimal .
+i:tag:8/rule:r5 sem:ofTag i:tag:7 .
+i:tag:8/rule:r5 sem:isRecursive "true"^^xsd:boolean .
+i:tag:8 sem:hasRule i:tag:8/rule:r2 .
+i:tag:8/rule:r2 a sem:FieldRule .
+i:tag:8/rule:r2 sem:ruleId "r2" .
+i:tag:8/rule:r2 sem:hasWeight "10"^^xsd:decimal .
+i:tag:8/rule:r2 sem:hasField "__derived_bust" .
+i:tag:8/rule:r2 sem:hasModifier "GREATER_THAN" .
+i:tag:8/rule:r2 sem:hasValue "50" .
+i:tag:8 sem:hasRule i:tag:8/rule:r6 .
+i:tag:8/rule:r6 a sem:FieldRule .
+i:tag:8/rule:r6 sem:ruleId "r6" .
+i:tag:8/rule:r6 sem:hasWeight "5"^^xsd:decimal .
+i:tag:8/rule:r6 sem:hasField "gender" .
+i:tag:8/rule:r6 sem:hasModifier "BETWEEN" .
+i:tag:8/rule:r6 sem:hasValue "A" .
+i:tag:8/rule:r6 sem:hasValue2 "B" .
+i:tag:8 sem:hasRule i:tag:8/rule:r3 .
+i:tag:8/rule:r3 a sem:LabelDependencyRule .
+i:tag:8/rule:r3 sem:ruleId "r3" .
+i:tag:8/rule:r3 sem:hasWeight "30"^^xsd:decimal .
+i:tag:8/rule:r3 sem:ofTag i:tag:13 .
+i:tag:8 sem:hasRule i:tag:8/rule:r4 .
+i:tag:8/rule:r4 a sem:PluggableRule .
+i:tag:8/rule:r4 sem:ruleId "r4" .
+i:tag:8/rule:r4 sem:hasWeight "50"^^xsd:decimal .
+i:tag:8/rule:r4 sem:ofTag i:tag:6 .
+
+# ---- Tags 9 and 10: Mise-en-scène
+i:tag:9 a sem:MiseEnScene .
+i:tag:9 rdfs:label "Beach" .
+i:tag:9 sem:hasCategory "Location" .
+i:tag:9 sem:hasTagVariation "sunset" .
+i:tag:9 sem:hasTagVariation "night" .
+i:tag:10 a sem:MiseEnScene .
+i:tag:10 rdfs:label "Studio" .
+
+# ---- Tag 11: a Variation; traitTagIds is not mapped
+i:tag:11 a sem:Variation .
+i:tag:11 rdfs:label "Performer A (Redhead)" .
+i:tag:11 sem:variationOf i:performer:7 .
+i:tag:11 sem:hasVariationPluggable i:tag:6 .
+i:tag:11 sem:hasVariationLabel i:tag:8 .
+
+# ---- Tag 12: a Relation under a Relation, with ends and two rules
+i:tag:12 a sem:Relation .
+i:tag:12 rdfs:label "Care" .
+i:tag:12 sem:parentTag i:tag:14 .
+i:tag:12 sem:broaderRelation i:tag:14 .
+i:tag:12 sem:endARole i:tag:2 .
+i:tag:12 sem:endBRole i:tag:3 .
+i:tag:12 sem:hasRelationRule i:tag:12/rule:rr1 .
+i:tag:12/rule:rr1 a sem:RelationRule .
+i:tag:12/rule:rr1 sem:relationRuleId "rr1" .
+i:tag:12/rule:rr1 sem:endALabel i:tag:8 .
+i:tag:12/rule:rr1 sem:endBRoleCondition i:tag:3 .
+i:tag:12/rule:rr1 sem:linkingAction i:tag:4 .
+i:tag:12 sem:hasRelationRule i:tag:12/rule:rr2 .
+i:tag:12/rule:rr2 a sem:RelationRule .
+i:tag:12/rule:rr2 sem:relationRuleId "rr2" .
+i:tag:12/rule:rr2 sem:endARoleCondition i:tag:2 .
+i:tag:12/rule:rr2 sem:endBRoleCondition i:tag:3 .
+
+# ---- Tag 13: two flags, a formula with only a threshold
+i:tag:13 a sem:Trait .
+i:tag:13 a sem:Label .
+i:tag:13 rdfs:label "Muse" .
+i:tag:13 sem:hasThreshold "60"^^xsd:decimal .
+
+# ---- Tag 14
+i:tag:14 a sem:Relation .
+i:tag:14 rdfs:label "Bond" .
+
+# ---- Performer 7: Trait, Label, Variation tags (tag 500 is not semantic); measurements 34D-26-35
+i:performer:7 a sem:Performer .
+i:performer:7 sem:hasTrait i:tag:7 .
+i:performer:7 sem:hasLabel i:tag:8 .
+i:performer:7 sem:hasPerformerVariation i:tag:11 .
+i:performer:7 sem:bustSize "55.5"^^xsd:decimal .
+i:performer:7 sem:waist "26"^^xsd:integer .
+i:performer:7 sem:hip "35"^^xsd:integer .
+i:performer:7 sem:waistToHipRatio "0.74"^^xsd:decimal .
+
+# ---- Performer 8: tag 13 is both a Trait and a Label; 36DD gives bust size only
+i:performer:8 a sem:Performer .
+i:performer:8 sem:hasTrait i:tag:13 .
+i:performer:8 sem:hasLabel i:tag:13 .
+i:performer:8 sem:bustSize "58.5"^^xsd:decimal .
+
+# ---- Performers 20 to 22: Archetypes
+i:performer:20 a sem:Performer .
+i:performer:20 a sem:Archetype .
+i:performer:20 sem:parentArchetype i:performer:21 .
+i:performer:20 sem:parentArchetype i:performer:22 .
+i:performer:21 a sem:Performer .
+i:performer:21 a sem:Archetype .
+i:performer:22 a sem:Performer .
+i:performer:22 a sem:Archetype .
+
+# ---- Scene 100
+i:scene:100 a sem:Scene .
+i:scene:100 sem:hasPerformer i:performer:7 .
+i:scene:100 sem:hasPerformer i:performer:8 .
+
+# Role 7:2, listed twice: one instance
+i:scene:100/role:7:2 a sem:RoleInstance .
+i:scene:100/role:7:2 sem:inMedia i:scene:100 .
+i:scene:100/role:7:2 sem:forPerformer i:performer:7 .
+i:scene:100/role:7:2 sem:ofTag i:tag:2 .
+i:performer:7 sem:hasRole i:scene:100/role:7:2 .
+
+# Role 8:3, also automatic; placed by slot e2 at 45.5 s
+i:scene:100/role:8:3 a sem:RoleInstance .
+i:scene:100/role:8:3 sem:inMedia i:scene:100 .
+i:scene:100/role:8:3 sem:forPerformer i:performer:8 .
+i:scene:100/role:8:3 sem:ofTag i:tag:3 .
+i:performer:8 sem:hasRole i:scene:100/role:8:3 .
+i:scene:100/role:8:3 sem:roleAppliedAutomatically "true"^^xsd:boolean .
+i:scene:100/role:8:3 sem:atTime "45.5"^^xsd:decimal .
+
+# Action 7:4, two entries merged with both variations; placed by slot e1 at 30 s
+i:scene:100/action:7:4 a sem:ActionInstance .
+i:scene:100/action:7:4 sem:inMedia i:scene:100 .
+i:scene:100/action:7:4 sem:forPerformer i:performer:7 .
+i:scene:100/action:7:4 sem:ofTag i:tag:4 .
+i:performer:7 sem:hasAction i:scene:100/action:7:4 .
+i:scene:100/action:7:4 sem:hasVariation "making out" .
+i:scene:100/action:7:4 sem:hasVariation "peck" .
+i:scene:100/action:7:4 sem:atTime "30"^^xsd:decimal .
+
+# Action 8:4, no variations
+i:scene:100/action:8:4 a sem:ActionInstance .
+i:scene:100/action:8:4 sem:inMedia i:scene:100 .
+i:scene:100/action:8:4 sem:forPerformer i:performer:8 .
+i:scene:100/action:8:4 sem:ofTag i:tag:4 .
+i:performer:8 sem:hasAction i:scene:100/action:8:4 .
+
+# Pluggable 7:6
+i:scene:100/pluggable:7:6 a sem:PluggableInstance .
+i:scene:100/pluggable:7:6 sem:inMedia i:scene:100 .
+i:scene:100/pluggable:7:6 sem:forPerformer i:performer:7 .
+i:scene:100/pluggable:7:6 sem:ofTag i:tag:6 .
+i:performer:7 sem:hasPluggable i:scene:100/pluggable:7:6 .
+
+# Action pairing p1: no direction stored, so bidirectional
+i:scene:100/pairing:p1 a sem:ActionPairing .
+i:scene:100/pairing:p1 sem:inMedia i:scene:100 .
+i:scene:100/pairing:p1 sem:pairingId "p1" .
+i:scene:100/pairing:p1 sem:pairsA i:scene:100/action:7:4 .
+i:scene:100/pairing:p1 sem:pairsB i:scene:100/action:8:4 .
+i:scene:100/pairing:p1 sem:pairingDirection "bidirectional" .
+
+# Action pairing p2: 8 gives to 7
+i:scene:100/pairing:p2 a sem:ActionPairing .
+i:scene:100/pairing:p2 sem:inMedia i:scene:100 .
+i:scene:100/pairing:p2 sem:pairingId "p2" .
+i:scene:100/pairing:p2 sem:pairsA i:scene:100/action:8:4 .
+i:scene:100/pairing:p2 sem:pairsB i:scene:100/action:7:4 .
+i:scene:100/pairing:p2 sem:pairingDirection "give" .
+
+# Role pairing p3: no direction
+i:scene:100/pairing:p3 a sem:RolePairing .
+i:scene:100/pairing:p3 sem:inMedia i:scene:100 .
+i:scene:100/pairing:p3 sem:pairingId "p3" .
+i:scene:100/pairing:p3 sem:pairsA i:scene:100/role:7:2 .
+i:scene:100/pairing:p3 sem:pairsB i:scene:100/role:8:3 .
+
+# Relation instances: automatic by rule rr2, and manual in the other direction
+i:scene:100/relation:12:7:8 a sem:RelationInstance .
+i:scene:100/relation:12:7:8 sem:inMedia i:scene:100 .
+i:scene:100/relation:12:7:8 sem:ofRelation i:tag:12 .
+i:scene:100/relation:12:7:8 sem:atEndA i:performer:7 .
+i:scene:100/relation:12:7:8 sem:atEndB i:performer:8 .
+i:scene:100/relation:12:7:8 sem:appliedAutomatically "true"^^xsd:boolean .
+i:scene:100/relation:12:7:8 sem:appliedByRule i:tag:12/rule:rr2 .
+i:scene:100/relation:12:8:7 a sem:RelationInstance .
+i:scene:100/relation:12:8:7 sem:inMedia i:scene:100 .
+i:scene:100/relation:12:8:7 sem:ofRelation i:tag:12 .
+i:scene:100/relation:12:8:7 sem:atEndA i:performer:8 .
+i:scene:100/relation:12:8:7 sem:atEndB i:performer:7 .
+i:scene:100/relation:12:8:7 sem:appliedAutomatically "false"^^xsd:boolean .
+
+# Timeline
+i:scene:100 sem:hasTimeline i:scene:100/timeline .
+i:scene:100/timeline a sem:Timeline .
+i:scene:100/timeline sem:inMedia i:scene:100 .
+
+# Stage s1 (position 0): Beach at sunset, and Studio with no variation
+i:scene:100/timeline sem:hasEntry i:scene:100/timeline/s1 .
+i:scene:100/timeline/s1 a sem:Stage .
+i:scene:100/timeline/s1 sem:position "0"^^xsd:nonNegativeInteger .
+i:scene:100/timeline/s1 sem:entryId "s1" .
+i:scene:100/timeline/s1 sem:hasPick i:scene:100/timeline/s1/pick:9 .
+i:scene:100/timeline/s1/pick:9 a sem:StagePick .
+i:scene:100/timeline/s1/pick:9 sem:ofTag i:tag:9 .
+i:scene:100/timeline/s1/pick:9 sem:hasVariation "sunset" .
+i:scene:100/timeline/s1 sem:hasPick i:scene:100/timeline/s1/pick:10 .
+i:scene:100/timeline/s1/pick:10 a sem:StagePick .
+i:scene:100/timeline/s1/pick:10 sem:ofTag i:tag:10 .
+
+# Slot e1 (position 1): action 7:4 at 30 s, with a marker
+i:scene:100/timeline sem:hasEntry i:scene:100/timeline/e1 .
+i:scene:100/timeline/e1 a sem:Slot .
+i:scene:100/timeline/e1 sem:position "1"^^xsd:nonNegativeInteger .
+i:scene:100/timeline/e1 sem:entryId "e1" .
+i:scene:100/timeline/e1 sem:slotSeconds "30"^^xsd:decimal .
+i:scene:100/timeline/e1 sem:linkedMarker i:marker:55 .
+i:scene:100/timeline/e1 sem:places i:scene:100/action:7:4 .
+
+# Slot e2 (position 2): role 8:3 at 45.5 s
+i:scene:100/timeline sem:hasEntry i:scene:100/timeline/e2 .
+i:scene:100/timeline/e2 a sem:Slot .
+i:scene:100/timeline/e2 sem:position "2"^^xsd:nonNegativeInteger .
+i:scene:100/timeline/e2 sem:entryId "e2" .
+i:scene:100/timeline/e2 sem:slotSeconds "45.5"^^xsd:decimal .
+i:scene:100/timeline/e2 sem:places i:scene:100/role:8:3 .
+
+# Stage s2 (position 3): Beach at night
+i:scene:100/timeline sem:hasEntry i:scene:100/timeline/s2 .
+i:scene:100/timeline/s2 a sem:Stage .
+i:scene:100/timeline/s2 sem:position "3"^^xsd:nonNegativeInteger .
+i:scene:100/timeline/s2 sem:entryId "s2" .
+i:scene:100/timeline/s2 sem:hasPick i:scene:100/timeline/s2/pick:9 .
+i:scene:100/timeline/s2/pick:9 a sem:StagePick .
+i:scene:100/timeline/s2/pick:9 sem:ofTag i:tag:9 .
+i:scene:100/timeline/s2/pick:9 sem:hasVariation "night" .
+
+# Slot e3 (position 4): action pairing p1; pairings get no atTime
+i:scene:100/timeline sem:hasEntry i:scene:100/timeline/e3 .
+i:scene:100/timeline/e3 a sem:Slot .
+i:scene:100/timeline/e3 sem:position "4"^^xsd:nonNegativeInteger .
+i:scene:100/timeline/e3 sem:entryId "e3" .
+i:scene:100/timeline/e3 sem:slotSeconds "90"^^xsd:decimal .
+i:scene:100/timeline/e3 sem:places i:scene:100/pairing:p1 .
+
+# Slot e4 (position 5): role pairing p3
+i:scene:100/timeline sem:hasEntry i:scene:100/timeline/e4 .
+i:scene:100/timeline/e4 a sem:Slot .
+i:scene:100/timeline/e4 sem:position "5"^^xsd:nonNegativeInteger .
+i:scene:100/timeline/e4 sem:entryId "e4" .
+i:scene:100/timeline/e4 sem:slotSeconds "100"^^xsd:decimal .
+i:scene:100/timeline/e4 sem:places i:scene:100/pairing:p3 .
+
+# Mise-en-scène instances: Beach from both Stages with both variations; Studio from s1
+i:scene:100 sem:hasMiseEnScene i:scene:100/mise:9 .
+i:scene:100/mise:9 a sem:MiseEnSceneInstance .
+i:scene:100/mise:9 sem:inMedia i:scene:100 .
+i:scene:100/mise:9 sem:ofTag i:tag:9 .
+i:scene:100/mise:9 sem:hasVariation "sunset" .
+i:scene:100/mise:9 sem:hasVariation "night" .
+i:scene:100/mise:9 sem:fromPick i:scene:100/timeline/s1/pick:9 .
+i:scene:100/mise:9 sem:fromPick i:scene:100/timeline/s2/pick:9 .
+i:scene:100 sem:hasMiseEnScene i:scene:100/mise:10 .
+i:scene:100/mise:10 a sem:MiseEnSceneInstance .
+i:scene:100/mise:10 sem:inMedia i:scene:100 .
+i:scene:100/mise:10 sem:ofTag i:tag:10 .
+i:scene:100/mise:10 sem:fromPick i:scene:100/timeline/s1/pick:10 .
+
+# ---- Scene 101: performer 7 is Sub here (Dom in scene 100); performer 9 is not a read performer
+i:scene:101 a sem:Scene .
+i:scene:101 sem:hasPerformer i:performer:7 .
+i:scene:101 sem:hasPerformer i:performer:9 .
+i:scene:101/role:7:3 a sem:RoleInstance .
+i:scene:101/role:7:3 sem:inMedia i:scene:101 .
+i:scene:101/role:7:3 sem:forPerformer i:performer:7 .
+i:scene:101/role:7:3 sem:ofTag i:tag:3 .
+i:performer:7 sem:hasRole i:scene:101/role:7:3 .
+i:scene:101/role:9:2 a sem:RoleInstance .
+i:scene:101/role:9:2 sem:inMedia i:scene:101 .
+i:scene:101/role:9:2 sem:forPerformer i:performer:9 .
+i:scene:101/role:9:2 sem:ofTag i:tag:2 .
+i:performer:9 sem:hasRole i:scene:101/role:9:2 .
+
+# ---- Image 200: a slot with no seconds, so no slotSeconds and no atTime
+i:image:200 a sem:Image .
+i:image:200 sem:hasPerformer i:performer:8 .
+i:image:200/role:8:2 a sem:RoleInstance .
+i:image:200/role:8:2 sem:inMedia i:image:200 .
+i:image:200/role:8:2 sem:forPerformer i:performer:8 .
+i:image:200/role:8:2 sem:ofTag i:tag:2 .
+i:performer:8 sem:hasRole i:image:200/role:8:2 .
+i:image:200 sem:hasTimeline i:image:200/timeline .
+i:image:200/timeline a sem:Timeline .
+i:image:200/timeline sem:inMedia i:image:200 .
+i:image:200/timeline sem:hasEntry i:image:200/timeline/i1 .
+i:image:200/timeline/i1 a sem:Slot .
+i:image:200/timeline/i1 sem:position "0"^^xsd:nonNegativeInteger .
+i:image:200/timeline/i1 sem:entryId "i1" .
+i:image:200/timeline/i1 sem:places i:image:200/role:8:2 .
+
+# ======== Records with bad fields (user story 3). Only their good facts are listed; the notes
+# ======== they give are in expected-notes.json.
+
+# ---- Tag 15: categories on a Label (mapped, noted); a trait rule with no id (skipped)
+i:tag:15 a sem:Label .
+i:tag:15 rdfs:label "Broken Label" .
+i:tag:15 sem:hasCategory "Unused Category" .
+i:tag:15 sem:hasThreshold "50"^^xsd:decimal .
+
+# ---- Tag 16: an invalid variantOfTagId and unreadable variations, both skipped
+i:tag:16 a sem:Tag .
+i:tag:16 rdfs:label "Bad Variant" .
+
+# ---- Performer 30: archetype parents on a non-Archetype (mapped, noted)
+i:performer:30 a sem:Performer .
+i:performer:30 sem:parentArchetype i:performer:31 .
+
+# ---- Performer 31: unreadable archetype parents
+i:performer:31 a sem:Performer .
+i:performer:31 a sem:Archetype .
+
+# ---- Scene 300: unreadable role assignments; the pluggable assignment is still mapped
+i:scene:300 a sem:Scene .
+i:scene:300 sem:hasPerformer i:performer:7 .
+i:scene:300/pluggable:7:6 a sem:PluggableInstance .
+i:scene:300/pluggable:7:6 sem:inMedia i:scene:300 .
+i:scene:300/pluggable:7:6 sem:forPerformer i:performer:7 .
+i:scene:300/pluggable:7:6 sem:ofTag i:tag:6 .
+i:performer:7 sem:hasPluggable i:scene:300/pluggable:7:6 .
+
+# ---- Scene 301
+i:scene:301 a sem:Scene .
+i:scene:301 sem:hasPerformer i:performer:7 .
+i:scene:301 sem:hasPerformer i:performer:8 .
+
+# A "role" naming Action tag 4, and one naming tag 999, which does not exist: mapped, noted
+i:scene:301/role:7:4 a sem:RoleInstance .
+i:scene:301/role:7:4 sem:inMedia i:scene:301 .
+i:scene:301/role:7:4 sem:forPerformer i:performer:7 .
+i:scene:301/role:7:4 sem:ofTag i:tag:4 .
+i:performer:7 sem:hasRole i:scene:301/role:7:4 .
+i:scene:301/role:7:999 a sem:RoleInstance .
+i:scene:301/role:7:999 sem:inMedia i:scene:301 .
+i:scene:301/role:7:999 sem:forPerformer i:performer:7 .
+i:scene:301/role:7:999 sem:ofTag i:tag:999 .
+i:performer:7 sem:hasRole i:scene:301/role:7:999 .
+
+# Role 8:3, placed by slot t4 at 12 s
+i:scene:301/role:8:3 a sem:RoleInstance .
+i:scene:301/role:8:3 sem:inMedia i:scene:301 .
+i:scene:301/role:8:3 sem:forPerformer i:performer:8 .
+i:scene:301/role:8:3 sem:ofTag i:tag:3 .
+i:performer:8 sem:hasRole i:scene:301/role:8:3 .
+i:scene:301/role:8:3 sem:atTime "12"^^xsd:decimal .
+
+# An automatic role not in roleTagAssignments: mapped, noted
+i:scene:301/role:8:1 a sem:RoleInstance .
+i:scene:301/role:8:1 sem:inMedia i:scene:301 .
+i:scene:301/role:8:1 sem:forPerformer i:performer:8 .
+i:scene:301/role:8:1 sem:ofTag i:tag:1 .
+i:performer:8 sem:hasRole i:scene:301/role:8:1 .
+i:scene:301/role:8:1 sem:roleAppliedAutomatically "true"^^xsd:boolean .
+
+# An action for performer 9, who is not on the scene: mapped, noted
+i:scene:301/action:9:4 a sem:ActionInstance .
+i:scene:301/action:9:4 sem:inMedia i:scene:301 .
+i:scene:301/action:9:4 sem:forPerformer i:performer:9 .
+i:scene:301/action:9:4 sem:ofTag i:tag:4 .
+i:performer:9 sem:hasAction i:scene:301/action:9:4 .
+
+# Pairing q2 with an unknown direction: mapped without one, noted. q1 (dangling) and a/b (an
+# id the IRI scheme refuses) are skipped.
+i:scene:301/pairing:q2 a sem:ActionPairing .
+i:scene:301/pairing:q2 sem:inMedia i:scene:301 .
+i:scene:301/pairing:q2 sem:pairingId "q2" .
+i:scene:301/pairing:q2 sem:pairsA i:scene:301/action:9:4 .
+i:scene:301/pairing:q2 sem:pairsB i:scene:301/action:9:4 .
+
+# Timeline: t1 (unknown kind), t2 (retired ref) and the entry with no id are skipped. Slot t5
+# names the skipped pairing q1, so it keeps its own facts without places.
+i:scene:301 sem:hasTimeline i:scene:301/timeline .
+i:scene:301/timeline a sem:Timeline .
+i:scene:301/timeline sem:inMedia i:scene:301 .
+i:scene:301/timeline sem:hasEntry i:scene:301/timeline/t4 .
+i:scene:301/timeline/t4 a sem:Slot .
+i:scene:301/timeline/t4 sem:position "3"^^xsd:nonNegativeInteger .
+i:scene:301/timeline/t4 sem:entryId "t4" .
+i:scene:301/timeline/t4 sem:slotSeconds "12"^^xsd:decimal .
+i:scene:301/timeline/t4 sem:places i:scene:301/role:8:3 .
+i:scene:301/timeline sem:hasEntry i:scene:301/timeline/t5 .
+i:scene:301/timeline/t5 a sem:Slot .
+i:scene:301/timeline/t5 sem:position "4"^^xsd:nonNegativeInteger .
+i:scene:301/timeline/t5 sem:entryId "t5" .
+
+# ---- Scene 302: every semantic field unreadable; still a media entity with its performer
+i:scene:302 a sem:Scene .
+i:scene:302 sem:hasPerformer i:performer:8 .
