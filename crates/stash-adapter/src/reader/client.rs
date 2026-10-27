@@ -11,8 +11,9 @@ use super::keys::{
 use super::measurements::Measurements;
 use super::queries::*;
 use super::records::{
-    id_order, sorted_ids, Kind, LibraryRead, MediaKind, MediaRecord, PerformerDisplay, Phase,
-    Progress, ReadStart, RecordBatch, SemanticPerformer, SemanticTag, TagFlag,
+    id_order, performer_tag_set, sorted_ids, Kind, LibraryRead, MediaKind, MediaRecord,
+    PerformerDisplay, Phase, Progress, ReadStart, RecordBatch, SemanticPerformer, SemanticTag,
+    TagFlag,
 };
 use super::{LibraryReader, PERFORMER_TAG_CHUNK, RECORD_BATCH};
 use crate::fixtures::{not_null, CriterionModifier};
@@ -326,22 +327,7 @@ impl Client {
         }
 
         // Discovery: one "key is not null" query per key (research R3).
-        let mut tag_ids = Vec::new();
-        let mut performer_tag_ids = Vec::new();
-        for key in TAG_DISCOVERY {
-            let found = run.step(|| {
-                self.tag_ids(Some(TagIdFilter {
-                    custom_fields: Some(not_null(key)),
-                    updated_at: None,
-                }))
-            })?;
-            if PERFORMER_TAG_FLAGS.contains(&key) {
-                performer_tag_ids.extend(found.iter().cloned());
-            }
-            tag_ids.extend(found);
-        }
-        let tag_ids = sorted_ids(tag_ids);
-        let performer_tag_ids = sorted_ids(performer_tag_ids);
+        let (tag_ids, performer_tag_ids) = self.discover_tags(run)?;
         run.total += performer_tag_ids.len().div_ceil(PERFORMER_TAG_CHUNK);
 
         let mut performer_ids = Vec::new();
@@ -408,16 +394,8 @@ impl Client {
             missing(Kind::Tag, b.missing.len());
             tags.extend(b.found);
         }
-        tags.retain(|t| !t.flags.is_empty() || t.fields.contains_key("variantOfTagId"));
-        let semantic_performer_tags: BTreeSet<&str> = tags
-            .iter()
-            .filter(|t| {
-                t.flags
-                    .iter()
-                    .any(|f| PERFORMER_TAG_FLAGS.contains(&f.key()))
-            })
-            .map(|t| t.id.as_str())
-            .collect();
+        tags.retain(SemanticTag::is_semantic);
+        let semantic_performer_tags = performer_tag_set(&tags);
 
         let mut performers = Vec::new();
         for chunk in performer_ids.chunks(RECORD_BATCH) {
@@ -425,14 +403,7 @@ impl Client {
             missing(Kind::Performer, b.missing.len());
             performers.extend(b.found);
         }
-        performers.retain(|p| {
-            p.archetype
-                || p.archetype_parents.is_some()
-                || p.measurements.is_some()
-                || p.tags
-                    .iter()
-                    .any(|t| semantic_performer_tags.contains(t.as_str()))
-        });
+        performers.retain(|p| p.is_semantic(&semantic_performer_tags));
 
         let mut media: BTreeMap<MediaKind, Vec<MediaRecord>> = BTreeMap::new();
         for (kind, list) in &media_ids {
@@ -444,7 +415,7 @@ impl Client {
                 missing((*kind).into(), b.missing.len());
                 found.extend(b.found);
             }
-            found.retain(|m| !m.fields.is_empty());
+            found.retain(MediaRecord::is_semantic);
             media.insert(*kind, found);
         }
 
@@ -460,6 +431,26 @@ impl Client {
             total: 0,
         });
         Ok(read)
+    }
+
+    /// The tag discovery queries: every semantic tag's id, and the ids of tags whose performer
+    /// flag keys are present (those make their performers worth reading).
+    fn discover_tags(&self, run: &mut Run) -> Result<(Vec<String>, Vec<String>), Error> {
+        let mut tag_ids = Vec::new();
+        let mut performer_tag_ids = Vec::new();
+        for key in TAG_DISCOVERY {
+            let found = run.step(|| {
+                self.tag_ids(Some(TagIdFilter {
+                    custom_fields: Some(not_null(key)),
+                    updated_at: None,
+                }))
+            })?;
+            if PERFORMER_TAG_FLAGS.contains(&key) {
+                performer_tag_ids.extend(found.iter().cloned());
+            }
+            tag_ids.extend(found);
+        }
+        Ok((sorted_ids(tag_ids), sorted_ids(performer_tag_ids)))
     }
 
     fn by_ids<T>(
@@ -550,5 +541,40 @@ impl LibraryReader for Client {
     fn latest_updated_at(&self, kind: Kind) -> Result<Option<String>, Error> {
         self.check_version()?;
         self.latest(kind)
+    }
+
+    fn semantic_tags(&self) -> Result<Vec<SemanticTag>, Error> {
+        self.check_version()?;
+        let mut progress = |_: Progress| {};
+        let mut run = Run {
+            stop: &|| false,
+            progress: &mut progress,
+            requests: 0,
+            phase: Phase::Discover,
+            done: 0,
+            total: 0,
+        };
+        let (tag_ids, _) = self.discover_tags(&mut run)?;
+        let mut tags = Vec::new();
+        for chunk in tag_ids.chunks(RECORD_BATCH) {
+            tags.extend(batch(chunk, self.tag_rows(chunk)?, |t| &t.id).found);
+        }
+        tags.retain(SemanticTag::is_semantic);
+        Ok(tags)
+    }
+
+    fn performers_with_tags(&self, tag_ids: &[String]) -> Result<Vec<String>, Error> {
+        self.check_version()?;
+        let mut out = Vec::new();
+        for chunk in sorted_ids(tag_ids.to_vec()).chunks(PERFORMER_TAG_CHUNK) {
+            out.extend(self.performer_ids(Some(PerformerIdFilter {
+                tags: Some(TagsCriterion {
+                    value: ids(chunk),
+                    modifier: CriterionModifier::Includes,
+                }),
+                ..Default::default()
+            }))?);
+        }
+        Ok(sorted_ids(out))
     }
 }

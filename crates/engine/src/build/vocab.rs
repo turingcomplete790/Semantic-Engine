@@ -3,6 +3,9 @@
 
 use crate::graph::{from_ox_triple, Fact};
 
+/// The graph the vocabulary's facts are kept in (spec 008 research R1).
+pub const VOCAB_OWNER: &str = "urn:semantic-stash:vocab:";
+
 /// The vocabulary files that describe the graph. `stash-mapping.ttl` describes Stash keys, and
 /// is not written.
 pub const GRAPH_FILES: [&str; 3] = ["core.ttl", "labels.ttl", "timeline.ttl"];

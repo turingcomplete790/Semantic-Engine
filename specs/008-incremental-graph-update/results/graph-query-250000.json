@@ -1,0 +1,65 @@
+{
+  "command": "query --dir /home/bbulder/.cache/se-graph-250k --runs 50 --out /tmp/claude-1000/gb",
+  "result": {
+    "allCallsMs": {
+      "max": 91.347427,
+      "median": 14.063236,
+      "min": 6.320724,
+      "p95": 81.847222,
+      "runs": 250
+    },
+    "queries": {
+      "1 pattern: scenes": {
+        "callMs": {
+          "max": 13.391407,
+          "median": 7.432655,
+          "min": 6.320724,
+          "p95": 8.581193,
+          "runs": 50
+        },
+        "rows": 100
+      },
+      "2 patterns: media with role": {
+        "callMs": {
+          "max": 14.429971,
+          "median": 11.183014,
+          "min": 9.142402,
+          "p95": 12.970226,
+          "runs": 50
+        },
+        "rows": 100
+      },
+      "3 patterns: performers with role": {
+        "callMs": {
+          "max": 16.508803,
+          "median": 14.033520000000001,
+          "min": 10.16291,
+          "p95": 15.306510000000001,
+          "runs": 50
+        },
+        "rows": 100
+      },
+      "4 patterns: role and action in one scene": {
+        "callMs": {
+          "max": 91.347427,
+          "median": 72.161629,
+          "min": 54.69900199999999,
+          "p95": 88.192438,
+          "runs": 50
+        },
+        "rows": 100
+      },
+      "5 patterns: trait holder with role": {
+        "callMs": {
+          "max": 63.929303000000004,
+          "median": 53.679935,
+          "min": 46.144991000000005,
+          "p95": 60.989073,
+          "runs": 50
+        },
+        "rows": 100
+      }
+    }
+  },
+  "scenes": 250000
+}

@@ -244,3 +244,16 @@ fn notes_are_logged_up_to_the_cap_and_counted_in_the_summary() {
     assert!(summary.contains("mismatches 6 ("), "{summary}");
     assert!(summary.contains("unreadable 5"), "{summary}");
 }
+
+#[test]
+fn a_build_records_its_stamp() {
+    let s = store("stamp");
+    let read = fixture_library();
+    build(&s, read.clone()).result.unwrap();
+    let g = s.reader().unwrap().generation().clone();
+    let stamp = engine::build::stamp::BuildStamp::read(&g).expect("a stamp");
+    assert_eq!(stamp.mapping_version, engine::build::stamp::MAPPING_VERSION);
+    assert_eq!(stamp.mapping_version, 1);
+    assert_eq!(stamp.catch_up, read.start);
+    assert_eq!(stamp.how, engine::build::stamp::How::Build);
+}

@@ -3,8 +3,8 @@
 //! contracts/reader-interface.md.
 
 use super::records::{
-    id_order, sorted_ids, Kind, LibraryRead, MediaKind, MediaRecord, Phase, Progress, RecordBatch,
-    SemanticPerformer, SemanticTag,
+    id_order, performer_tag_set, sorted_ids, Kind, LibraryRead, MediaKind, MediaRecord, Phase,
+    Progress, RecordBatch, SemanticPerformer, SemanticTag,
 };
 use super::{LibraryReader, RECORD_BATCH};
 use crate::Error;
@@ -146,10 +146,24 @@ impl LibraryReader for MemoryReader {
             done: 0,
             total: 0,
         });
+        // The full read keeps only semantic records, as the Client's does (spec 008 R3); records
+        // read by id stay unfiltered.
+        let tags: Vec<SemanticTag> = r.tags.iter().filter(|t| t.is_semantic()).cloned().collect();
+        let performer_tags = performer_tag_set(&tags);
+        let semantic = |m: &&MediaRecord| m.is_semantic();
         Ok(LibraryRead {
+            start: r.start.clone(),
+            performers: r
+                .performers
+                .iter()
+                .filter(|p| p.is_semantic(&performer_tags))
+                .cloned()
+                .collect(),
+            scenes: r.scenes.iter().filter(semantic).cloned().collect(),
+            images: r.images.iter().filter(semantic).cloned().collect(),
+            tags,
             requests: 0,
             missing: BTreeMap::new(),
-            ..r.clone()
         })
     }
 
@@ -197,5 +211,31 @@ impl LibraryReader for MemoryReader {
     fn latest_updated_at(&self, kind: Kind) -> Result<Option<String>, Error> {
         self.check()?;
         Ok(self.read.start.get(&kind).cloned())
+    }
+
+    fn semantic_tags(&self) -> Result<Vec<SemanticTag>, Error> {
+        self.check()?;
+        let mut tags: Vec<SemanticTag> = self
+            .read
+            .tags
+            .iter()
+            .filter(|t| t.is_semantic())
+            .cloned()
+            .collect();
+        tags.sort_by_key(|t| id_order(&t.id));
+        Ok(tags)
+    }
+
+    fn performers_with_tags(&self, tag_ids: &[String]) -> Result<Vec<String>, Error> {
+        self.check()?;
+        let wanted: BTreeSet<&str> = tag_ids.iter().map(String::as_str).collect();
+        Ok(sorted_ids(
+            self.read
+                .performers
+                .iter()
+                .filter(|p| p.tags.iter().any(|t| wanted.contains(t.as_str())))
+                .map(|p| p.id.clone())
+                .collect(),
+        ))
     }
 }

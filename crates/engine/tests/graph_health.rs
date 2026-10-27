@@ -3,7 +3,9 @@
 mod common;
 
 use common::graph::{cleared, publish, sample_facts, temp_store, SERVER};
-use engine::graph::{GraphError, GraphStore, Health, RebuildReason, GENERATION_GRACE};
+use engine::graph::{
+    GraphError, GraphStore, Health, RebuildReason, GENERATION_GRACE, STORE_FORMAT,
+};
 use std::path::Path;
 use std::time::{Duration, SystemTime};
 
@@ -101,12 +103,18 @@ fn set_format(dir: &Path, format: u32) {
 
 #[test]
 fn another_format_needs_a_rebuild_naming_both() {
-    for found in [0, 2] {
+    for found in [STORE_FORMAT - 1, STORE_FORMAT + 1] {
         let (dir, store) = cleared(&format!("format{found}"));
         publish(&store, &sample_facts(1));
         set_format(&dir, found);
         let r = needs(&store);
-        assert_eq!(r, RebuildReason::OtherFormat { found, expected: 1 });
+        assert_eq!(
+            r,
+            RebuildReason::OtherFormat {
+                found,
+                expected: STORE_FORMAT
+            }
+        );
         refused_then_repaired(&store, &r);
     }
 }

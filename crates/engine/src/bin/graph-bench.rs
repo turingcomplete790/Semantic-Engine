@@ -288,9 +288,22 @@ fn build(dir: &Path, scenes: u64) -> Result<Value, String> {
     let start = Instant::now();
     let mut w = store.writer().map_err(|e| e.to_string())?;
     let mut written = 0u64;
+    // Format 2 (spec 008): each fact goes to an owner graph, named by its subject's item IRI
+    // (the part before any `/`), so queries run over the union of many graphs, as the real
+    // build's do.
     let mut add = |w: &mut engine::graph::Writer, facts: Vec<Fact>| -> Result<(), String> {
         written += facts.len() as u64;
-        w.add(&facts).map_err(|e| e.to_string())
+        let mut owners: std::collections::BTreeMap<String, Vec<Fact>> = Default::default();
+        for f in facts {
+            let Term::Iri(s) = &f.subject else { continue };
+            let owner = s.split('/').next().unwrap_or(s).to_string();
+            owners.entry(owner).or_default().push(f);
+        }
+        let batch: Vec<engine::graph::Owned> = owners
+            .into_iter()
+            .map(|(owner, facts)| engine::graph::Owned { owner, facts })
+            .collect();
+        w.add_owned(&batch).map_err(|e| e.to_string())
     };
     add(&mut w, tag_facts(&iris))?;
     add(

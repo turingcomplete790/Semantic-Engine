@@ -123,6 +123,27 @@ pub struct PerformerDisplay {
     pub graph_position: Option<GraphPosition>,
 }
 
+impl SemanticTag {
+    /// The full read's rule (spec 008 research R3): a flag is set, or `variantOfTagId` is
+    /// present.
+    pub fn is_semantic(&self) -> bool {
+        !self.flags.is_empty() || self.fields.contains_key("variantOfTagId")
+    }
+}
+
+/// The ids of tags with a Trait, Label or Variation flag: the tags that make their performers
+/// semantic.
+pub fn performer_tag_set(tags: &[SemanticTag]) -> BTreeSet<String> {
+    tags.iter()
+        .filter(|t| {
+            t.flags
+                .iter()
+                .any(|f| super::keys::PERFORMER_TAG_FLAGS.contains(&f.key()))
+        })
+        .map(|t| t.id.clone())
+        .collect()
+}
+
 /// A performer with semantic data: a Trait, Label or Variation tag, an Archetype field, or a
 /// non-empty `measurements` field (FR-002).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -138,6 +159,17 @@ pub struct SemanticPerformer {
     pub updated_at: String,
 }
 
+impl SemanticPerformer {
+    /// The full read's rule: an Archetype, archetype parents or measurements, or a tag in
+    /// `performer_tags` (see [`performer_tag_set`]).
+    pub fn is_semantic(&self, performer_tags: &BTreeSet<String>) -> bool {
+        self.archetype
+            || self.archetype_parents.is_some()
+            || self.measurements.is_some()
+            || self.tags.iter().any(|t| performer_tags.contains(t))
+    }
+}
+
 /// A scene or image with at least one semantic field.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MediaRecord {
@@ -149,6 +181,13 @@ pub struct MediaRecord {
     /// The media keys of research R1 that are present.
     pub fields: BTreeMap<String, Field>,
     pub updated_at: String,
+}
+
+impl MediaRecord {
+    /// The full read's rule: at least one semantic field is present.
+    pub fn is_semantic(&self) -> bool {
+        !self.fields.is_empty()
+    }
 }
 
 /// The newest `updated_at` of each kind, taken before discovery (FR-007). A kind with no items

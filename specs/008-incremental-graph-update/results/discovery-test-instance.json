@@ -1,0 +1,41 @@
+{
+  "batchFacts": 50000,
+  "command": "stash",
+  "input": {
+    "fullRead": {
+      "readMs": 2672,
+      "records": 905,
+      "requests": 40,
+      "requestsPerRecord": 0.04419889502762431
+    },
+    "stash": "http://localhost:9998"
+  },
+  "result": {
+    "peakMemoryBytes": 506687488,
+    "report": {
+      "facts": 5985,
+      "generation": 1,
+      "notes": {
+        "mismatches": {
+          "performerNotInMedia": 1
+        },
+        "skipped": {
+          "danglingRef": 1
+        }
+      },
+      "phases": {
+        "map": 3,
+        "publish": 170,
+        "read": 135,
+        "write": 210
+      },
+      "records": {
+        "images": 1,
+        "performers": 886,
+        "scenes": 1,
+        "tags": 17
+      },
+      "seconds": 4.63184235
+    }
+  }
+}

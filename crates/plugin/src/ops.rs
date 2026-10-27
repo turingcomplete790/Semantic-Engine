@@ -25,6 +25,7 @@ pub const REGISTRY: &[(&str, Handler)] = &[
     ("applyRelations", crate::relations::apply_relations),
     ("reapplyRelations", crate::relations::reapply_relations),
     ("buildGraph", crate::build::build_graph),
+    ("updateGraph", crate::build::update_graph),
 ];
 
 pub fn names() -> Vec<&'static str> {

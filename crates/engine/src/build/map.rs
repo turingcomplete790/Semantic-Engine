@@ -40,6 +40,18 @@ pub fn boolean(b: bool) -> Term {
     Term::typed(b.to_string(), format!("{XSD}boolean"))
 }
 
+/// The graph an item's facts are kept in: its own item IRI (spec 008 research R1). `None` for an
+/// id the item-IRI scheme refuses; such a record maps to no facts.
+pub fn owner_iri(iris: &ItemIris, kind: Kind, id: &str) -> Option<String> {
+    match kind {
+        Kind::Tag => iris.try_tag(id),
+        Kind::Performer => iris.try_performer(id),
+        Kind::Scene => iris.try_scene(id),
+        Kind::Image => iris.try_image(id),
+    }
+    .ok()
+}
+
 /// A Stash id: a string or JSON integer of decimal digits.
 pub fn stash_id(v: &Value) -> Option<String> {
     match v {

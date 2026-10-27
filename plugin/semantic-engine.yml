@@ -24,6 +24,10 @@ tasks:
     description: Read the whole library and rebuild the semantic graph from it. The previous graph stays in use until the new one is published.
     defaultArgs:
       op: buildGraph
+  - name: Update semantic graph
+    description: Bring the semantic graph up to date with what changed since the last build or update. Rebuilds in full when it has to.
+    defaultArgs:
+      op: updateGraph
 hooks:
   - name: Apply relations after a save
     description: Records the saved scene or image and starts the "Apply relations" task. Adds only a few milliseconds to the save.

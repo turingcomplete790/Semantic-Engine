@@ -2,13 +2,15 @@
 //! vocabulary, and one publish. Nothing is published unless every step succeeds; a build that
 //! is killed leaves the previous generation current (research R2).
 
+use super::map::owner_iri;
 use super::map::{map_media, map_performer, map_tag, Ctx, Mapped};
 use super::notes::{Note, NoteReason};
-use super::vocab::vocabulary_facts;
-use crate::graph::{Fact, GraphError, GraphStore, Health, RebuildReason, Writer};
+use super::stamp::{BuildStamp, How};
+use super::vocab::{vocabulary_facts, VOCAB_OWNER};
+use crate::graph::{Fact, GraphError, GraphStore, Health, Owned, RebuildReason, Writer};
 use semantic_vocabulary::iri::ItemIris;
 use serde::Serialize;
-use stash_adapter::reader::{LibraryReader, Progress};
+use stash_adapter::reader::{Kind, LibraryReader, Progress};
 use std::collections::BTreeMap;
 use std::time::{Duration, Instant};
 
@@ -159,18 +161,32 @@ impl Percent<'_> {
     }
 }
 
-/// Facts gathered into batches for the writer, so at most one batch is held at a time.
+/// Owners' facts gathered into batches for the writer, so at most one batch is held at a time.
+/// Each record's facts go to the graph named by its item IRI (spec 008 research R1).
 struct Batches<'w> {
     writer: &'w mut Writer,
-    batch: Vec<Fact>,
+    batch: Vec<Owned>,
+    facts: usize,
     size: usize,
     write: Duration,
 }
 
 impl Batches<'_> {
-    fn push(&mut self, facts: impl IntoIterator<Item = Fact>) -> Result<(), BuildError> {
-        self.batch.extend(facts);
-        if self.batch.len() >= self.size {
+    fn push(
+        &mut self,
+        owner: Option<String>,
+        facts: impl IntoIterator<Item = Fact>,
+    ) -> Result<(), BuildError> {
+        let facts: Vec<Fact> = facts.into_iter().collect();
+        let Some(owner) = owner else {
+            return Ok(()); // an id the item-IRI scheme refuses: the record mapped to nothing
+        };
+        if facts.is_empty() {
+            return Ok(());
+        }
+        self.facts += facts.len();
+        self.batch.push(Owned { owner, facts });
+        if self.facts >= self.size {
             self.flush()?;
         }
         Ok(())
@@ -179,8 +195,9 @@ impl Batches<'_> {
     fn flush(&mut self) -> Result<(), BuildError> {
         if !self.batch.is_empty() {
             let t = Instant::now();
-            self.writer.add(&self.batch)?;
+            self.writer.add_owned(&self.batch)?;
             self.batch.clear();
+            self.facts = 0;
             self.write += t.elapsed();
         }
         Ok(())
@@ -241,40 +258,46 @@ pub fn run(
     let total = records.total().max(1);
     let mut sink = Batches {
         writer: &mut writer,
-        batch: Vec::with_capacity(options.batch_facts),
+        batch: Vec::new(),
+        facts: 0,
         size: options.batch_facts,
         write: Duration::ZERO,
     };
     let mut notes: Vec<Note> = Vec::new();
     let mut map_time = Duration::ZERO;
     let mut done = 0usize;
-    let mut mapped = |m: Mapped, t: Instant, sink: &mut Batches, pct: &mut Percent| {
-        map_time += t.elapsed();
-        notes.extend(m.notes.into_vec());
-        done += 1;
-        pct.set(READ_SHARE + (WRITE_END - READ_SHARE) * (done as f64 / total as f64));
-        sink.push(m.facts)
-    };
+    let mut mapped =
+        |owner: Option<String>, m: Mapped, t: Instant, sink: &mut Batches, pct: &mut Percent| {
+            map_time += t.elapsed();
+            notes.extend(m.notes.into_vec());
+            done += 1;
+            pct.set(READ_SHARE + (WRITE_END - READ_SHARE) * (done as f64 / total as f64));
+            sink.push(owner, m.facts)
+        };
     for tag in &read.tags {
         let t = Instant::now();
-        mapped(map_tag(&ctx, tag), t, &mut sink, &mut pct)?;
+        let owner = owner_iri(&iris, Kind::Tag, &tag.id);
+        mapped(owner, map_tag(&ctx, tag), t, &mut sink, &mut pct)?;
     }
     for p in &read.performers {
         let t = Instant::now();
-        mapped(map_performer(&ctx, p), t, &mut sink, &mut pct)?;
+        let owner = owner_iri(&iris, Kind::Performer, &p.id);
+        mapped(owner, map_performer(&ctx, p), t, &mut sink, &mut pct)?;
     }
     for r in read.scenes.iter().chain(&read.images) {
         let t = Instant::now();
-        mapped(map_media(&ctx, r), t, &mut sink, &mut pct)?;
+        let owner = owner_iri(&iris, r.kind.into(), &r.id);
+        mapped(owner, map_media(&ctx, r), t, &mut sink, &mut pct)?;
     }
-    sink.push(vocabulary_facts())?;
+    sink.push(Some(VOCAB_OWNER.to_string()), vocabulary_facts())?;
     sink.flush()?;
     let write_ms = sink.write.as_millis() as u64;
     pct.set(WRITE_END);
 
     log(LogLevel::Info, "build: publishing");
     let t = Instant::now();
-    let generation = writer.publish()?;
+    let generation =
+        writer.publish_with(BuildStamp::new(read.start.clone(), How::Build).to_json())?;
     let publish_ms = t.elapsed().as_millis() as u64;
     pct.set(1.0);
 

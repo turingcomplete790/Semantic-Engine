@@ -31,7 +31,7 @@ pub use error::{GraphError, Health, RebuildReason};
 pub use layout::Generation;
 pub use reader::Reader;
 pub(crate) use term::from_ox_triple;
-pub use term::{round_trip, validate, Fact, Pattern, Solutions, Term};
+pub use term::{round_trip, validate, Fact, Owned, Pattern, Replaced, Solutions, Term};
 pub use writer::Writer;
 
 use health::Inspection;
@@ -39,7 +39,7 @@ use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 /// The store layout version (research R2). A store of any other format needs a rebuild.
-pub const STORE_FORMAT: u32 = 1;
+pub const STORE_FORMAT: u32 = 2;
 /// The minimum age before an old generation is removed (research R5).
 pub const GENERATION_GRACE: Duration = Duration::from_secs(15 * 60);
 /// The store's folder under the plugin's folder.
@@ -52,7 +52,7 @@ pub struct GraphStore {
 }
 
 /// The report of spec 006 US4 (FR-018).
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Summary {
     pub health: Health,
     /// The current generation, when there is one.
@@ -95,7 +95,10 @@ impl GraphStore {
     pub fn reader(&self) -> Result<Reader, GraphError> {
         self.need_server_id()?;
         match health::inspect(&self.dir, &self.server_id) {
-            Inspection::Ready(generation, store) => Ok(Reader { generation, store }),
+            Inspection::Ready(generation, store) => Ok(Reader {
+                generation: *generation,
+                store,
+            }),
             Inspection::NotBuilt => Err(GraphError::NotBuilt),
             Inspection::NeedsRebuild(r) => Err(GraphError::NeedsRebuild(r)),
         }

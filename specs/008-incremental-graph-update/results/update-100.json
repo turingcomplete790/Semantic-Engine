@@ -1,0 +1,62 @@
+{
+  "batchFacts": 50000,
+  "command": "update",
+  "input": {
+    "change": 100,
+    "images": 325000,
+    "scenes": 250000
+  },
+  "result": {
+    "buildMs": 1098797,
+    "changes": {
+      "added": 33,
+      "deleted": 33,
+      "edited": 34
+    },
+    "peakMemoryBytes": 16843911168,
+    "report": {
+      "changes": {
+        "images": {
+          "added": 0,
+          "changed": 0,
+          "removed": 0
+        },
+        "performers": {
+          "added": 0,
+          "changed": 0,
+          "dependents": 0,
+          "removed": 0
+        },
+        "scenes": {
+          "added": 33,
+          "changed": 34,
+          "removed": 33
+        },
+        "tags": {
+          "added": 0,
+          "changed": 0,
+          "removed": 0
+        }
+      },
+      "facts": {
+        "added": 2376,
+        "removed": 2711,
+        "total": 24161160
+      },
+      "generation": 2,
+      "mode": "update",
+      "notes": {
+        "mismatches": {},
+        "skipped": {}
+      },
+      "phases": {
+        "map": 10,
+        "publish": 1458,
+        "read": 4062,
+        "write": 1745
+      },
+      "seconds": 7.848348003
+    },
+    "updateMs": 8051
+  }
+}

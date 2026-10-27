@@ -1,6 +1,6 @@
 # Semantic Engine API
 
-Contract version: **1.2.0**
+Contract version: **1.3.0**
 
 This is the contract for clients of the Semantic Engine Stash plugin, such as the Semantic Stash
 Viewer and the semantic-tagging plugin. It lists every operation and task, what to send, what
@@ -40,11 +40,11 @@ GraphQL call.
 Every operation returns one JSON object as the value of `runPluginOperation`:
 
 ```json
-{ "ok": true, "op": "status", "contractVersion": "1.2.0", "result": { } }
+{ "ok": true, "op": "status", "contractVersion": "1.3.0", "result": { } }
 ```
 
 ```json
-{ "ok": false, "op": "getServerId", "contractVersion": "1.2.0",
+{ "ok": false, "op": "getServerId", "contractVersion": "1.3.0",
   "error": { "code": "SERVER_ID_NOT_GENERATED", "message": "no server identifier yet; run the \"Generate server identifier\" task" } }
 ```
 
@@ -86,7 +86,7 @@ Reports versions, the server's Stash version, and the server identifier.
 ```json
 {
   "engineVersion": "0.1.0",
-  "contractVersion": "1.2.0",
+  "contractVersion": "1.3.0",
   "vocabularyVersion": "1.4.0",
   "oxigraphVersion": "0.4.11",
   "rocksdbVersion": "10.3.0",
@@ -309,6 +309,37 @@ Stash; it writes nothing but the engine's own folder.
   says which)
 - Since: 1.2.0
 
+### Update semantic graph (`updateGraph`)
+
+Brings the semantic graph up to date with what changed in Stash since the last build or update,
+and publishes it as a new generation. It re-reads only the changed items (and every semantic
+tag, which are few), so it is quick on a large library. It rebuilds in full instead when it
+cannot trust an update:
+- no graph yet;
+- a damaged store, or one from an older engine format;
+- a graph built by other mapping rules or another vocabulary version;
+- no record of where to catch up from;
+- more than a third of the library changed.
+
+When nothing changed, it publishes nothing.
+
+- Run with: `runPluginTask(plugin_id: "semantic-engine", task_name: "Update semantic graph")`
+- Log: progress, then a summary line such as `update: generation 7 published; performers 3
+  changed, 1 added, 2 dependents; scenes 4 changed, 1 removed; facts -210 +236 (41048); skipped 0;
+  mismatches 0; 0.2 s`, or `update: the graph is current; generation 6 kept; 0.1 s`.
+- Called as an operation, `args: { op: "updateGraph" }`, it returns
+  `{ "mode": "update" | "current" | "rebuild", "rebuildReason"?, "generation", "changes":
+  { "tags", "performers", "scenes", "images" }, "facts": { "removed", "added", "total" },
+  "notes", "phases", "seconds", "build"? }`. Each kind in `changes` holds `changed`, `added` and
+  `removed`, and performers also `dependents`. `rebuildReason` holds a `cause`: `firstBuild`,
+  `storeNeedsRebuild` (with `cleared`), `mappingVersion` or `vocabularyVersion` (with `from` and
+  `to`), `noCatchUpPoint`, or `tooManyChanges` (with `items` and `limit`). A rebuild also carries
+  the full build's report in `build`.
+- Stopping the job publishes nothing; the next update catches up from the same point.
+- Errors: as "Build semantic graph": `SERVER_ID_NOT_GENERATED`, `SERVER_ID_INVALID`, `BUSY`,
+  `STASH_UNREACHABLE`, `STASH_TOO_OLD`, `INTERNAL`
+- Since: 1.3.0
+
 ## The server identifier
 
 Every Stash server gets one identifier, a lower-case hyphenated UUID such as
@@ -361,6 +392,11 @@ terms yet.
 - `status` reports `contractVersion`, so a client can check it before relying on newer features.
 
 ## Changes
+
+### 1.3.0 (in progress, spec 008)
+
+Task "Update semantic graph" (`updateGraph`). The graph store moves to format 2 (one graph per
+item); a store from an earlier build is rebuilt on its first update.
 
 ### 1.2.0 (in progress, spec 007)
 

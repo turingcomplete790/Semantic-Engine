@@ -1,5 +1,5 @@
 {
-  "contractVersion": "1.2.0",
+  "contractVersion": "1.3.0",
   "pluginId": "semantic-engine",
   "operations": [
     {
@@ -93,6 +93,19 @@
       "name": "Build semantic graph",
       "op": "buildGraph",
       "since": "1.2.0",
+      "errors": [
+        "SERVER_ID_NOT_GENERATED",
+        "SERVER_ID_INVALID",
+        "BUSY",
+        "STASH_UNREACHABLE",
+        "STASH_TOO_OLD",
+        "INTERNAL"
+      ]
+    },
+    {
+      "name": "Update semantic graph",
+      "op": "updateGraph",
+      "since": "1.3.0",
       "errors": [
         "SERVER_ID_NOT_GENERATED",
         "SERVER_ID_INVALID",

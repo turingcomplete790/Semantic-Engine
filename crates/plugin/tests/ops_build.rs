@@ -69,7 +69,7 @@ fn a_build_returns_its_report_and_logs_progress_and_a_summary() {
     let (env, log) = common::run(&input(port, &dir));
     assert_eq!(env["ok"], true, "{env}");
     assert_eq!(env["op"], "buildGraph");
-    assert_eq!(env["contractVersion"], "1.2.0");
+    assert_eq!(env["contractVersion"], engine::CONTRACT_VERSION);
     let r = &env["result"];
     assert_eq!(r["generation"], 1);
     assert!(r["facts"].as_u64().unwrap() > 0);

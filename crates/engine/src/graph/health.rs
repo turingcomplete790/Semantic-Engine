@@ -10,7 +10,7 @@ use std::path::Path;
 
 /// What a reader needs: the current generation and the store opened on it.
 pub(crate) enum Inspection {
-    Ready(Generation, Store),
+    Ready(Box<Generation>, Store),
     NotBuilt,
     NeedsRebuild(RebuildReason),
 }
@@ -54,7 +54,7 @@ pub(crate) fn inspect(dir: &Path, server_id: &str) -> Inspection {
         Err(detail) => return damaged(detail),
     };
     match Store::open_read_only(&path) {
-        Ok(store) => Inspection::Ready(generation, store),
+        Ok(store) => Inspection::Ready(Box::new(generation), store),
         Err(e) => damaged(format!("generation {n}: {e}")),
     }
 }

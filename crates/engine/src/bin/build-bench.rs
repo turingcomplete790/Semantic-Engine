@@ -3,8 +3,11 @@
 //! package.
 //!
 //! usage: build-bench synth --scenes N --images M --dir DIR [--batch FACTS] [--out FILE]
+//!        build-bench update --scenes N --images M --change K --dir DIR [--out FILE]
 //!        STASH_URL=… STASH_API_KEY=… build-bench stash --dir DIR [--out FILE]
 //!
+//! `update` (spec 008 research R10) builds the synthetic library, changes K scenes (a third
+//! edited, a third deleted, a third new), and times one incremental update of them.
 //! `synth` builds a fully tagged synthetic library (`engine::build::synth`) through a reader
 //! that hands it over once. `stash` reads a real Stash, read-only, and builds into the local folder DIR. The API
 //! key is read from the environment and never printed. The report (phase times, counts, facts,
@@ -15,7 +18,7 @@ use engine::build::{run, synth, BuildOptions};
 use engine::graph::GraphStore;
 use serde_json::{json, Value};
 use stash_adapter::reader::{
-    Kind, LibraryRead, LibraryReader, MediaKind, MediaRecord, Progress, RecordBatch,
+    Kind, LibraryRead, LibraryReader, MediaKind, MediaRecord, MemoryReader, Progress, RecordBatch,
     SemanticPerformer, SemanticTag,
 };
 use std::cell::RefCell;
@@ -81,6 +84,12 @@ impl LibraryReader for OnceReader {
     fn latest_updated_at(&self, _: Kind) -> Result<Option<String>, stash_adapter::Error> {
         unsupported()
     }
+    fn semantic_tags(&self) -> Result<Vec<SemanticTag>, stash_adapter::Error> {
+        unsupported()
+    }
+    fn performers_with_tags(&self, _: &[String]) -> Result<Vec<String>, stash_adapter::Error> {
+        unsupported()
+    }
 }
 
 fn build(
@@ -117,6 +126,91 @@ fn build(
     }))
 }
 
+/// Builds the synthetic library, changes `k` scenes, and times one update (research R10).
+fn update_bench(
+    dir: &PathBuf,
+    scenes: usize,
+    images: usize,
+    k: usize,
+    options: &BuildOptions,
+) -> Result<Value, String> {
+    let _ = std::fs::remove_dir_all(dir);
+    let store = GraphStore::new(dir, SERVER_ID);
+    let mut lib = synth::library(scenes, images);
+    let t = Instant::now();
+    run(
+        &MemoryReader::new(lib.clone()),
+        &store,
+        SERVER_ID,
+        options,
+        &mut |_| {},
+        &mut |_, _| {},
+    )
+    .map_err(|e| e.to_string())?;
+    let build_ms = t.elapsed().as_millis() as u64;
+
+    // The changes, each saved after every synthetic item (synth's times are all in September).
+    let stamp = |n: usize| {
+        format!(
+            "2026-10-27T{:02}:{:02}:{:02}-06:00",
+            n / 3600 % 24,
+            n / 60 % 60,
+            n % 60
+        )
+    };
+    let (edits, deletes) = (k.div_ceil(3), k / 3);
+    let adds = k - edits - deletes;
+    let mut n = 0;
+    for m in lib.scenes.iter_mut().take(edits) {
+        n += 1;
+        m.fields.insert(
+            "pluggableAssignments".into(),
+            stash_adapter::reader::field::Field::Value(json!({})),
+        );
+        m.updated_at = stamp(n);
+    }
+    let gone: std::collections::BTreeSet<String> = lib
+        .scenes
+        .iter()
+        .skip(edits)
+        .take(deletes)
+        .map(|m| m.id.clone())
+        .collect();
+    lib.scenes.retain(|m| !gone.contains(&m.id));
+    let template = lib.scenes[0].clone();
+    for i in 0..adds {
+        n += 1;
+        let mut m = template.clone();
+        m.id = (scenes + 1 + i).to_string();
+        m.updated_at = stamp(n);
+        lib.scenes.push(m);
+    }
+    if n > 0 {
+        lib.start
+            .insert(stash_adapter::reader::Kind::Scene, stamp(n));
+    }
+
+    let reader = MemoryReader::new(lib);
+    let t = Instant::now();
+    let report = engine::build::update::update(
+        &reader,
+        &store,
+        SERVER_ID,
+        options,
+        &mut |_| {},
+        &mut |_, m| eprintln!("{m}"),
+    )
+    .map_err(|e| e.to_string())?;
+    let update_ms = t.elapsed().as_millis() as u64;
+    Ok(json!({
+        "buildMs": build_ms,
+        "updateMs": update_ms,
+        "changes": { "edited": edits, "deleted": deletes, "added": adds },
+        "report": report,
+        "peakMemoryBytes": peak_memory(),
+    }))
+}
+
 fn main() -> ExitCode {
     let mut args = std::env::args().skip(1);
     let Some(command) = args.next() else {
@@ -124,6 +218,7 @@ fn main() -> ExitCode {
     };
     let (mut dir, mut out, mut scenes, mut images) = (None::<PathBuf>, None::<PathBuf>, 0, 0);
     let mut options = BuildOptions::default();
+    let mut change = 0usize;
     let rest: Vec<String> = args.collect();
     for pair in rest.chunks(2) {
         let value = pair.get(1).cloned();
@@ -134,6 +229,7 @@ fn main() -> ExitCode {
             "--scenes" => scenes = number.unwrap_or(0),
             "--images" => images = number.unwrap_or(0),
             "--batch" => options.batch_facts = number.unwrap_or(options.batch_facts),
+            "--change" => change = number.unwrap_or(0),
             other => return fail(&format!("unknown argument: {other}")),
         }
     }
@@ -155,6 +251,15 @@ fn main() -> ExitCode {
                 build(&reader, &dir, &options),
             )
         }
+        "update" => {
+            if scenes == 0 {
+                return fail("update needs --scenes N, and --change K");
+            }
+            (
+                json!({ "scenes": scenes, "images": images, "change": change }),
+                update_bench(&dir, scenes, images, change, &options),
+            )
+        }
         "stash" => {
             let url = std::env::var("STASH_URL").unwrap_or_else(|_| "http://localhost:9998".into());
             let key = std::env::var("STASH_API_KEY").unwrap_or_default();
@@ -162,7 +267,24 @@ fn main() -> ExitCode {
                 Ok(c) => c,
                 Err(e) => return fail(&e.to_string()),
             };
-            (json!({ "stash": url }), build(&client, &dir, &options))
+            // Discovery bounds (spec 008 FR-020): one full read on its own, with its request count.
+            let t = Instant::now();
+            let read = match client.full_read(&|| false, &mut |_| {}) {
+                Ok(r) => r,
+                Err(e) => return fail(&e.to_string()),
+            };
+            let records =
+                read.tags.len() + read.performers.len() + read.scenes.len() + read.images.len();
+            let discovery = json!({
+                "readMs": t.elapsed().as_millis() as u64,
+                "requests": read.requests,
+                "records": records,
+                "requestsPerRecord": read.requests as f64 / records.max(1) as f64,
+            });
+            (
+                json!({ "stash": url, "fullRead": discovery }),
+                build(&client, &dir, &options),
+            )
         }
         other => return fail(&format!("unknown command: {other}")),
     };

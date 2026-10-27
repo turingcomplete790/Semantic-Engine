@@ -51,7 +51,7 @@ pub(crate) struct Stamp {
 }
 
 /// One published generation (data-model "Generation").
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Generation {
     #[serde(rename = "generation")]
@@ -64,6 +64,9 @@ pub struct Generation {
     /// What cleanup could not do at this publish (research R5); empty when all went well.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub notes: Vec<String>,
+    /// What made this generation (spec 008 research R7). Opaque here: the builder defines it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub build: Option<serde_json::Value>,
 }
 
 pub(crate) fn now() -> String {

@@ -457,9 +457,9 @@ fail, naming the fact.
 - [X] T043 Add the results table and verdicts to `specs/007-graph-build/quickstart.md`. Run
   `cargo fmt --all`, `cargo clippy --workspace --all-targets -- -D warnings`,
   `cargo test --workspace` and `vocab-check`. Fix what they report.
-- [ ] T044 Update the graphify graph (`graphify-out/`) with the new code and docs. Code done
-  2026-10-26 (`graphify update .`: 3,345 nodes); the semantic pass over the changed docs (specs
-  006 and 007, docs/api.md, vocabulary) is left for the commit cycle.
+- [X] T044 Update the graphify graph (`graphify-out/`) with the new code and docs. Done
+  2026-10-26: code with `graphify update .`, then the semantic pass over the 25 changed docs
+  (3,484 nodes, 7,691 edges, 203 communities).
 
 ---
 

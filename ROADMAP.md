@@ -103,9 +103,14 @@ Done 2026-10-20: [specs/003-engine-design-spike/decision-record.md](specs/003-en
       `isTrait`, `isLabel`, `isMiseEnScene`, `isVariation`), `variantOfTagId`, scene- and
       image-scoped assignments, performer-global Traits and Labels. Done in `specs/007-graph-build`:
       every key's facts are in its mapping rules; bad fields are skipped or noted, never fatal
-- [ ] Bounded, flag-filtered discovery (constitution Principle VII)
-- [ ] Incremental build with progress and cancellation; store rebuilt when missing, damaged, or
-      from an older format
+- [x] Bounded, flag-filtered discovery (constitution Principle VII). Done in specs 005 and 008:
+      one filtered query per key, then records by id, 250 per request (40 requests for 905
+      semantic records on the test instance); updates read in proportion to what changed
+- [x] Incremental build with progress and cancellation; store rebuilt when missing, damaged, or
+      from an older format. Done as "Update semantic graph" (`specs/008-incremental-graph-update`,
+      store format 2, contract 1.3.0): every update equals a full rebuild. At 250k scenes, one
+      changed scene takes 4.6 s and 1,000 take 17.9 s. Starting updates from save hooks stays
+      with Phase 3's "Hook-driven incremental updates"
 - [x] Store with published snapshot generations, a single writer, and readers of published
       generations only (constitution Principle IV; decision record rules 1–3). Done in
       `specs/006-graph-store`: 0 partial reads in 16,492 multi-process reads at 250k. A

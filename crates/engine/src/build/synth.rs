@@ -13,7 +13,19 @@ use std::collections::BTreeMap;
 
 /// Tags per flag.
 pub const TAGS_PER_FLAG: usize = 6;
-const TIME: &str = "2026-10-26T10:00:00-06:00";
+/// Each item gets its own `updated_at`, one second apart from 2026-09-01 00:00 in Stash's
+/// server-local text (2.4 million distinct seconds, all before October), so an update's catch-up
+/// reads only what changed after the last save.
+fn time(n: usize) -> String {
+    let (d, r) = (n / 86_400, n % 86_400);
+    format!(
+        "2026-09-{:02}T{:02}:{:02}:{:02}-06:00",
+        1 + d % 28,
+        r / 3600,
+        r / 60 % 60,
+        r % 60
+    )
+}
 
 fn tag_id(flag: usize, n: usize) -> String {
     (1 + flag * TAGS_PER_FLAG + n).to_string()
@@ -52,7 +64,7 @@ pub fn library(scenes: usize, images: usize) -> LibraryRead {
                 flags: [*f].into(),
                 parents: Vec::new(),
                 fields: fields(extra),
-                updated_at: TIME.into(),
+                updated_at: time(fi * TAGS_PER_FLAG + n),
             });
         }
     }
@@ -65,7 +77,7 @@ pub fn library(scenes: usize, images: usize) -> LibraryRead {
             archetype_parents: None,
             measurements: Some(Measurements::parse("34D-26-35")),
             display: None,
-            updated_at: TIME.into(),
+            updated_at: time(100 + i),
         })
         .collect();
     let perf = |i: usize| (1 + i % people).to_string();
@@ -118,7 +130,7 @@ pub fn library(scenes: usize, images: usize) -> LibraryRead {
                         ]),
                     ),
                 ]),
-                updated_at: TIME.into(),
+                updated_at: time(100 + people + i),
             }
         })
         .collect();
@@ -139,12 +151,22 @@ pub fn library(scenes: usize, images: usize) -> LibraryRead {
                             "roleTagId": &role}}]),
                     ),
                 ]),
-                updated_at: TIME.into(),
+                updated_at: time(100 + people + scenes + i),
             }
         })
         .collect();
+    let latest = |n: usize, first: usize| (n > 0).then(|| time(first + n - 1));
+    let start = [
+        (Kind::Tag, latest(TagFlag::ALL.len() * TAGS_PER_FLAG, 0)),
+        (Kind::Performer, latest(people, 100)),
+        (Kind::Scene, latest(scenes, 100 + people)),
+        (Kind::Image, latest(images, 100 + people + scenes)),
+    ]
+    .into_iter()
+    .filter_map(|(k, t)| t.map(|t| (k, t)))
+    .collect();
     LibraryRead {
-        start: Kind::ALL.iter().map(|k| (*k, TIME.to_string())).collect(),
+        start,
         tags,
         performers,
         scenes: scene_records,

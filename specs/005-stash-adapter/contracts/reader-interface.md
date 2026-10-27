@@ -126,3 +126,18 @@ a `MediaKind`) with the same names as `LibraryReader`'s (taking a `Kind`). Metho
 | `NotAuthorized`, `Graphql`, `UnexpectedResponse`, `Setup`, `Stopped` | `INTERNAL`, with the kind named in the message |
 
 No code is added, so `api/operations.json` and `docs/api.md` are unchanged.
+
+## Additions (spec 008)
+
+From `specs/008-incremental-graph-update/contracts/reader-additions.md`:
+
+- **The semantic rule, in one place:** `SemanticTag::is_semantic()`,
+  `SemanticPerformer::is_semantic(&performer_tags)`, `MediaRecord::is_semantic()` and
+  `performer_tag_set(&tags)`.
+  - `full_read` (the Client and `MemoryReader`) filters with them.
+  - Records read by id stay unfiltered; callers apply the rule.
+- **`semantic_tags()`:** the tag half of `full_read`, sorted by id.
+- **`performers_with_tags(tag_ids)`:** ids of performers carrying any of the tags, sorted,
+  queried in chunks of `PERFORMER_TAG_CHUNK`.
+
+Rules B1–B9 hold for both methods.

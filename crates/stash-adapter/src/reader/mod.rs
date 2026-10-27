@@ -17,8 +17,8 @@ pub mod time;
 
 pub use memory::MemoryReader;
 pub use records::{
-    Kind, LibraryRead, MediaKind, MediaRecord, Phase, Progress, ReadStart, RecordBatch,
-    SemanticPerformer, SemanticTag, TagFlag,
+    performer_tag_set, Kind, LibraryRead, MediaKind, MediaRecord, Phase, Progress, ReadStart,
+    RecordBatch, SemanticPerformer, SemanticTag, TagFlag,
 };
 
 use crate::Error;
@@ -56,4 +56,12 @@ pub trait LibraryReader {
 
     /// The newest `updated_at` of `kind`, exactly as Stash stores it (FR-012).
     fn latest_updated_at(&self, kind: Kind) -> Result<Option<String>, Error>;
+
+    /// Every semantic tag: the tag half of `full_read` (discovery by key, records in batches,
+    /// filtered by `SemanticTag::is_semantic`), sorted by id (spec 008).
+    fn semantic_tags(&self) -> Result<Vec<SemanticTag>, Error>;
+
+    /// Ids of performers carrying any of `tag_ids`, sorted, queried in chunks of
+    /// [`PERFORMER_TAG_CHUNK`] (spec 008).
+    fn performers_with_tags(&self, tag_ids: &[String]) -> Result<Vec<String>, Error>;
 }

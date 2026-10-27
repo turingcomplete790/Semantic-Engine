@@ -71,6 +71,10 @@ impl Reader {
                 "only SELECT queries are allowed; this is {form}"
             )));
         }
+        // Format 2 keeps each item's facts in its own graph (spec 008 R1); a query's default
+        // graph is the union of them all, so answers do not depend on where a fact lives.
+        let mut parsed = parsed;
+        parsed.dataset_mut().set_default_graph_as_union();
         match self.store.query(parsed).map_err(GraphError::internal)? {
             QueryResults::Solutions(solutions) => {
                 let variables: Vec<String> = solutions
@@ -94,10 +98,21 @@ impl Reader {
         }
     }
 
-    /// True when the generation holds `fact` (for tests and checks).
+    /// True when the generation holds `fact` in any graph (for tests and checks).
     pub fn contains(&self, fact: &Fact) -> Result<bool, GraphError> {
-        self.store
-            .contains(&to_ox_quad(fact)?)
-            .map_err(GraphError::internal)
+        let q = to_ox_quad(fact)?;
+        match self
+            .store
+            .quads_for_pattern(
+                Some(q.subject.as_ref()),
+                Some(q.predicate.as_ref()),
+                Some(q.object.as_ref()),
+                None,
+            )
+            .next()
+        {
+            Some(found) => found.map(|_| true).map_err(GraphError::internal),
+            None => Ok(false),
+        }
     }
 }

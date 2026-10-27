@@ -104,6 +104,21 @@ impl Fact {
     }
 }
 
+/// Facts owned by one item: they live in the graph named by `owner`, an absolute IRI (spec 008
+/// research R1).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Owned {
+    pub owner: String,
+    pub facts: Vec<Fact>,
+}
+
+/// What `Writer::replace_owned` did.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Replaced {
+    Unchanged,
+    Changed { removed: u64, added: u64 },
+}
+
 /// A fact pattern for `remove_matching`; `None` matches anything.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Pattern {
@@ -188,6 +203,16 @@ pub(crate) fn to_ox_quad(f: &Fact) -> Result<ox::Quad, GraphError> {
         to_ox_predicate(&f.predicate)?,
         to_ox_term(&f.object)?,
         ox::GraphName::DefaultGraph,
+    ))
+}
+
+/// A fact in an owner's graph.
+pub(crate) fn to_ox_owned_quad(f: &Fact, graph: &ox::NamedNode) -> Result<ox::Quad, GraphError> {
+    Ok(ox::Quad::new(
+        to_ox_subject(&f.subject)?,
+        to_ox_predicate(&f.predicate)?,
+        to_ox_term(&f.object)?,
+        graph.clone(),
     ))
 }
 

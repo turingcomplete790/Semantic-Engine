@@ -86,3 +86,25 @@ impl Writer {
 - **Query operations (Phase 3):** `reader()`, then `select`.
 - **`status` (Phase 3 item):** `summary()`. In this feature it is used only by `graph-bench` and
   by tests.
+
+## Format 2 additions (spec 008)
+
+From `specs/008-incremental-graph-update/contracts/graph-store-format-2.md`:
+- **`STORE_FORMAT = 2`:** facts live in one named graph per owner (an item IRI, or the
+  vocabulary's namespace).
+- **Queries:** the default graph is the union of all graphs, so queries answer as in format 1.
+  Format-1 stores need a rebuild.
+- **`Writer` additions:**
+  - `add_owned(&[Owned])`;
+  - `replace_owned(owner, facts) -> Replaced`, which is a no-op for identical facts;
+  - `remove_owned(owner) -> u64`;
+  - `owners()`, `owners_referencing(iri)`;
+  - `publish_with(build)`.
+- **`Generation.build`:** an opaque JSON stamp written by the builder.
+
+| Rule | Statement |
+|---|---|
+| G10 | The fact count is kept as the writer goes; `publish` counts the store only after a default-graph `add`, `remove`, `remove_matching` or `clear` |
+| G11 | `replace_owned` with identical facts writes nothing and leaves the store clean |
+| G12 | Owner methods touch only that owner's graph |
+| G13 | `owners` and `owners_referencing` see the writer's unpublished changes |

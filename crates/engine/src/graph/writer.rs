@@ -8,10 +8,11 @@
 
 use super::error::GraphError;
 use super::layout::{self, Generation};
-use super::term::{to_ox_pattern, to_ox_quad, Fact, Pattern};
+use super::term::{to_ox_owned_quad, to_ox_pattern, to_ox_quad, Fact, Owned, Pattern, Replaced};
 use super::{GENERATION_GRACE, STORE_FORMAT};
-use oxigraph::model::GraphNameRef;
+use oxigraph::model::{GraphName, GraphNameRef, NamedNode, NamedOrBlankNode, Quad, Term};
 use oxigraph::store::Store;
+use std::collections::{BTreeSet, HashSet};
 use std::fs::{self, File, OpenOptions, TryLockError};
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
@@ -24,6 +25,12 @@ pub struct Writer {
     server_id: String,
     store: Store,
     dirty: bool,
+    /// The store's fact count, kept as the writer goes (spec 008 research R2, rule G10). `None`
+    /// after a default-graph change, when `publish` counts the store instead.
+    count: Option<u64>,
+    /// An in-memory store that puts facts in the form the store keeps them in, for comparing
+    /// (Oxigraph stores integer-derived types as `xsd:integer`, and values canonically).
+    scratch: Option<Store>,
     _lock: File,
 }
 
@@ -74,11 +81,17 @@ impl Writer {
             layout::remove_if_present(&layout::dirty_path(dir))?;
         }
         let store = Store::open(&work).map_err(storage)?;
+        let count = match current {
+            Some(n) => layout::read_generation(dir, n).ok().map(|g| g.facts),
+            None => Some(0),
+        };
         Ok(Writer {
             dir: dir.to_path_buf(),
             server_id: server_id.to_string(),
             store,
             dirty: false,
+            count,
+            scratch: None,
             _lock: lock,
         })
     }
@@ -99,6 +112,8 @@ impl Writer {
             server_id: server_id.to_string(),
             store,
             dirty: true,
+            count: Some(0),
+            scratch: None,
             _lock: lock,
         })
     }
@@ -118,6 +133,7 @@ impl Writer {
             .map(to_ox_quad)
             .collect::<Result<Vec<_>, _>>()?;
         self.touch()?;
+        self.count = None;
         // The bulk loader is not transactional, but the dirty marker makes that safe: a crash
         // leaves `work.dirty`, and the next writer starts over from the current generation.
         // Small batches go through a transaction, which is faster for a handful of facts.
@@ -134,6 +150,7 @@ impl Writer {
             .map(to_ox_quad)
             .collect::<Result<Vec<_>, _>>()?;
         self.touch()?;
+        self.count = None;
         for q in &quads {
             self.store.remove(q).map_err(storage)?;
         }
@@ -144,6 +161,7 @@ impl Writer {
     pub fn remove_matching(&mut self, pattern: &Pattern) -> Result<u64, GraphError> {
         let (s, p, o) = to_ox_pattern(pattern)?;
         self.touch()?;
+        self.count = None;
         let found = self
             .store
             .quads_for_pattern(
@@ -162,11 +180,160 @@ impl Writer {
 
     pub fn clear(&mut self) -> Result<(), GraphError> {
         self.touch()?;
+        self.count = None;
         self.store.clear().map_err(storage)
+    }
+
+    fn graph(owner: &str) -> Result<NamedNode, GraphError> {
+        NamedNode::new(owner).map_err(|e| GraphError::InvalidFact {
+            message: format!("{owner:?} is not an absolute IRI: {e}"),
+        })
+    }
+
+    /// The facts an owner's graph holds now.
+    fn owned_quads(&self, graph: &NamedNode) -> Result<HashSet<Quad>, GraphError> {
+        self.store
+            .quads_for_pattern(None, None, None, Some(graph.as_ref().into()))
+            .collect::<Result<HashSet<_>, _>>()
+            .map_err(storage)
+    }
+
+    /// The quads as the store will hold them: written to the scratch store and read back.
+    fn as_stored(&mut self, quads: Vec<Quad>) -> Result<HashSet<Quad>, GraphError> {
+        if self.scratch.is_none() {
+            self.scratch = Some(Store::new().map_err(storage)?);
+        }
+        let scratch = self.scratch.as_ref().expect("just made");
+        scratch.extend(quads).map_err(storage)?;
+        let out = scratch
+            .iter()
+            .collect::<Result<HashSet<_>, _>>()
+            .map_err(storage)?;
+        scratch.clear().map_err(storage)?;
+        Ok(out)
+    }
+
+    /// Adds whole owners' facts, for builds; the owners' graphs must be empty, and each
+    /// owner's facts distinct (contracts/graph-store-format-2.md).
+    pub fn add_owned(&mut self, batch: &[Owned]) -> Result<(), GraphError> {
+        let mut quads = Vec::new();
+        for o in batch {
+            let graph = Self::graph(&o.owner)?;
+            for f in &o.facts {
+                quads.push(to_ox_owned_quad(f, &graph)?);
+            }
+        }
+        if quads.is_empty() {
+            return Ok(());
+        }
+        self.touch()?;
+        let n = quads.len() as u64;
+        if quads.len() >= BULK_BATCH || self.store.is_empty().map_err(storage)? {
+            self.store
+                .bulk_loader()
+                .load_quads(quads)
+                .map_err(storage)?;
+        } else {
+            self.store.extend(quads).map_err(storage)?;
+        }
+        self.count = self.count.map(|c| c + n);
+        Ok(())
+    }
+
+    /// Makes the owner's graph hold exactly `facts`; writes nothing when it already does (G11).
+    pub fn replace_owned(&mut self, owner: &str, facts: &[Fact]) -> Result<Replaced, GraphError> {
+        let graph = Self::graph(owner)?;
+        let old = self.owned_quads(&graph)?;
+        let new = self.as_stored(
+            facts
+                .iter()
+                .map(|f| to_ox_owned_quad(f, &graph))
+                .collect::<Result<Vec<_>, _>>()?,
+        )?;
+        if old == new {
+            return Ok(Replaced::Unchanged);
+        }
+        self.touch()?;
+        let removed: Vec<&Quad> = old.difference(&new).collect();
+        let added: Vec<Quad> = new.difference(&old).cloned().collect();
+        if new.is_empty() {
+            self.store
+                .remove_named_graph(graph.as_ref())
+                .map_err(storage)?;
+        } else {
+            for q in &removed {
+                self.store.remove(*q).map_err(storage)?;
+            }
+            self.store.extend(added.iter().cloned()).map_err(storage)?;
+        }
+        let (r, a) = (removed.len() as u64, added.len() as u64);
+        self.count = self.count.map(|c| c - r + a);
+        Ok(Replaced::Changed {
+            removed: r,
+            added: a,
+        })
+    }
+
+    /// Removes the owner's graph; returns how many facts it held.
+    pub fn remove_owned(&mut self, owner: &str) -> Result<u64, GraphError> {
+        let graph = Self::graph(owner)?;
+        let n = self.owned_quads(&graph)?.len() as u64;
+        let known = self
+            .store
+            .contains_named_graph(graph.as_ref())
+            .map_err(storage)?;
+        if n == 0 && !known {
+            return Ok(0);
+        }
+        self.touch()?;
+        self.store
+            .remove_named_graph(graph.as_ref())
+            .map_err(storage)?;
+        self.count = self.count.map(|c| c - n);
+        Ok(n)
+    }
+
+    /// Every owner in the working store, sorted (G13).
+    pub fn owners(&self) -> Result<Vec<String>, GraphError> {
+        let mut out: Vec<String> = self
+            .store
+            .named_graphs()
+            .filter_map(|g| match g {
+                Ok(NamedOrBlankNode::NamedNode(n)) => Some(Ok(n.into_string())),
+                Ok(_) => None,
+                Err(e) => Some(Err(storage(e))),
+            })
+            .collect::<Result<_, _>>()?;
+        out.sort();
+        Ok(out)
+    }
+
+    /// Owners whose graphs hold a fact with `object` as its object, sorted (G13).
+    pub fn owners_referencing(&self, object: &str) -> Result<Vec<String>, GraphError> {
+        let object: Term = Self::graph(object)?.into();
+        let mut out = BTreeSet::new();
+        for q in self
+            .store
+            .quads_for_pattern(None, None, Some(object.as_ref()), None)
+        {
+            if let GraphName::NamedNode(g) = q.map_err(storage)?.graph_name {
+                out.insert(g.into_string());
+            }
+        }
+        Ok(out.into_iter().collect())
     }
 
     /// Publishes the working store as the next generation, then cleans up old ones.
     pub fn publish(self) -> Result<Generation, GraphError> {
+        self.publish_inner(None)
+    }
+
+    /// `publish`, also recording `build` in the generation file (spec 008 research R7).
+    pub fn publish_with(self, build: serde_json::Value) -> Result<Generation, GraphError> {
+        self.publish_inner(Some(build))
+    }
+
+    fn publish_inner(self, build: Option<serde_json::Value>) -> Result<Generation, GraphError> {
         let dir = self.dir.clone();
         self.store.flush().map_err(storage)?;
         let current = layout::read_current(&dir).map_err(GraphError::internal)?;
@@ -179,7 +346,17 @@ impl Writer {
         self.store
             .backup(layout::generation_dir(&dir, n))
             .map_err(storage)?;
-        let facts = self.store.len().map_err(storage)? as u64;
+        let facts = match self.count {
+            Some(n) => {
+                debug_assert_eq!(
+                    Some(n as usize),
+                    self.store.len().ok(),
+                    "the kept fact count (G10)"
+                );
+                n
+            }
+            None => self.store.len().map_err(storage)? as u64,
+        };
         let mut generation = Generation {
             number: n,
             published_at: layout::now(),
@@ -187,6 +364,7 @@ impl Writer {
             format: STORE_FORMAT,
             server_id: self.server_id.clone(),
             notes: Vec::new(),
+            build,
         };
         layout::write_generation(&dir, &generation)?;
         layout::write_current(&dir, n)?;

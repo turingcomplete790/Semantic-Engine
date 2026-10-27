@@ -1,11 +1,11 @@
 //! Error codes and the contract version (spec 004: 1.1.0 adds NOT_FOUND; spec 007: 1.2.0 adds
-//! BUSY).
+//! BUSY; spec 008: 1.3.0 adds the updateGraph task).
 
 use engine::{ErrorCode, CONTRACT_VERSION};
 
 #[test]
-fn contract_is_1_2_0() {
-    assert_eq!(CONTRACT_VERSION, "1.2.0");
+fn contract_is_1_3_0() {
+    assert_eq!(CONTRACT_VERSION, "1.3.0");
 }
 
 #[test]
