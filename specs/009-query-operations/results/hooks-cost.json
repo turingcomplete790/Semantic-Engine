@@ -1,0 +1,93 @@
+{
+  "measuredAt": "2026-10-29T00:24:44Z",
+  "stash": "v0.31.1",
+  "method": "each save writes a current value back; median of 20 per save kind with the plugin enabled, then disabled; one bulkSceneUpdate per mode; idle job queue before each set",
+  "rows": [
+    {
+      "save": "sceneUpdate",
+      "plugin": false,
+      "items": 1,
+      "medianMs": 2.873641496989876,
+      "p95Ms": 4.214401007629931,
+      "runs": 20
+    },
+    {
+      "save": "imageUpdate",
+      "plugin": false,
+      "items": 1,
+      "medianMs": 2.713922964176163,
+      "p95Ms": 3.9468560134992003,
+      "runs": 20
+    },
+    {
+      "save": "performerUpdate",
+      "plugin": false,
+      "items": 1,
+      "medianMs": 2.657720004208386,
+      "p95Ms": 3.2146680168807507,
+      "runs": 20
+    },
+    {
+      "save": "tagUpdate",
+      "plugin": false,
+      "items": 1,
+      "medianMs": 2.31396101298742,
+      "p95Ms": 2.846281975507736,
+      "runs": 20
+    },
+    {
+      "save": "bulkSceneUpdate",
+      "plugin": false,
+      "items": 1000,
+      "ms": 421.79455602308735,
+      "msPerItem": 0.42179455602308735
+    },
+    {
+      "save": "sceneUpdate",
+      "plugin": true,
+      "items": 1,
+      "medianMs": 8.319327986100689,
+      "p95Ms": 10.57039899751544,
+      "runs": 20
+    },
+    {
+      "save": "imageUpdate",
+      "plugin": true,
+      "items": 1,
+      "medianMs": 7.9474619997199625,
+      "p95Ms": 11.65283500449732,
+      "runs": 20
+    },
+    {
+      "save": "performerUpdate",
+      "plugin": true,
+      "items": 1,
+      "medianMs": 7.577195996418595,
+      "p95Ms": 10.601070011034608,
+      "runs": 20
+    },
+    {
+      "save": "tagUpdate",
+      "plugin": true,
+      "items": 1,
+      "medianMs": 7.921186013845727,
+      "p95Ms": 12.248085986357182,
+      "runs": 20
+    },
+    {
+      "save": "bulkSceneUpdate",
+      "plugin": true,
+      "items": 1000,
+      "ms": 5522.654320986476,
+      "msPerItem": 5.522654320986476
+    }
+  ],
+  "addedMsPerItem": {
+    "sceneUpdate": 5.4456864891108125,
+    "imageUpdate": 5.233539035543799,
+    "performerUpdate": 4.919475992210209,
+    "tagUpdate": 5.607225000858307,
+    "bulkSceneUpdate": 5.100859764963388
+  },
+  "target": "at most 7 ms per saved item (SC-006)"
+}

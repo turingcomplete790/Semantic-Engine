@@ -4,6 +4,7 @@
 
 use crate::envelope::Envelope;
 use crate::input::PluginInput;
+use crate::journal::Journal;
 use crate::log::{Level, Logger};
 use crate::relations::stash_error;
 use engine::build::update::update;
@@ -94,7 +95,23 @@ pub fn build_graph(input: &PluginInput, logger: &mut Logger) -> Envelope {
     graph_task("buildGraph", run, input, logger)
 }
 
-/// "Update semantic graph": what changed since the last build or update (spec 008).
+/// "Update semantic graph": what changed since the last build or update (spec 008). It takes
+/// the graph's pending marker before the update takes its catch-up point, so a save after that
+/// point starts another update; on `BUSY` or any failure it restores the marker as stale, so the
+/// next save starts one (spec 009 research R8; FR-023).
 pub fn update_graph(input: &PluginInput, logger: &mut Logger) -> Envelope {
-    graph_task("updateGraph", update, input, logger)
+    let journal = Journal::new(&input.server_connection.plugin_dir);
+    if let Err(e) = journal.take_graph_pending() {
+        logger.log(Level::Warning, &format!("updateGraph: marker: {e}"));
+    }
+    let env = graph_task("updateGraph", update, input, logger);
+    let ended = if env.ok {
+        journal.finish_graph()
+    } else {
+        journal.restore_graph_pending()
+    };
+    if let Err(e) = ended {
+        logger.log(Level::Warning, &format!("updateGraph: marker: {e}"));
+    }
+    env
 }

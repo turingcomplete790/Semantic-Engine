@@ -1,0 +1,27 @@
+{
+  "command": "build",
+  "measuredAt": "2026-10-28T22:23:44Z",
+  "report": {
+    "facts": 24311499,
+    "generation": 1,
+    "notes": {
+      "mismatches": {},
+      "skipped": {}
+    },
+    "phases": {
+      "map": 37810,
+      "publish": 19191,
+      "read": 5900,
+      "write": 858663
+    },
+    "records": {
+      "images": 325000,
+      "performers": 5000,
+      "scenes": 250000,
+      "tags": 48
+    },
+    "seconds": 923.947288328
+  },
+  "scenes": 250000,
+  "seconds": 928.294733658
+}

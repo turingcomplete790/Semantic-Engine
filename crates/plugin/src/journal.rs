@@ -6,13 +6,18 @@
 //! when it creates the marker, so a burst of saves starts one job. The job drains the journal,
 //! removes the marker, and checks again for entries that arrived meanwhile. A marker left by a
 //! crashed job goes stale after [`STALE_AFTER`] and no longer blocks new jobs.
+//!
+//! The graph has markers of its own and no journal (spec 009 research R8): "Update semantic
+//! graph" finds changes from `updated_at`, so `graph.pending` only says an update is wanted. The
+//! update renames it to `graph.applying` before taking its catch-up point, and restores it,
+//! backdated as stale, when it fails.
 
 use serde_json::{json, Value};
 use stash_adapter::relations::MediaKind;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime};
 
 /// How old a pending marker may be before the next hook treats its job as gone.
@@ -22,6 +27,8 @@ const JOURNAL: &str = "journal.jsonl";
 const DRAINING: &str = "journal.draining";
 const PENDING: &str = "apply.pending";
 const WATERMARK: &str = "apply-watermark";
+pub const GRAPH_PENDING: &str = "graph.pending";
+pub const GRAPH_APPLYING: &str = "graph.applying";
 
 pub struct Journal {
     dir: PathBuf,
@@ -29,6 +36,43 @@ pub struct Journal {
 
 fn not_found(e: &io::Error) -> bool {
     e.kind() == io::ErrorKind::NotFound
+}
+
+/// How long ago `path` was last modified, or `None` when it does not exist.
+fn age(path: &Path) -> io::Result<Option<Duration>> {
+    match fs::metadata(path) {
+        Ok(m) => Ok(Some(
+            m.modified()
+                .ok()
+                .and_then(|m| SystemTime::now().duration_since(m).ok())
+                .unwrap_or_default(),
+        )),
+        Err(e) if not_found(&e) => Ok(None),
+        Err(e) => Err(e),
+    }
+}
+
+/// Creates the marker at `path`. True when this call created it, or replaced a stale one.
+fn mark(path: &Path) -> io::Result<bool> {
+    match OpenOptions::new().write(true).create_new(true).open(path) {
+        Ok(_) => Ok(true),
+        Err(e) if e.kind() == io::ErrorKind::AlreadyExists => {
+            if age(path)?.unwrap_or_default() >= STALE_AFTER {
+                fs::File::create(path)?;
+                Ok(true)
+            } else {
+                Ok(false)
+            }
+        }
+        Err(e) => Err(e),
+    }
+}
+
+fn remove(path: &Path) -> io::Result<()> {
+    match fs::remove_file(path) {
+        Err(e) if !not_found(&e) => Err(e),
+        _ => Ok(()),
+    }
 }
 
 impl Journal {
@@ -52,24 +96,7 @@ impl Journal {
     /// the caller should start the job; false when a job is already pending.
     pub fn mark_pending(&self) -> io::Result<bool> {
         fs::create_dir_all(&self.dir)?;
-        let path = self.dir.join(PENDING);
-        match OpenOptions::new().write(true).create_new(true).open(&path) {
-            Ok(_) => Ok(true),
-            Err(e) if e.kind() == io::ErrorKind::AlreadyExists => {
-                let age = fs::metadata(&path)?
-                    .modified()
-                    .ok()
-                    .and_then(|m| SystemTime::now().duration_since(m).ok())
-                    .unwrap_or_default();
-                if age >= STALE_AFTER {
-                    fs::File::create(&path)?;
-                    Ok(true)
-                } else {
-                    Ok(false)
-                }
-            }
-            Err(e) => Err(e),
-        }
+        mark(&self.dir.join(PENDING))
     }
 
     /// Takes every journal entry (plus any left by a drain that crashed), each item once in
@@ -151,9 +178,61 @@ pub use stash_adapter::reader::time::one_second_earlier;
 impl Journal {
     /// Removes the pending marker, for when starting the job failed, so the next save retries.
     pub fn clear_pending(&self) -> io::Result<()> {
-        match fs::remove_file(self.dir.join(PENDING)) {
+        remove(&self.dir.join(PENDING))
+    }
+}
+
+/// The graph's markers (spec 009 research R8).
+impl Journal {
+    /// Creates `graph.pending`. True when this call created it (or replaced a stale one), so
+    /// the caller should start "Update semantic graph".
+    pub fn mark_graph_pending(&self) -> io::Result<bool> {
+        fs::create_dir_all(&self.dir)?;
+        mark(&self.dir.join(GRAPH_PENDING))
+    }
+
+    /// Removes `graph.pending`, for when starting the update failed, so the next save retries.
+    pub fn clear_graph_pending(&self) -> io::Result<()> {
+        remove(&self.dir.join(GRAPH_PENDING))
+    }
+
+    /// Renames `graph.pending` to `graph.applying`, as an update starts. A save after this
+    /// creates a new `graph.pending` and starts another update.
+    pub fn take_graph_pending(&self) -> io::Result<()> {
+        match fs::rename(self.dir.join(GRAPH_PENDING), self.dir.join(GRAPH_APPLYING)) {
             Err(e) if !not_found(&e) => Err(e),
             _ => Ok(()),
         }
+    }
+
+    /// Removes `graph.applying`, as an update ends.
+    pub fn finish_graph(&self) -> io::Result<()> {
+        remove(&self.dir.join(GRAPH_APPLYING))
+    }
+
+    /// Ends an update that failed: removes `graph.applying` and writes `graph.pending` backdated
+    /// past [`STALE_AFTER`], so the next save starts an update. A `graph.pending` written by a
+    /// save during the update is kept as it is: that save started an update already.
+    pub fn restore_graph_pending(&self) -> io::Result<()> {
+        fs::create_dir_all(&self.dir)?;
+        let path = self.dir.join(GRAPH_PENDING);
+        match OpenOptions::new().write(true).create_new(true).open(&path) {
+            Ok(file) => {
+                file.set_modified(SystemTime::now() - STALE_AFTER - Duration::from_secs(60))?
+            }
+            Err(e) if e.kind() == io::ErrorKind::AlreadyExists => {}
+            Err(e) => return Err(e),
+        }
+        self.finish_graph()
+    }
+
+    /// An update is wanted or running: `graph.pending` exists, or `graph.applying` exists and is
+    /// younger than [`STALE_AFTER`].
+    pub fn graph_pending(&self) -> bool {
+        self.dir.join(GRAPH_PENDING).exists()
+            || age(&self.dir.join(GRAPH_APPLYING))
+                .ok()
+                .flatten()
+                .is_some_and(|a| a < STALE_AFTER)
     }
 }

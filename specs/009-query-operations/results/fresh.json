@@ -1,0 +1,13 @@
+{
+  "command": "fresh",
+  "measuredAt": "2026-10-29T00:01:05Z",
+  "performer": "7",
+  "pollSeconds": 0.5,
+  "role": "20",
+  "scene": "2",
+  "secondsFromSave": 1.068705787,
+  "secondsToRestore": 1.052878592,
+  "secondsToShow": 1.046738558,
+  "server": "http://localhost:9998",
+  "target": "under 30 s (SC-007)"
+}

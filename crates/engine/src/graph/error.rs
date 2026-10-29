@@ -59,6 +59,10 @@ pub enum GraphError {
     },
     /// The plugin has no server id yet, so the store cannot be stamped or checked.
     NoServerId,
+    /// The generation asked for is not kept (G7), or was never published (spec 009 R6).
+    GenerationGone {
+        generation: u64,
+    },
     Io {
         message: String,
     },
@@ -77,6 +81,7 @@ impl GraphError {
             GraphError::InvalidQuery { .. } => "invalid query",
             GraphError::InvalidFact { .. } => "invalid fact",
             GraphError::NoServerId => "no server id",
+            GraphError::GenerationGone { .. } => "generation gone",
             GraphError::Io { .. } => "io",
             GraphError::Internal { .. } => "internal",
         }
@@ -120,6 +125,9 @@ impl std::fmt::Display for GraphError {
                 f,
                 "this Stash server has no identifier yet; run \"Generate server identifier\""
             ),
+            GraphError::GenerationGone { generation } => {
+                write!(f, "generation {generation} is no longer kept")
+            }
             GraphError::Io { message } => write!(f, "graph store file error: {message}"),
             GraphError::Internal { message } => write!(f, "graph store error: {message}"),
         }

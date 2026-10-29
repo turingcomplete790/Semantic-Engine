@@ -1,5 +1,5 @@
 {
-  "contractVersion": "1.3.0",
+  "contractVersion": "1.4.0",
   "pluginId": "semantic-engine",
   "operations": [
     {
@@ -13,7 +13,8 @@
       "errors": [
         "STASH_UNREACHABLE",
         "STASH_TOO_OLD"
-      ]
+      ],
+      "graph": "since 1.4.0: a graph object (state, format, generation, publishedAt, how, facts, items, reason, pending), also in the details of STASH_UNREACHABLE and STASH_TOO_OLD"
     },
     {
       "name": "getServerId",
@@ -56,7 +57,35 @@
     {
       "name": "recordChange",
       "since": "1.1.0",
-      "errors": []
+      "errors": [],
+      "result": "since 1.4.0: { recorded, started, graph: { recorded, started } }"
+    },
+    {
+      "name": "query",
+      "since": "1.4.0",
+      "arguments": {
+        "query": "string, required",
+        "pageSize": "integer 1 to 20000",
+        "limit": "integer >= 1",
+        "continuation": "string",
+        "contract": "MAJOR.MINOR.PATCH"
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "QUERY_SYNTAX",
+        "QUERY_UNSUPPORTED",
+        "QUERY_UNKNOWN",
+        "QUERY_SCOPE_AMBIGUOUS",
+        "QUERY_NOT_RECURSIVE",
+        "QUERY_TIMEOUT",
+        "RESULT_TOO_LARGE",
+        "PAGE_EXPIRED",
+        "PAGE_INVALID",
+        "GRAPH_NOT_BUILT",
+        "GRAPH_NEEDS_REBUILD",
+        "CONTRACT_MISMATCH",
+        "INTERNAL"
+      ]
     }
   ],
   "tasks": [
@@ -150,8 +179,79 @@
       "since": "1.2.0"
     },
     {
+      "code": "QUERY_SYNTAX",
+      "since": "1.4.0"
+    },
+    {
+      "code": "QUERY_UNSUPPORTED",
+      "since": "1.4.0"
+    },
+    {
+      "code": "QUERY_UNKNOWN",
+      "since": "1.4.0"
+    },
+    {
+      "code": "QUERY_SCOPE_AMBIGUOUS",
+      "since": "1.4.0"
+    },
+    {
+      "code": "QUERY_NOT_RECURSIVE",
+      "since": "1.4.0"
+    },
+    {
+      "code": "QUERY_TIMEOUT",
+      "since": "1.4.0"
+    },
+    {
+      "code": "RESULT_TOO_LARGE",
+      "since": "1.4.0"
+    },
+    {
+      "code": "PAGE_EXPIRED",
+      "since": "1.4.0"
+    },
+    {
+      "code": "PAGE_INVALID",
+      "since": "1.4.0"
+    },
+    {
+      "code": "GRAPH_NOT_BUILT",
+      "since": "1.4.0"
+    },
+    {
+      "code": "GRAPH_NEEDS_REBUILD",
+      "since": "1.4.0"
+    },
+    {
+      "code": "CONTRACT_MISMATCH",
+      "since": "1.4.0"
+    },
+    {
       "code": "INTERNAL",
       "since": "1.0.0"
+    }
+  ],
+  "hooks": [
+    {
+      "name": "Record changes for the semantic engine",
+      "op": "recordChange",
+      "since": "1.4.0",
+      "replaces": "Apply relations after a save",
+      "triggeredBy": [
+        "Tag.Create.Post",
+        "Tag.Update.Post",
+        "Tag.Destroy.Post",
+        "Tag.Merge.Post",
+        "Performer.Create.Post",
+        "Performer.Update.Post",
+        "Performer.Destroy.Post",
+        "Scene.Create.Post",
+        "Scene.Update.Post",
+        "Scene.Destroy.Post",
+        "Image.Create.Post",
+        "Image.Update.Post",
+        "Image.Destroy.Post"
+      ]
     }
   ]
 }

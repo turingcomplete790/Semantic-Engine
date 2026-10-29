@@ -6,7 +6,7 @@
 //! single-item updates and the viewer's bulk updates, merges, and deletes. Every update here
 //! changes custom fields only, which is what the seed and the scripted saves need.
 
-use crate::{schema, Client, Error, JsonAny, JsonMap};
+use crate::{schema, Client, Error, JsonMap};
 use serde_json::{Map, Value};
 
 json_scalar_local!(BoolMap, BoolMap);
@@ -289,19 +289,6 @@ pub struct BulkPerformerUpdate {
 }
 
 #[derive(cynic::QueryVariables, Debug)]
-pub struct RunPluginOperationVars {
-    pub plugin_id: cynic::Id,
-    pub args: Option<JsonMap>,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(graphql_type = "Mutation", variables = "RunPluginOperationVars")]
-pub struct RunPluginOperation {
-    #[arguments(plugin_id: $plugin_id, args: $args)]
-    pub run_plugin_operation: Option<JsonAny>,
-}
-
-#[derive(cynic::QueryVariables, Debug)]
 pub struct SetPluginsEnabledVars {
     pub enabled_map: BoolMap,
 }
@@ -534,24 +521,6 @@ impl Client {
     pub fn stats(&self) -> Result<Stats, Error> {
         use cynic::QueryBuilder;
         Ok(self.run(StatsQuery::build(()))?.stats)
-    }
-
-    /// `runPluginOperation(plugin_id, args)`; returns the plugin's `output` as JSON.
-    pub fn run_plugin_operation(
-        &self,
-        plugin_id: &str,
-        args: Map<String, Value>,
-    ) -> Result<Value, Error> {
-        use cynic::MutationBuilder;
-        let op = RunPluginOperation::build(RunPluginOperationVars {
-            plugin_id: cynic::Id::new(plugin_id),
-            args: Some(JsonMap(Value::Object(args))),
-        });
-        Ok(self
-            .run(op)?
-            .run_plugin_operation
-            .map(|v| v.0)
-            .unwrap_or(Value::Null))
     }
 
     pub fn set_plugin_enabled(&self, plugin_id: &str, enabled: bool) -> Result<bool, Error> {

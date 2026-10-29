@@ -1,0 +1,124 @@
+{
+  "command": "run",
+  "measuredAt": "2026-10-28T23:27:02Z",
+  "overall": {
+    "maxMs": 405.652511,
+    "medianMs": 118.888577,
+    "p95Ms": 369.957447,
+    "runs": 400
+  },
+  "queries": [
+    {
+      "bindings": 8122,
+      "engineSeconds": 0.068719429,
+      "morePages": true,
+      "name": "plain",
+      "pageBytes": 1048449,
+      "query": "SELECT ?scene WHERE { ?scene :hasPerformer ?p . ?p :hasRole :isRole%202 }",
+      "time": {
+        "maxMs": 134.33324399999998,
+        "medianMs": 115.305874,
+        "p95Ms": 126.56506,
+        "runs": 50
+      }
+    },
+    {
+      "bindings": 2704,
+      "engineSeconds": 0.076616265,
+      "morePages": true,
+      "name": "two performers, !=",
+      "pageBytes": 1048267,
+      "query": "SELECT ?scene ?a ?b WHERE { ?scene :hasPerformer ?a . ?scene :hasPerformer ?b . ?a :hasRole :isRole%202 . ?b :hasRole :isRole%203 . FILTER (?a != ?b) }",
+      "time": {
+        "maxMs": 131.215202,
+        "medianMs": 113.438668,
+        "p95Ms": 126.78152200000001,
+        "runs": 50
+      }
+    },
+    {
+      "bindings": 0,
+      "engineSeconds": 0.341669816,
+      "morePages": false,
+      "name": "three performers",
+      "pageBytes": 2,
+      "query": "SELECT ?scene ?a ?b ?c WHERE { ?scene :hasPerformer ?a , ?b , ?c . FILTER (?a != ?b) FILTER (?b != ?c) FILTER (?a != ?c) }",
+      "time": {
+        "maxMs": 405.652511,
+        "medianMs": 365.90927,
+        "p95Ms": 385.36639499999995,
+        "runs": 50
+      }
+    },
+    {
+      "bindings": 4051,
+      "engineSeconds": 0.106796947,
+      "morePages": true,
+      "name": "trait and role",
+      "pageBytes": 1048419,
+      "query": "SELECT ?scene ?p WHERE { ?scene :hasPerformer ?p . ?p :hasRole :isRole%202 . ?p :hasTrait :isTrait%202 }",
+      "time": {
+        "maxMs": 155.853897,
+        "medianMs": 141.91002899999998,
+        "p95Ms": 153.09902,
+        "runs": 50
+      }
+    },
+    {
+      "bindings": 100,
+      "engineSeconds": 0.012171148,
+      "morePages": false,
+      "name": "time comparison",
+      "pageBytes": 23760,
+      "query": "SELECT ?scene ?x WHERE { ?scene :hasPerformer performer:7 . ?x sem:inMedia ?scene ; sem:atTime ?t FILTER (?t > 45) }",
+      "time": {
+        "maxMs": 21.473543000000003,
+        "medianMs": 17.850074,
+        "p95Ms": 20.937943,
+        "runs": 50
+      }
+    },
+    {
+      "bindings": 8122,
+      "engineSeconds": 0.069819156,
+      "morePages": true,
+      "name": "recursive role",
+      "pageBytes": 1048457,
+      "query": "SELECT ?scene WHERE { ?scene :hasPerformer ?p . ?p :hasRole recursive:isRole%200 }",
+      "time": {
+        "maxMs": 134.451602,
+        "medianMs": 117.710312,
+        "p95Ms": 125.021898,
+        "runs": 50
+      }
+    },
+    {
+      "bindings": 8027,
+      "engineSeconds": 0.093935841,
+      "morePages": true,
+      "name": "recursive relation",
+      "pageBytes": 1048453,
+      "query": "SELECT ?scene WHERE { ?r sem:ofRelation recursive:isRelation%200 ; sem:inMedia ?scene }",
+      "time": {
+        "maxMs": 160.073904,
+        "medianMs": 143.103295,
+        "p95Ms": 157.458184,
+        "runs": 50
+      }
+    },
+    {
+      "bindings": 8474,
+      "engineSeconds": 0.055880692,
+      "morePages": true,
+      "name": "every scene, first 1 MiB page",
+      "pageBytes": 1048563,
+      "query": "SELECT ?s WHERE { ?s a sem:Scene }",
+      "time": {
+        "maxMs": 128.415393,
+        "medianMs": 112.148422,
+        "p95Ms": 124.429361,
+        "runs": 50
+      }
+    }
+  ]
+}

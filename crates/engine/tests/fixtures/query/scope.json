@@ -1,0 +1,164 @@
+{
+  "start": {
+    "scene": "2026-10-26T10:00:00-06:00",
+    "image": "2026-10-26T10:00:00-06:00",
+    "performer": "2026-10-26T10:00:00-06:00",
+    "tag": "2026-10-26T10:00:00-06:00"
+  },
+  "tags": [
+    {
+      "id": "1",
+      "name": "Dom",
+      "flags": [
+        "role"
+      ],
+      "parents": [],
+      "fields": {},
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "id": "2",
+      "name": "Sub",
+      "flags": [
+        "role"
+      ],
+      "parents": [],
+      "fields": {},
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "id": "3",
+      "name": "Blonde",
+      "flags": [
+        "trait"
+      ],
+      "parents": [],
+      "fields": {},
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "id": "4",
+      "name": "Dungeon",
+      "flags": [
+        "miseEnScene"
+      ],
+      "parents": [],
+      "fields": {},
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    }
+  ],
+  "performers": [
+    {
+      "id": "10",
+      "tags": [
+        "3"
+      ],
+      "archetype": false,
+      "archetype_parents": null,
+      "measurements": null,
+      "display": null,
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    }
+  ],
+  "scenes": [
+    {
+      "kind": "scene",
+      "id": "1",
+      "performers": [
+        "10",
+        "11"
+      ],
+      "tags": [],
+      "fields": {
+        "roleTagAssignments": {
+          "value": {
+            "10": [
+              "1"
+            ],
+            "11": [
+              "2"
+            ]
+          }
+        }
+      },
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "kind": "scene",
+      "id": "2",
+      "performers": [
+        "10",
+        "12"
+      ],
+      "tags": [],
+      "fields": {
+        "roleTagAssignments": {
+          "value": {
+            "10": [
+              "2"
+            ]
+          }
+        }
+      },
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "kind": "scene",
+      "id": "3",
+      "performers": [
+        "11"
+      ],
+      "tags": [],
+      "fields": {
+        "roleTagAssignments": {
+          "value": {
+            "11": [
+              "1"
+            ]
+          }
+        },
+        "timeline": {
+          "value": [
+            {
+              "id": "s1",
+              "type": "stage",
+              "miseEnScenePicks": [
+                {
+                  "tagId": "4",
+                  "tagName": "Dungeon"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    }
+  ],
+  "images": [
+    {
+      "kind": "image",
+      "id": "1",
+      "performers": [
+        "10",
+        "11"
+      ],
+      "tags": [],
+      "fields": {
+        "roleTagAssignments": {
+          "value": {
+            "10": [
+              "1"
+            ],
+            "11": [
+              "2"
+            ]
+          }
+        }
+      },
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    }
+  ],
+  "missing": {},
+  "requests": 0
+}

@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-10-29T00:31:23Z",
+  "stash": "v0.31.1",
+  "edits": [
+    "a tag's flags",
+    "a performer's tags",
+    "100 scenes in one bulk edit",
+    "a scene deleted",
+    "two tags merged"
+  ],
+  "secondsUntilIdle": 1.9,
+  "status": {
+    "state": "ready",
+    "generation": 9,
+    "how": "update",
+    "pending": false,
+    "facts": 5995
+  },
+  "facts": {
+    "live": 5995,
+    "rebuilt": 5995
+  },
+  "onlyLive": [],
+  "onlyRebuilt": [],
+  "equal": true
+}

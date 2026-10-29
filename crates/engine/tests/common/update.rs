@@ -361,3 +361,22 @@ pub fn differences(a: &BTreeSet<Fact>, b: &BTreeSet<Fact>) -> String {
         lines(b, a).join("\n")
     )
 }
+
+/// The owners per kind the store holds, counted with the writer (spec 009 T036).
+pub fn owner_counts(store: &GraphStore) -> engine::build::stamp::Items {
+    let mut items = engine::build::stamp::Items::default();
+    for o in store.writer().unwrap().owners().unwrap() {
+        if let Some(kind) = engine::build::update::owner_kind(&o) {
+            items.add(kind, 1);
+        }
+    }
+    items
+}
+
+/// The `items` of the current generation's build stamp.
+pub fn stamp_items(store: &GraphStore) -> Option<engine::build::stamp::Items> {
+    let generation = store.reader().unwrap().generation().clone();
+    engine::build::stamp::BuildStamp::read(&generation)
+        .unwrap()
+        .items
+}

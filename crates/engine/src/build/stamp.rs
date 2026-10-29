@@ -2,7 +2,7 @@
 //! next update catches up from. A missing or mismatched stamp makes the update rebuild in full.
 
 use serde::{Deserialize, Serialize};
-use stash_adapter::reader::ReadStart;
+use stash_adapter::reader::{Kind, ReadStart};
 
 /// Bumped by any change to the mapping rules (spec 007 contracts/mapping-rules.md) that changes
 /// what some record gives. `owners_disjoint` pins it to the fixture's expected graph.
@@ -16,6 +16,32 @@ pub enum How {
     Update,
 }
 
+/// Items per kind in a generation: its owners of each kind (spec 009 research R9).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Items {
+    pub tags: u64,
+    pub performers: u64,
+    pub scenes: u64,
+    pub images: u64,
+}
+
+impl Items {
+    fn slot(&mut self, kind: Kind) -> &mut u64 {
+        match kind {
+            Kind::Tag => &mut self.tags,
+            Kind::Performer => &mut self.performers,
+            Kind::Scene => &mut self.scenes,
+            Kind::Image => &mut self.images,
+        }
+    }
+
+    /// Adds `n` (which may be negative) to the count of `kind`, never going below zero.
+    pub fn add(&mut self, kind: Kind, n: i64) {
+        let slot = self.slot(kind);
+        *slot = slot.saturating_add_signed(n);
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct BuildStamp {
@@ -24,6 +50,9 @@ pub struct BuildStamp {
     /// Per kind, the newest `updated_at` when the build or update began, in Stash's own text.
     pub catch_up: ReadStart,
     pub how: How,
+    /// Absent in stamps written before contract 1.4.0.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub items: Option<Items>,
 }
 
 /// The embedded vocabulary's version.
@@ -41,7 +70,13 @@ impl BuildStamp {
             vocabulary_version: vocabulary_version(),
             catch_up,
             how,
+            items: None,
         }
+    }
+
+    pub fn with_items(mut self, items: Items) -> BuildStamp {
+        self.items = Some(items);
+        self
     }
 
     /// The stamp of a generation; `None` when absent, unreadable or partial.

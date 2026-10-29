@@ -29,13 +29,22 @@ tasks:
     defaultArgs:
       op: updateGraph
 hooks:
-  - name: Apply relations after a save
-    description: Records the saved scene or image and starts the "Apply relations" task. Adds only a few milliseconds to the save.
+  - name: Record changes for the semantic engine
+    description: Records saved tags, performers, scenes and images, and starts "Update semantic graph" and, for scenes and images, "Apply relations". Adds only a few milliseconds to a save.
     triggeredBy:
+      - Tag.Create.Post
+      - Tag.Update.Post
+      - Tag.Destroy.Post
+      - Tag.Merge.Post
+      - Performer.Create.Post
+      - Performer.Update.Post
+      - Performer.Destroy.Post
       - Scene.Create.Post
       - Scene.Update.Post
+      - Scene.Destroy.Post
       - Image.Create.Post
       - Image.Update.Post
+      - Image.Destroy.Post
     defaultArgs:
       op: recordChange
 settings:

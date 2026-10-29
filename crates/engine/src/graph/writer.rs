@@ -31,6 +31,10 @@ pub struct Writer {
     /// An in-memory store that puts facts in the form the store keeps them in, for comparing
     /// (Oxigraph stores integer-derived types as `xsd:integer`, and values canonically).
     scratch: Option<Store>,
+    /// The generation the working store started from, when it started from one.
+    base: Option<u64>,
+    /// How publishing writes the generation's query index (spec 009 research R12).
+    index: crate::qindex::Plan,
     _lock: File,
 }
 
@@ -92,6 +96,8 @@ impl Writer {
             dirty: false,
             count,
             scratch: None,
+            base: current,
+            index: crate::qindex::Plan::Delta(BTreeSet::new()),
             _lock: lock,
         })
     }
@@ -114,8 +120,39 @@ impl Writer {
             dirty: true,
             count: Some(0),
             scratch: None,
+            base: None,
+            index: crate::qindex::Plan::Collect(crate::qindex::Builder::default()),
             _lock: lock,
         })
+    }
+
+    /// Notes, for the index, that `owner`'s facts changed (`None`: the default graph). A writer
+    /// collecting every fact cannot follow a change to facts it already has, and rescans.
+    fn changed(&mut self, owner: Option<&str>) {
+        use crate::qindex::Plan;
+        match &mut self.index {
+            Plan::Delta(touched) => {
+                touched.insert(owner.map(str::to_string));
+            }
+            Plan::Collect(_) => self.index = Plan::Rescan,
+            Plan::Rescan => {}
+        }
+    }
+
+    /// Adds facts to the index being collected, in the form the store keeps them.
+    fn collect<'f>(&mut self, owner: Option<&str>, facts: impl IntoIterator<Item = &'f Fact>) {
+        use super::term::canonical;
+        match &mut self.index {
+            crate::qindex::Plan::Collect(b) => {
+                for f in facts {
+                    b.add(&f.subject, &f.predicate, &canonical(&f.object), owner);
+                }
+            }
+            crate::qindex::Plan::Delta(touched) => {
+                touched.insert(owner.map(str::to_string));
+            }
+            crate::qindex::Plan::Rescan => {}
+        }
     }
 
     /// Marks the working store as having unpublished changes, before the first one.
@@ -134,6 +171,7 @@ impl Writer {
             .collect::<Result<Vec<_>, _>>()?;
         self.touch()?;
         self.count = None;
+        self.collect(None, facts);
         // The bulk loader is not transactional, but the dirty marker makes that safe: a crash
         // leaves `work.dirty`, and the next writer starts over from the current generation.
         // Small batches go through a transaction, which is faster for a handful of facts.
@@ -151,6 +189,7 @@ impl Writer {
             .collect::<Result<Vec<_>, _>>()?;
         self.touch()?;
         self.count = None;
+        self.changed(None);
         for q in &quads {
             self.store.remove(q).map_err(storage)?;
         }
@@ -162,6 +201,7 @@ impl Writer {
         let (s, p, o) = to_ox_pattern(pattern)?;
         self.touch()?;
         self.count = None;
+        self.changed(None);
         let found = self
             .store
             .quads_for_pattern(
@@ -181,6 +221,7 @@ impl Writer {
     pub fn clear(&mut self) -> Result<(), GraphError> {
         self.touch()?;
         self.count = None;
+        self.index = crate::qindex::Plan::Collect(crate::qindex::Builder::default());
         self.store.clear().map_err(storage)
     }
 
@@ -227,6 +268,9 @@ impl Writer {
             return Ok(());
         }
         self.touch()?;
+        for o in batch {
+            self.collect(Some(&o.owner), &o.facts);
+        }
         let n = quads.len() as u64;
         if quads.len() >= BULK_BATCH || self.store.is_empty().map_err(storage)? {
             self.store
@@ -254,6 +298,7 @@ impl Writer {
             return Ok(Replaced::Unchanged);
         }
         self.touch()?;
+        self.changed(Some(owner));
         let removed: Vec<&Quad> = old.difference(&new).collect();
         let added: Vec<Quad> = new.difference(&old).cloned().collect();
         if new.is_empty() {
@@ -286,6 +331,7 @@ impl Writer {
             return Ok(0);
         }
         self.touch()?;
+        self.changed(Some(owner));
         self.store
             .remove_named_graph(graph.as_ref())
             .map_err(storage)?;
@@ -333,7 +379,7 @@ impl Writer {
         self.publish_inner(Some(build))
     }
 
-    fn publish_inner(self, build: Option<serde_json::Value>) -> Result<Generation, GraphError> {
+    fn publish_inner(mut self, build: Option<serde_json::Value>) -> Result<Generation, GraphError> {
         let dir = self.dir.clone();
         self.store.flush().map_err(storage)?;
         let current = layout::read_current(&dir).map_err(GraphError::internal)?;
@@ -366,11 +412,69 @@ impl Writer {
             notes: Vec::new(),
             build,
         };
+        // The query index, before the generation is switched to, so a published generation
+        // has its index from the start. One that cannot be written is noted, and the generation
+        // is answered by the store instead.
+        let mut notes = Vec::new();
+        if let Err(e) = self.write_index(n) {
+            let _ = layout::remove_if_present(&crate::qindex::path(&dir, n));
+            notes.push(format!("query index of generation {n} not written: {e}"));
+        }
         layout::write_generation(&dir, &generation)?;
         layout::write_current(&dir, n)?;
         layout::remove_if_present(&layout::dirty_path(&dir))?;
-        generation.notes = cleanup(&dir, n);
+        notes.extend(cleanup(&dir, n));
+        generation.notes = notes;
         Ok(generation)
+    }
+
+    /// Writes generation `n`'s query index (spec 009 research R12).
+    fn write_index(&mut self, n: u64) -> std::io::Result<()> {
+        use crate::qindex::{self, Plan};
+        let path = qindex::path(&self.dir, n);
+        let base = self
+            .base
+            .and_then(|b| qindex::QIndex::open(&qindex::path(&self.dir, b)).ok());
+        let quads = |store: &Store, graph: Option<GraphNameRef>| {
+            store
+                .quads_for_pattern(None, None, None, graph)
+                .map(|q| q.map_err(std::io::Error::other))
+                .collect::<Result<Vec<_>, _>>()
+        };
+        let owner = |q: &Quad| match &q.graph_name {
+            GraphName::NamedNode(g) => Some(g.as_str().to_string()),
+            _ => None,
+        };
+        let plan = std::mem::replace(&mut self.index, Plan::Rescan);
+        match (plan, base) {
+            (Plan::Collect(b), _) => b.write(&path),
+            (Plan::Delta(touched), Some(base)) => {
+                let mut added = Vec::new();
+                for o in &touched {
+                    let found = match o {
+                        Some(o) => {
+                            let g = NamedNode::new(o).map_err(std::io::Error::other)?;
+                            quads(&self.store, Some(g.as_ref().into()))?
+                        }
+                        None => quads(&self.store, Some(GraphNameRef::DefaultGraph))?,
+                    };
+                    for q in &found {
+                        let f = super::term::from_ox_quad(q);
+                        added.push((f.subject, f.predicate, f.object, owner(q)));
+                    }
+                }
+                qindex::merge(&base, &touched, added, &path)
+            }
+            // No base index to merge into, or changes the writer did not follow: every fact.
+            (Plan::Delta(_), None) | (Plan::Rescan, _) => {
+                let mut b = qindex::Builder::default();
+                for q in quads(&self.store, None)? {
+                    let f = super::term::from_ox_quad(&q);
+                    b.add(&f.subject, &f.predicate, &f.object, owner(&q).as_deref());
+                }
+                b.write(&path)
+            }
+        }
     }
 }
 
@@ -402,6 +506,7 @@ pub(crate) fn cleanup(dir: &Path, current: u64) -> Vec<String> {
             continue;
         }
         let _ = layout::remove_if_present(&layout::generation_file(dir, g));
+        let _ = layout::remove_if_present(&crate::qindex::path(dir, g));
     }
     notes
 }

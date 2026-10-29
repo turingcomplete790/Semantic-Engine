@@ -36,11 +36,9 @@ impl Hierarchy {
             }
         }
 
-        for cycle in cycles(&up) {
+        let (h, loops) = Hierarchy::without_loops(up);
+        for cycle in loops {
             for t in &cycle {
-                if let Some(ps) = up.get_mut(t) {
-                    ps.retain(|p| !cycle.contains(p));
-                }
                 if let Some(r) = defs.relations.get_mut(t) {
                     r.valid = false;
                 }
@@ -52,17 +50,40 @@ impl Hierarchy {
                 detail: String::new(),
             });
         }
-        up.retain(|_, ps| !ps.is_empty());
+        h.check_relation_ends(defs);
+        h
+    }
 
+    /// Builds a hierarchy from (child, broader) links, such as the graph's `sem:broaderRole` and
+    /// `sem:broaderRelation` facts (spec 009 research R5). Links on a loop are removed as in
+    /// [`Hierarchy::build`], so "narrower" means the same in both.
+    pub fn from_links(links: impl IntoIterator<Item = (String, String)>) -> Hierarchy {
+        let mut up = Graph::new();
+        for (child, parent) in links {
+            up.entry(child).or_default().insert(parent);
+        }
+        Hierarchy::without_loops(up).0
+    }
+
+    /// Removes every link that lies on a loop and derives the narrower links; returns the
+    /// hierarchy and the loops found.
+    fn without_loops(mut up: Graph) -> (Hierarchy, Vec<BTreeSet<String>>) {
+        let loops = cycles(&up);
+        for cycle in &loops {
+            for t in cycle {
+                if let Some(ps) = up.get_mut(t) {
+                    ps.retain(|p| !cycle.contains(p));
+                }
+            }
+        }
+        up.retain(|_, ps| !ps.is_empty());
         let mut down = Graph::new();
         for (child, parents) in &up {
             for p in parents {
                 down.entry(p.clone()).or_default().insert(child.clone());
             }
         }
-        let h = Hierarchy { up, down };
-        h.check_relation_ends(defs);
-        h
+        (Hierarchy { up, down }, loops)
     }
 
     /// Direct broader terms.

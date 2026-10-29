@@ -100,46 +100,138 @@ fn journal(input: &PluginInput) -> Option<Journal> {
     (!dir.is_empty()).then(|| Journal::new(dir))
 }
 
-/// The save hook (`Scene/Image.Create/Update.Post`): appends the saved item to the journal and,
-/// for the first save of a burst, asks Stash to start "Apply relations". It does no evaluation
-/// and no store work, because its time is added to the save (spec 004 FR-012; research R6). It
-/// never fails the save: problems are logged and the result says what happened.
-pub fn record_change(input: &PluginInput, logger: &mut Logger) -> Envelope {
-    const OP: &str = "recordChange";
-    let ctx = input.args.get("hookContext");
-    let kind = ctx
-        .and_then(|c| c.get("type"))
-        .and_then(Value::as_str)
-        .and_then(|t| t.split('.').next())
-        .and_then(MediaKind::parse);
-    let id = arg_text(ctx.and_then(|c| c.get("id")));
-    let (Some(kind), Some(id), Some(journal)) = (kind, id, journal(input)) else {
-        return Envelope::ok(OP, json!({ "recorded": false, "started": false }));
-    };
-    if let Err(e) = journal.append(kind, &id) {
-        logger.error(&format!("{OP}: journal: {e}"));
-        return Envelope::ok(OP, json!({ "recorded": false, "started": false }));
+/// The task the hook starts when the graph needs updating (spec 009 research R8).
+pub const UPDATE_TASK: &str = "Update semantic graph";
+
+/// The hook types the hook entry is triggered by (contracts/operations-1.4.md). Stash v0.31.1
+/// fires no hook for a performer or scene merge, and has no image merge.
+const HOOK_TYPES: &[(&str, &[&str])] = &[
+    ("Tag", &["Create", "Update", "Destroy", "Merge"]),
+    ("Performer", &["Create", "Update", "Destroy"]),
+    ("Scene", &["Create", "Update", "Destroy"]),
+    ("Image", &["Create", "Update", "Destroy"]),
+];
+
+/// `Kind.Operation.Post` as (kind, operation), for the hook types of [`HOOK_TYPES`].
+fn hook_type(t: &str) -> Option<(&str, &str)> {
+    let mut parts = t.split('.');
+    let (kind, op) = (parts.next()?, parts.next()?);
+    if parts.next()? != "Post" || parts.next().is_some() {
+        return None;
     }
-    let started = match journal.mark_pending() {
+    HOOK_TYPES
+        .iter()
+        .any(|(k, ops)| *k == kind && ops.contains(&op))
+        .then_some((kind, op))
+}
+
+/// Creates a marker with `mark` and, when this call created it, starts `task`. On a failed
+/// start the marker is cleared with `clear`, so the next save tries again. Returns (recorded,
+/// started).
+fn mark_and_start(
+    mark: impl FnOnce() -> std::io::Result<bool>,
+    clear: impl FnOnce() -> std::io::Result<()>,
+    client: &mut Option<Result<stash_adapter::Client, String>>,
+    input: &PluginInput,
+    task: &str,
+    logger: &mut Logger,
+) -> (bool, bool) {
+    const OP: &str = "recordChange";
+    match mark() {
         Ok(true) => {
-            let started = stash_adapter::Client::from_server_connection(&input.server_connection)
-                .and_then(|c| c.run_plugin_task(PLUGIN_ID, APPLY_TASK));
+            let client = client.get_or_insert_with(|| {
+                stash_adapter::Client::from_server_connection(&input.server_connection)
+                    .map_err(|e| e.to_string())
+            });
+            let started = match client {
+                Ok(c) => c
+                    .run_plugin_task(PLUGIN_ID, task)
+                    .map_err(|e| e.to_string()),
+                Err(e) => Err(e.clone()),
+            };
             match started {
-                Ok(_) => true,
+                Ok(_) => (true, true),
                 Err(e) => {
-                    logger.error(&format!("{OP}: could not start {APPLY_TASK}: {e}"));
-                    let _ = journal.clear_pending();
-                    false
+                    logger.error(&format!("{OP}: could not start {task}: {e}"));
+                    let _ = clear();
+                    (true, false)
                 }
             }
         }
-        Ok(false) => false,
+        Ok(false) => (true, false),
         Err(e) => {
             logger.error(&format!("{OP}: marker: {e}"));
-            false
+            (false, false)
         }
+    }
+}
+
+/// The save hook, "Record changes for the semantic engine" (spec 009 research R8). For a scene
+/// or image create or update it appends the item to the relations journal and, for the first
+/// save of a burst, asks Stash to start "Apply relations" (spec 004 research R6). For every
+/// recognized save it creates the graph's pending marker and, when this call created it, starts
+/// "Update semantic graph". It does no evaluation and no store work, because its time is added
+/// to the save (spec 004 FR-012; 003 rule 11). It never fails the save: problems are logged and
+/// the result says what happened.
+pub fn record_change(input: &PluginInput, logger: &mut Logger) -> Envelope {
+    const OP: &str = "recordChange";
+    let nothing = json!({ "recorded": false, "started": false });
+    let ctx = input.args.get("hookContext");
+    let parsed = ctx
+        .and_then(|c| c.get("type"))
+        .and_then(Value::as_str)
+        .and_then(hook_type);
+    let (Some((kind, op)), Some(journal)) = (parsed, journal(input)) else {
+        return Envelope::ok(
+            OP,
+            json!({ "recorded": false, "started": false, "graph": nothing }),
+        );
     };
-    Envelope::ok(OP, json!({ "recorded": true, "started": started }))
+    let mut client = None;
+
+    // The relations path (spec 004): scene and image creates and updates.
+    let media = matches!(op, "Create" | "Update")
+        .then(|| MediaKind::parse(kind))
+        .flatten();
+    let id = arg_text(ctx.and_then(|c| c.get("id")));
+    let (recorded, started) = match (media, id) {
+        (Some(media), Some(id)) => match journal.append(media, &id) {
+            Ok(()) => {
+                let (_, started) = mark_and_start(
+                    || journal.mark_pending(),
+                    || journal.clear_pending(),
+                    &mut client,
+                    input,
+                    APPLY_TASK,
+                    logger,
+                );
+                (true, started)
+            }
+            Err(e) => {
+                logger.error(&format!("{OP}: journal: {e}"));
+                (false, false)
+            }
+        },
+        _ => (false, false),
+    };
+
+    // The graph (spec 009): every recognized save.
+    let (graph_recorded, graph_started) = mark_and_start(
+        || journal.mark_graph_pending(),
+        || journal.clear_graph_pending(),
+        &mut client,
+        input,
+        UPDATE_TASK,
+        logger,
+    );
+    Envelope::ok(
+        OP,
+        json!({
+            "recorded": recorded,
+            "started": started,
+            "graph": { "recorded": graph_recorded, "started": graph_started },
+        }),
+    )
 }
 
 fn report_result(op: &str, r: Report, started: Instant, logger: &mut Logger) -> Envelope {

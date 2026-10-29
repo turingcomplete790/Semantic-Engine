@@ -1,0 +1,137 @@
+{
+  "stash": "v0.31.1",
+  "checkedAt": "2026-10-28T15:34:41Z",
+  "method": "one save per row on the test instance, each started from idle; fired = the plugin's graph.pending/graph.applying marker appeared, or an \"update:\" log line followed the save",
+  "rows": [
+    {
+      "trigger": "Tag.Create.Post",
+      "mutation": "tagCreate",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Tag.Create.Post",
+      "mutation": "tagCreate",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Tag.Update.Post",
+      "mutation": "tagUpdate",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Tag.Merge.Post",
+      "mutation": "tagsMerge",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Tag.Destroy.Post",
+      "mutation": "tagDestroy",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Performer.Create.Post",
+      "mutation": "performerCreate",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Performer.Create.Post",
+      "mutation": "performerCreate",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Performer.Update.Post",
+      "mutation": "performerUpdate",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Performer.Merge.Post",
+      "mutation": "performerMerge",
+      "fired": false,
+      "markerSeen": false,
+      "updateLogLines": 0
+    },
+    {
+      "trigger": "Performer.Destroy.Post",
+      "mutation": "performerDestroy",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Scene.Create.Post",
+      "mutation": "sceneCreate",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Scene.Create.Post",
+      "mutation": "sceneCreate",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Scene.Update.Post",
+      "mutation": "sceneUpdate",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Scene.Merge.Post",
+      "mutation": "sceneMerge",
+      "fired": false,
+      "markerSeen": false,
+      "updateLogLines": 0
+    },
+    {
+      "trigger": "Scene.Destroy.Post",
+      "mutation": "sceneDestroy",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Image.Create.Post",
+      "mutation": "metadataScan",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Image.Update.Post",
+      "mutation": "imageUpdate",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    },
+    {
+      "trigger": "Image.Destroy.Post",
+      "mutation": "imageDestroy",
+      "fired": true,
+      "markerSeen": true,
+      "updateLogLines": 1
+    }
+  ],
+  "removed": {
+    "Performer.Merge.Post": "performerMerge merged the performers but fired no hook of any registered type",
+    "Scene.Merge.Post": "sceneMerge merged the scenes but fired no hook of any registered type"
+  }
+}

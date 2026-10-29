@@ -123,17 +123,37 @@ Done 2026-10-20: [specs/003-engine-design-spike/decision-record.md](specs/003-en
 
 **Goal:** clients can query the graph through Stash.
 
-- [ ] Versioned operation protocol (Principle VI): request, response, structured errors
-- [ ] SPARQL `SELECT`: triple patterns, variables, joins, projection, basic filters
-- [ ] Relation and Role criteria accept `recursive` and expand through the engine's hierarchy
+- [x] Versioned operation protocol (Principle VI): request, response, structured errors. Done in
+      `specs/009-query-operations`: contract 1.4.0, a `contract` argument with
+      `CONTRACT_MISMATCH`, and twelve new error codes, each query error with its line and column
+- [x] SPARQL `SELECT`: triple patterns, variables, joins, projection, basic filters. Done in
+      `specs/009-query-operations`: query language level 1 (`docs/query-language.md`), 36 known
+      answers on the compatibility fixture. Queries are evaluated on an engine-owned query index
+      written with each generation (research R12): at 250k scenes, a 1 MiB first page in
+      124–158 ms p95, against over 10 s through Oxigraph
+- [x] Relation and Role criteria accept `recursive` and expand through the engine's hierarchy
       (`Hierarchy::expand_criterion`, 004 US3); verify 004 SC-004 (exact matches) and SC-007
-      (p95 under 200 ms at 250k scenes) here
-- [ ] Scoping rules enforced (scene-scoped predicates only join within one scene)
-- [ ] Paging and result-size limits per Phase 1 findings: 1 MiB pages, never over 2 MiB
-      (decision record rule 9)
-- [ ] Hook-driven incremental updates: hooks append to a journal and the next engine call
-      applies it (003 decision record, rules 4–8), with a manual rebuild task
-- [ ] Status operation: engine version, store format, last update, graph counts
+      (p95 under 200 ms at 250k scenes) here. Done in `specs/009-query-operations`: SC-004
+      exact on its library; recursive Role 125 ms and Relation 158 ms p95 at 250k
+- [x] Scoping rules enforced (scene-scoped predicates only join within one scene). Done in
+      `specs/009-query-operations`: the short form joins within the scene that links its
+      performer, and an ambiguous scope is refused
+- [x] Paging and result-size limits per Phase 1 findings: 1 MiB pages, never over 2 MiB
+      (decision record rule 9). Done in `specs/009-query-operations`: stateless continuations
+      tied to one generation, expired and altered ones refused
+- [x] Hook-driven incremental updates: hooks append to a journal and the next engine call
+      applies it (003 decision record, rules 4–8), with a manual rebuild task. Done in
+      `specs/009-query-operations`, as superseded by 004 R6: the save hook for tags,
+      performers, scenes and images starts "Update semantic graph" (at most 5.6 ms per save; a
+      change shows in 1.05 s on the test instance). Stash v0.31.1 fires no hook for performer
+      or scene merges
+- [x] Status operation: engine version, store format, last update, graph counts. Done in
+      `specs/009-query-operations`: `status.graph`, read from the store's small files only
+
+Open from Phase 3:
+- the empty three-performer join at 250k is 385 ms p95, the one bench query over budget;
+- the query index is a deviation from Principle V, recorded in spec 009's plan, which awaits
+  the owner's decision on an amendment.
 
 ## Phase 4: Client adoption
 
@@ -142,7 +162,9 @@ query it; without it they say clearly that it is missing (constitution Principle
 
 - [ ] Viewer: semantic features query the engine, with a clear state when it is absent; no
       in-process engine (viewer Phase 6; needs the viewer's constitution amendment first)
-- [ ] Plugin: the semantic-search plugin calls the engine through `runPluginOperation`
+- [ ] Plugin: the semantic-search plugin calls the engine through `runPluginOperation`. The
+      `query` operation is ready for this (contract 1.4.0;
+      `specs/009-query-operations/client-notes.md`)
 - [ ] Plugin: tag pickers take recommendations from the engine's `recommendations` operation
       and retire `computeRecommendedTagIds` (004 US4; `specs/004-relations-role-hierarchy/plugin-notes.md`)
 - [ ] Plugin: adopt Relations, role hierarchy, and auto-apply in its design documents (004

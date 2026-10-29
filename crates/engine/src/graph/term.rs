@@ -247,6 +247,53 @@ pub(crate) fn from_ox_term(t: &ox::Term) -> Term {
     }
 }
 
+/// A literal as the store keeps it: Oxigraph parses the XSD datatypes it knows and writes them
+/// back in canonical form, integer-derived types as `xsd:integer` (its `numeric_encoder`). The
+/// query index holds terms in the same form (spec 009 research R12). Other terms are unchanged.
+pub(crate) fn canonical(t: &Term) -> Term {
+    use oxsdatatypes::*;
+    use std::str::FromStr;
+    let Term::Literal {
+        value,
+        datatype: Some(d),
+        language: None,
+    } = t
+    else {
+        return t.clone();
+    };
+    fn lit<T: FromStr>(v: &str) -> Option<T> {
+        T::from_str(v).ok()
+    }
+    let xsd = d.strip_prefix("http://www.w3.org/2001/XMLSchema#");
+    let parsed: Option<ox::Literal> = match xsd {
+        Some("boolean") => lit::<Boolean>(value).map(Into::into),
+        Some("float") => lit::<Float>(value).map(Into::into),
+        Some("double") => lit::<Double>(value).map(Into::into),
+        Some(
+            "integer" | "byte" | "short" | "int" | "long" | "unsignedByte" | "unsignedShort"
+            | "unsignedInt" | "unsignedLong" | "positiveInteger" | "negativeInteger"
+            | "nonPositiveInteger" | "nonNegativeInteger",
+        ) => lit::<Integer>(value).map(Into::into),
+        Some("decimal") => lit::<Decimal>(value).map(Into::into),
+        Some("dateTime" | "dateTimeStamp") => lit::<DateTime>(value).map(Into::into),
+        Some("time") => lit::<Time>(value).map(Into::into),
+        Some("date") => lit::<Date>(value).map(Into::into),
+        Some("gYearMonth") => lit::<GYearMonth>(value).map(Into::into),
+        Some("gYear") => lit::<GYear>(value).map(Into::into),
+        Some("gMonthDay") => lit::<GMonthDay>(value).map(Into::into),
+        Some("gDay") => lit::<GDay>(value).map(Into::into),
+        Some("gMonth") => lit::<GMonth>(value).map(Into::into),
+        Some("duration") => lit::<Duration>(value).map(Into::into),
+        Some("yearMonthDuration") => lit::<YearMonthDuration>(value).map(Into::into),
+        Some("dayTimeDuration") => lit::<DayTimeDuration>(value).map(Into::into),
+        _ => None,
+    };
+    match parsed {
+        Some(l) => from_ox_term(&ox::Term::Literal(l)),
+        None => t.clone(),
+    }
+}
+
 pub(crate) fn from_ox_quad(q: &ox::Quad) -> Fact {
     let subject = match &q.subject {
         ox::Subject::NamedNode(n) => Term::Iri(n.as_str().to_string()),

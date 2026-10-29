@@ -125,3 +125,95 @@ fn thresholds_are_one_second_early_in_the_server_format() {
     );
     assert_eq!(one_second_earlier("not a time"), None);
 }
+
+// ---- The graph's pending markers (spec 009 T020; research R8)
+
+fn backdate(path: &std::path::Path) {
+    let old = SystemTime::now() - STALE_AFTER - Duration::from_secs(60);
+    std::fs::File::options()
+        .write(true)
+        .open(path)
+        .unwrap()
+        .set_modified(old)
+        .unwrap();
+}
+
+#[test]
+fn only_the_first_save_of_a_burst_asks_for_a_graph_update() {
+    let dir = tmp("graph-mark");
+    let j = Journal::new(dir.clone());
+    assert!(!j.graph_pending(), "nothing recorded yet");
+    assert!(j.mark_graph_pending().unwrap(), "first: start the update");
+    assert!(
+        !j.mark_graph_pending().unwrap(),
+        "second: one is wanted already"
+    );
+    assert!(j.graph_pending());
+    backdate(&dir.join("graph.pending"));
+    assert!(
+        j.mark_graph_pending().unwrap(),
+        "a stale marker does not block a new update"
+    );
+    assert!(
+        !dir.join("apply.pending").exists(),
+        "the relations marker is separate"
+    );
+}
+
+#[test]
+fn an_update_takes_the_marker_and_finishes_it() {
+    let dir = tmp("graph-take");
+    let j = Journal::new(dir.clone());
+    j.mark_graph_pending().unwrap();
+    j.take_graph_pending().unwrap();
+    assert!(!dir.join("graph.pending").exists());
+    assert!(dir.join("graph.applying").exists());
+    assert!(j.graph_pending(), "an update is running");
+    assert!(
+        j.mark_graph_pending().unwrap(),
+        "a save after the update took the marker starts another"
+    );
+    j.finish_graph().unwrap();
+    assert!(!dir.join("graph.applying").exists());
+    assert!(
+        dir.join("graph.pending").exists(),
+        "the later save's marker stays"
+    );
+}
+
+#[test]
+fn a_stale_applying_marker_is_not_pending() {
+    let dir = tmp("graph-applying-stale");
+    let j = Journal::new(dir.clone());
+    j.mark_graph_pending().unwrap();
+    j.take_graph_pending().unwrap();
+    backdate(&dir.join("graph.applying"));
+    assert!(!j.graph_pending(), "an update that crashed long ago");
+    j.finish_graph().unwrap();
+    assert!(!j.graph_pending());
+    j.finish_graph().unwrap(); // nothing to remove: no error
+}
+
+#[test]
+fn a_failed_update_restores_a_stale_marker() {
+    let dir = tmp("graph-restore");
+    let j = Journal::new(dir.clone());
+    j.mark_graph_pending().unwrap();
+    j.take_graph_pending().unwrap();
+    j.restore_graph_pending().unwrap();
+    assert!(!dir.join("graph.applying").exists());
+    assert!(j.graph_pending(), "the update is still wanted");
+    let age = SystemTime::now()
+        .duration_since(
+            std::fs::metadata(dir.join("graph.pending"))
+                .unwrap()
+                .modified()
+                .unwrap(),
+        )
+        .unwrap();
+    assert!(age >= STALE_AFTER, "backdated: {age:?}");
+    assert!(
+        j.mark_graph_pending().unwrap(),
+        "so the next save starts a job"
+    );
+}

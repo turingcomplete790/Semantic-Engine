@@ -1,0 +1,473 @@
+[
+  {
+    "name": "role-short-form",
+    "query": "SELECT ?scene WHERE { ?scene :hasPerformer ?p . ?p :hasRole :Dom }",
+    "expected": [
+      {
+        "scene": "i:scene:100"
+      },
+      {
+        "scene": "i:scene:101"
+      },
+      {
+        "scene": "i:image:200"
+      }
+    ],
+    "because": "Dom is tag 2; role instances 100/role:7:2, 101/role:9:2, 200/role:8:2, each performer on its media"
+  },
+  {
+    "name": "role-with-performer",
+    "query": "SELECT ?scene ?p WHERE { ?scene :hasPerformer ?p . ?p :hasRole :Sub }",
+    "expected": [
+      {
+        "scene": "i:scene:100",
+        "p": "i:performer:8"
+      },
+      {
+        "scene": "i:scene:101",
+        "p": "i:performer:7"
+      },
+      {
+        "scene": "i:scene:301",
+        "p": "i:performer:8"
+      }
+    ],
+    "because": "Sub is tag 3: 100/role:8:3, 101/role:7:3, 301/role:8:3"
+  },
+  {
+    "name": "multiple-bound-performers",
+    "query": "SELECT ?scene ?dom ?sub WHERE {\n  ?scene :hasPerformer ?dom .\n  ?scene :hasPerformer ?sub .\n  ?dom :hasRole :Dom .\n  ?sub :hasRole :Sub .\n  FILTER (?dom != ?sub)\n}",
+    "expected": [
+      {
+        "scene": "i:scene:100",
+        "dom": "i:performer:7",
+        "sub": "i:performer:8"
+      },
+      {
+        "scene": "i:scene:101",
+        "dom": "i:performer:9",
+        "sub": "i:performer:7"
+      }
+    ],
+    "because": "the documents' example: 100 has Dom 7 and Sub 8; 101 has Dom 9 and Sub 7"
+  },
+  {
+    "name": "no-cross-scene-match",
+    "query": "SELECT ?scene ?p WHERE { ?scene :hasPerformer ?p . ?p :hasRole :Dom . ?p :hasRole :Sub }",
+    "expected": [],
+    "because": "performer 7 is Dom in 100 and Sub in 101, never both in one scene"
+  },
+  {
+    "name": "action-short-form",
+    "query": "SELECT ?scene ?p WHERE { ?scene :hasPerformer ?p . ?p :hasAction :Kissing }",
+    "expected": [
+      {
+        "scene": "i:scene:100",
+        "p": "i:performer:7"
+      },
+      {
+        "scene": "i:scene:100",
+        "p": "i:performer:8"
+      }
+    ],
+    "because": "Kissing is tag 4; 301/action:9:4 is for performer 9, who is not on scene 301"
+  },
+  {
+    "name": "action-no-scene",
+    "query": "SELECT ?p WHERE { ?p :hasAction :Kissing }",
+    "expected": [
+      {
+        "p": "i:performer:7"
+      },
+      {
+        "p": "i:performer:8"
+      },
+      {
+        "p": "i:performer:9"
+      }
+    ],
+    "because": "with no scene in the query the fact holds in some media entity: 100/action:7:4, 8:4, 301/action:9:4"
+  },
+  {
+    "name": "pluggable-short-form",
+    "query": "SELECT ?scene WHERE { ?scene :hasPerformer ?p . ?p :hasPluggable :Red%20Hair }",
+    "expected": [
+      {
+        "scene": "i:scene:100"
+      },
+      {
+        "scene": "i:scene:300"
+      }
+    ],
+    "because": "Red Hair is tag 6: 100/pluggable:7:6 and 300/pluggable:7:6"
+  },
+  {
+    "name": "mise-en-scene-constant",
+    "query": "SELECT ?scene WHERE { ?scene :hasMiseEnScene :Beach }",
+    "expected": [
+      {
+        "scene": "i:scene:100"
+      }
+    ],
+    "because": "100/mise:9"
+  },
+  {
+    "name": "mise-en-scene-variable",
+    "query": "SELECT ?t WHERE { scene:100 :hasMiseEnScene ?t }",
+    "expected": [
+      {
+        "t": "i:tag:9"
+      },
+      {
+        "t": "i:tag:10"
+      }
+    ],
+    "because": "a variable object never used as a subject is the tag: 100/mise:9 and 100/mise:10"
+  },
+  {
+    "name": "role-and-global-trait",
+    "query": "SELECT ?scene ?p WHERE { ?scene :hasPerformer ?p . ?p :hasRole :Sub . ?p :hasTrait :Hair%20Colour }",
+    "expected": [
+      {
+        "scene": "i:scene:101",
+        "p": "i:performer:7"
+      }
+    ],
+    "because": "performer 7 carries Trait 7 globally and is Sub in 101"
+  },
+  {
+    "name": "label",
+    "query": "SELECT ?p WHERE { ?p :hasLabel :Redhead }",
+    "expected": [
+      {
+        "p": "i:performer:7"
+      }
+    ],
+    "because": "performer:7 hasLabel tag:8"
+  },
+  {
+    "name": "trait-and-label-on-one-tag",
+    "query": "SELECT ?p WHERE { ?p :hasLabel :Muse . ?p :hasTrait :Muse }",
+    "expected": [
+      {
+        "p": "i:performer:8"
+      }
+    ],
+    "because": "tag 13 is a Trait and a Label of performer 8"
+  },
+  {
+    "name": "categories",
+    "query": "SELECT ?t ?c WHERE { ?t :hasCategory ?c }",
+    "expected": [
+      {
+        "t": "i:tag:2",
+        "c": "\"Dominant\""
+      },
+      {
+        "t": "i:tag:3",
+        "c": "\"Submissive\""
+      },
+      {
+        "t": "i:tag:7",
+        "c": "\"Appearance\""
+      },
+      {
+        "t": "i:tag:9",
+        "c": "\"Location\""
+      },
+      {
+        "t": "i:tag:15",
+        "c": "\"Unused Category\""
+      }
+    ],
+    "because": "hasCategory of tags 2, 3, 7, 9, 15"
+  },
+  {
+    "name": "parent-tags",
+    "query": "SELECT ?c ?p WHERE { ?c :parentTag ?p }",
+    "expected": [
+      {
+        "c": "i:tag:2",
+        "p": "i:tag:1"
+      },
+      {
+        "c": "i:tag:2",
+        "p": "i:tag:900"
+      },
+      {
+        "c": "i:tag:12",
+        "p": "i:tag:14"
+      }
+    ],
+    "because": "parentTag facts of tags 2 and 12"
+  },
+  {
+    "name": "broader-role",
+    "query": "SELECT ?c WHERE { ?c :broaderRole :Dominant }",
+    "expected": [
+      {
+        "c": "i:tag:2"
+      }
+    ],
+    "because": "tag:2 broaderRole tag:1"
+  },
+  {
+    "name": "relation-graph-form",
+    "query": "SELECT ?scene ?a ?b WHERE { ?r sem:ofRelation :Care ; sem:inMedia ?scene ; sem:atEndA ?a ; sem:atEndB ?b }",
+    "expected": [
+      {
+        "scene": "i:scene:100",
+        "a": "i:performer:7",
+        "b": "i:performer:8"
+      },
+      {
+        "scene": "i:scene:100",
+        "a": "i:performer:8",
+        "b": "i:performer:7"
+      }
+    ],
+    "because": "relation instances 100/relation:12:7:8 and 12:8:7"
+  },
+  {
+    "name": "relation-automatic",
+    "query": "SELECT ?a WHERE { ?r sem:ofRelation :Care ; sem:appliedAutomatically true ; sem:atEndA ?a }",
+    "expected": [
+      {
+        "a": "i:performer:7"
+      }
+    ],
+    "because": "only 12:7:8 has appliedAutomatically true"
+  },
+  {
+    "name": "pairing-direction",
+    "query": "SELECT ?pair ?d WHERE { ?pair a sem:ActionPairing ; sem:inMedia scene:100 ; sem:pairingDirection ?d }",
+    "expected": [
+      {
+        "pair": "i:scene:100/pairing:p1",
+        "d": "\"bidirectional\""
+      },
+      {
+        "pair": "i:scene:100/pairing:p2",
+        "d": "\"give\""
+      }
+    ],
+    "because": "action pairings p1 and p2 of scene 100"
+  },
+  {
+    "name": "role-pairing-performers",
+    "query": "SELECT ?a ?b WHERE { ?x a sem:RolePairing ; sem:pairsA ?ia ; sem:pairsB ?ib . ?ia sem:forPerformer ?a . ?ib sem:forPerformer ?b }",
+    "expected": [
+      {
+        "a": "i:performer:7",
+        "b": "i:performer:8"
+      }
+    ],
+    "because": "p3 pairs role 7:2 with role 8:3"
+  },
+  {
+    "name": "time-before",
+    "query": "SELECT ?x ?y WHERE { ?x sem:atTime ?t1 ; sem:inMedia scene:100 . ?y sem:atTime ?t2 ; sem:inMedia scene:100 . FILTER (?t1 < ?t2) }",
+    "expected": [
+      {
+        "x": "i:scene:100/action:7:4",
+        "y": "i:scene:100/role:8:3"
+      }
+    ],
+    "because": "action 7:4 at 30 s, role 8:3 at 45.5 s"
+  },
+  {
+    "name": "time-greater-than",
+    "query": "SELECT ?x WHERE { ?x sem:atTime ?t FILTER (?t > 20) }",
+    "expected": [
+      {
+        "x": "i:scene:100/action:7:4"
+      },
+      {
+        "x": "i:scene:100/role:8:3"
+      }
+    ],
+    "because": "30 and 45.5 are over 20; 301/role:8:3 is at 12"
+  },
+  {
+    "name": "time-at-most",
+    "query": "SELECT ?x WHERE { ?x sem:atTime ?t FILTER (?t <= 12) }",
+    "expected": [
+      {
+        "x": "i:scene:301/role:8:3"
+      }
+    ],
+    "because": "only 12 s"
+  },
+  {
+    "name": "time-at-least",
+    "query": "SELECT ?x WHERE { ?x sem:atTime ?t FILTER (?t >= 45.5) }",
+    "expected": [
+      {
+        "x": "i:scene:100/role:8:3"
+      }
+    ],
+    "because": "only 45.5 s"
+  },
+  {
+    "name": "position-equals",
+    "query": "SELECT ?e WHERE { ?e sem:position ?n FILTER (?n = 0) }",
+    "expected": [
+      {
+        "e": "i:image:200/timeline/i1"
+      },
+      {
+        "e": "i:scene:100/timeline/s1"
+      }
+    ],
+    "because": "entries at position 0"
+  },
+  {
+    "name": "string-equals",
+    "query": "SELECT ?t WHERE { ?t rdfs:label ?n FILTER (?n = \"Care\") }",
+    "expected": [
+      {
+        "t": "i:tag:12"
+      }
+    ],
+    "because": "tag 12 is named Care"
+  },
+  {
+    "name": "string-not-equal",
+    "query": "SELECT ?t WHERE { ?t :hasCategory ?c FILTER (?c != \"Dominant\") }",
+    "expected": [
+      {
+        "t": "i:tag:3"
+      },
+      {
+        "t": "i:tag:7"
+      },
+      {
+        "t": "i:tag:9"
+      },
+      {
+        "t": "i:tag:15"
+      }
+    ],
+    "because": "every category but tag 2's"
+  },
+  {
+    "name": "three-performers",
+    "query": "SELECT ?scene ?a ?b ?c WHERE { ?scene :hasPerformer ?a , ?b , ?c . FILTER (?a != ?b) FILTER (?b != ?c) FILTER (?a != ?c) }",
+    "expected": [],
+    "because": "no media entity of the fixture has three performers"
+  },
+  {
+    "name": "select-star",
+    "query": "SELECT * WHERE { ?p :hasLabel ?l }",
+    "expected": [
+      {
+        "p": "i:performer:7",
+        "l": "i:tag:8"
+      },
+      {
+        "p": "i:performer:8",
+        "l": "i:tag:13"
+      }
+    ],
+    "because": "hasLabel facts"
+  },
+  {
+    "name": "images",
+    "query": "SELECT ?m WHERE { ?m a sem:Image }",
+    "expected": [
+      {
+        "m": "i:image:200"
+      }
+    ],
+    "because": "image 200"
+  },
+  {
+    "name": "variation",
+    "query": "SELECT ?v WHERE { ?v sem:variationOf performer:7 }",
+    "expected": [
+      {
+        "v": "i:tag:11"
+      }
+    ],
+    "because": "tag 11 is a Variation of performer 7"
+  },
+  {
+    "name": "archetype-parents",
+    "query": "SELECT ?a WHERE { performer:20 sem:parentArchetype ?a }",
+    "expected": [
+      {
+        "a": "i:performer:21"
+      },
+      {
+        "a": "i:performer:22"
+      }
+    ],
+    "because": "performer 20's parents"
+  },
+  {
+    "name": "measurement-compare",
+    "query": "SELECT ?p ?b WHERE { ?p sem:bustSize ?b FILTER (?b > 56) }",
+    "expected": [
+      {
+        "p": "i:performer:8",
+        "b": "\"58.5\"^^xsd:decimal"
+      }
+    ],
+    "because": "bust sizes 55.5 and 58.5"
+  },
+  {
+    "name": "performer-in-two-scenes",
+    "query": "SELECT ?p WHERE { scene:100 :hasPerformer ?p . scene:101 :hasPerformer ?p }",
+    "expected": [
+      {
+        "p": "i:performer:7"
+      }
+    ],
+    "because": "performer 7 is on both"
+  },
+  {
+    "name": "role-graph-form",
+    "query": "SELECT ?scene ?p WHERE { ?p sem:hasRole ?i . ?i sem:ofTag :Dom ; sem:inMedia ?scene }",
+    "expected": [
+      {
+        "scene": "i:scene:100",
+        "p": "i:performer:7"
+      },
+      {
+        "scene": "i:scene:101",
+        "p": "i:performer:9"
+      },
+      {
+        "scene": "i:image:200",
+        "p": "i:performer:8"
+      }
+    ],
+    "because": "the graph form of role-short-form, with performers"
+  },
+  {
+    "name": "role-variable-tag",
+    "query": "SELECT ?r WHERE { scene:101 :hasPerformer ?p . ?p :hasRole ?r }",
+    "expected": [
+      {
+        "r": "i:tag:2"
+      },
+      {
+        "r": "i:tag:3"
+      }
+    ],
+    "because": "in 101, performer 7 is Sub (3) and 9 is Dom (2); not 7's Dom of scene 100"
+  },
+  {
+    "name": "slot-seconds",
+    "query": "SELECT ?e WHERE { scene:100 sem:hasTimeline ?tl . ?tl sem:hasEntry ?e . ?e sem:slotSeconds ?s FILTER (?s >= 90) }",
+    "expected": [
+      {
+        "e": "i:scene:100/timeline/e3"
+      },
+      {
+        "e": "i:scene:100/timeline/e4"
+      }
+    ],
+    "because": "slots at 90 and 100 s"
+  }
+]

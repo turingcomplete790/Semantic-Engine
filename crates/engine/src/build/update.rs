@@ -7,7 +7,7 @@ use super::notes::Note;
 use super::run::{
     reason_name, run, BuildError, BuildOptions, BuildReport, LogLevel, NoteCounts, PhaseTimes,
 };
-use super::stamp::{vocabulary_version, BuildStamp, How, MAPPING_VERSION};
+use super::stamp::{vocabulary_version, BuildStamp, How, Items, MAPPING_VERSION};
 use crate::graph::{GraphStore, Health, RebuildReason, Replaced, Writer};
 use semantic_vocabulary::iri::ItemIris;
 use serde::Serialize;
@@ -585,7 +585,21 @@ pub fn update(
     let (mode, generation, total, publish_ms) = if any {
         log(LogLevel::Info, "update: publishing");
         let t = Instant::now();
-        let g = writer.publish_with(BuildStamp::new(point, How::Update).to_json())?;
+        // Item counts: the owners held when the update began, plus added, minus removed.
+        let mut items = Items::default();
+        for (kind, held) in &owners {
+            items.add(*kind, held.len() as i64);
+        }
+        for (kind, c) in [
+            (Kind::Tag, &changes.tags),
+            (Kind::Performer, &changes.performers),
+            (Kind::Scene, &changes.scenes),
+            (Kind::Image, &changes.images),
+        ] {
+            items.add(kind, c.added as i64 - c.removed as i64);
+        }
+        let stamp = BuildStamp::new(point, How::Update).with_items(items);
+        let g = writer.publish_with(stamp.to_json())?;
         for n in &g.notes {
             log(LogLevel::Warning, &format!("cleanup: {n}"));
         }

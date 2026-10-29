@@ -4,6 +4,8 @@
 pub mod build;
 pub mod errors;
 pub mod graph;
+pub mod qindex;
+pub mod query;
 pub mod recommend;
 pub mod relations;
 pub mod server_id;

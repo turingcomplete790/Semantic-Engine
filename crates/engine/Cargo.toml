@@ -6,6 +6,8 @@ description = "Semantic engine library: versions, server identity, and (later) t
 
 [dependencies]
 oxigraph = "0.4"
+memmap2 = "0.9"
+oxsdatatypes = "0.2"
 uuid = { version = "1", features = ["v4"] }
 semantic-vocabulary = { path = "../semantic-vocabulary" }
 stash-adapter = { path = "../stash-adapter" }

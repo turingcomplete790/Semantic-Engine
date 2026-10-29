@@ -26,6 +26,7 @@ pub const REGISTRY: &[(&str, Handler)] = &[
     ("reapplyRelations", crate::relations::reapply_relations),
     ("buildGraph", crate::build::build_graph),
     ("updateGraph", crate::build::update_graph),
+    ("query", crate::query::query),
 ];
 
 pub fn names() -> Vec<&'static str> {
@@ -116,6 +117,43 @@ fn generate_server_id(input: &PluginInput, logger: &mut Logger) -> Envelope {
     }
 }
 
+/// `status.graph` (contracts/operations-1.4.md; spec 009 research R9), from the store's small
+/// files and the pending markers; it never opens the store. With `server_id`, a store stamped
+/// for another server is `needsRebuild`.
+fn graph_status(input: &PluginInput, server_id: Option<&str>) -> Value {
+    use engine::build::stamp::BuildStamp;
+    use engine::graph::{Description, GraphStore, RebuildReason};
+    let dir = std::path::Path::new(&input.server_connection.plugin_dir);
+    let pending = crate::journal::Journal::new(dir).graph_pending();
+    let store = GraphStore::new(dir.join(crate::build::STORE_DIR), server_id.unwrap_or(""));
+    match store.describe() {
+        Description::Ready(g) => {
+            let stamp = BuildStamp::read(&g);
+            json!({
+                "state": "ready",
+                "format": g.format,
+                "generation": g.number,
+                "publishedAt": g.published_at,
+                "how": stamp.as_ref().map(|s| s.how),
+                "facts": g.facts,
+                "items": stamp.and_then(|s| s.items),
+                "pending": pending,
+            })
+        }
+        Description::NotBuilt | Description::NeedsRebuild(RebuildReason::Missing) => {
+            json!({ "state": "notBuilt", "pending": pending })
+        }
+        Description::NeedsRebuild(r) => {
+            let reason = match r {
+                RebuildReason::OtherFormat { .. } => "otherFormat",
+                RebuildReason::OtherServer => "otherServer",
+                _ => "damaged",
+            };
+            json!({ "state": "needsRebuild", "reason": reason, "pending": pending })
+        }
+    }
+}
+
 fn status(input: &PluginInput, logger: &mut Logger) -> Envelope {
     let mut result = local_status();
     let client = stash_adapter::Client::from_server_connection(&input.server_connection);
@@ -127,6 +165,7 @@ fn status(input: &PluginInput, logger: &mut Logger) -> Envelope {
         Ok(v) => v.unwrap_or_default(),
         Err(e) => {
             logger.error(&format!("status: {e}"));
+            result["graph"] = graph_status(input, None);
             return Envelope::error("status", ErrorCode::StashUnreachable, &e, Some(result));
         }
     };
@@ -137,6 +176,7 @@ fn status(input: &PluginInput, logger: &mut Logger) -> Envelope {
             .map(Value::String)
             .unwrap_or(Value::Null);
     }
+    result["graph"] = graph_status(input, result["serverId"].as_str());
     if !engine::versions::stash_supported(&server) {
         return Envelope::error(
             "status",

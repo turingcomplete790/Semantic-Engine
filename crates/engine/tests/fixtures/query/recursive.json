@@ -1,0 +1,250 @@
+{
+  "start": {
+    "scene": "2026-10-26T10:00:00-06:00",
+    "image": "2026-10-26T10:00:00-06:00",
+    "performer": "2026-10-26T10:00:00-06:00",
+    "tag": "2026-10-26T10:00:00-06:00"
+  },
+  "tags": [
+    {
+      "id": "30",
+      "name": "Customer",
+      "flags": [
+        "role"
+      ],
+      "parents": [],
+      "fields": {},
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "id": "31",
+      "name": "Patient",
+      "flags": [
+        "role"
+      ],
+      "parents": [
+        "30"
+      ],
+      "fields": {},
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "id": "40",
+      "name": "Full Service",
+      "flags": [
+        "relation"
+      ],
+      "parents": [],
+      "fields": {},
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "id": "41",
+      "name": "Extra Care",
+      "flags": [
+        "relation"
+      ],
+      "parents": [
+        "40"
+      ],
+      "fields": {},
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "id": "70",
+      "name": "Loop A",
+      "flags": [
+        "role"
+      ],
+      "parents": [
+        "71"
+      ],
+      "fields": {},
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "id": "71",
+      "name": "Loop B",
+      "flags": [
+        "role"
+      ],
+      "parents": [
+        "70"
+      ],
+      "fields": {},
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "id": "72",
+      "name": "Loop Child",
+      "flags": [
+        "role"
+      ],
+      "parents": [
+        "70"
+      ],
+      "fields": {},
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "id": "3",
+      "name": "Blonde",
+      "flags": [
+        "trait"
+      ],
+      "parents": [],
+      "fields": {},
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    }
+  ],
+  "performers": [
+    {
+      "id": "10",
+      "tags": [],
+      "archetype": false,
+      "archetype_parents": null,
+      "measurements": null,
+      "display": null,
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "id": "11",
+      "tags": [],
+      "archetype": false,
+      "archetype_parents": null,
+      "measurements": null,
+      "display": null,
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    }
+  ],
+  "scenes": [
+    {
+      "kind": "scene",
+      "id": "1",
+      "performers": [
+        "10",
+        "11"
+      ],
+      "tags": [],
+      "fields": {
+        "roleTagAssignments": {
+          "value": {
+            "10": [
+              "30"
+            ]
+          }
+        },
+        "relationAssignments": {
+          "value": [
+            {
+              "relationTagId": "40",
+              "a": "10",
+              "b": "11"
+            }
+          ]
+        }
+      },
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "kind": "scene",
+      "id": "2",
+      "performers": [
+        "10",
+        "11"
+      ],
+      "tags": [],
+      "fields": {
+        "roleTagAssignments": {
+          "value": {
+            "10": [
+              "31"
+            ]
+          }
+        },
+        "relationAssignments": {
+          "value": [
+            {
+              "relationTagId": "41",
+              "a": "10",
+              "b": "11"
+            }
+          ]
+        }
+      },
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "kind": "scene",
+      "id": "3",
+      "performers": [
+        "11"
+      ],
+      "tags": [],
+      "fields": {
+        "roleTagAssignments": {
+          "value": {
+            "11": [
+              "71"
+            ]
+          }
+        }
+      },
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "kind": "scene",
+      "id": "4",
+      "performers": [
+        "11"
+      ],
+      "tags": [],
+      "fields": {
+        "roleTagAssignments": {
+          "value": {
+            "11": [
+              "72"
+            ]
+          }
+        }
+      },
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "kind": "scene",
+      "id": "5",
+      "performers": [
+        "10"
+      ],
+      "tags": [],
+      "fields": {
+        "roleTagAssignments": {
+          "value": {
+            "10": [
+              "70"
+            ]
+          }
+        }
+      },
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    },
+    {
+      "kind": "scene",
+      "id": "6",
+      "performers": [
+        "10",
+        "11"
+      ],
+      "tags": [],
+      "fields": {
+        "roleTagAssignments": {
+          "value": {}
+        }
+      },
+      "updated_at": "2026-10-26T10:00:00-06:00"
+    }
+  ],
+  "images": [],
+  "missing": {},
+  "requests": 0
+}

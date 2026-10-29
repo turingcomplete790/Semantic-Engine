@@ -136,3 +136,56 @@ fn not_built_is_distinct_from_an_empty_graph() {
     assert_eq!(s.variables, ["s"]);
     assert!(s.rows.is_empty());
 }
+
+// ---- Opening a kept generation (spec 009 T031; research R6)
+
+#[test]
+fn reader_at_opens_kept_generations_and_reports_the_rest_gone() {
+    let (dir, store) = cleared("reader-at");
+    let first = publish(&store, &library()[..2]);
+    let second = publish(&store, &library());
+    let old = store.reader_at(first.number).unwrap();
+    assert_eq!(old.generation().number, first.number);
+    let count =
+        |r: &engine::graph::Reader| r.select("SELECT ?s WHERE { ?s ?p ?o }").unwrap().rows.len();
+    assert_eq!(count(&old), 2, "the generation before answers as it was");
+    let now = store.reader_at(second.number).unwrap();
+    assert_eq!(now.generation(), store.reader().unwrap().generation());
+    assert_eq!(count(&now), 5);
+    drop((old, now));
+
+    // Never `work/`: a writer with unpublished changes holds the next number.
+    let mut w = store.writer().unwrap();
+    w.add(&library()[..1]).unwrap();
+    assert_eq!(
+        store.reader_at(second.number + 1).err(),
+        Some(GraphError::GenerationGone {
+            generation: second.number + 1
+        })
+    );
+    drop(w);
+
+    // A generation no longer kept.
+    std::fs::remove_dir_all(dir.join("snapshots").join(first.number.to_string())).unwrap();
+    assert_eq!(
+        store.reader_at(first.number).err(),
+        Some(GraphError::GenerationGone {
+            generation: first.number
+        })
+    );
+    assert!(matches!(
+        store.reader_at(0),
+        Err(GraphError::GenerationGone { generation: 0 })
+    ));
+}
+
+#[test]
+fn reader_at_checks_the_stamp_first() {
+    let (dir, store) = cleared("reader-at-stamp");
+    let g = publish(&store, &library());
+    let other = engine::graph::GraphStore::new(&dir, "another-server");
+    assert!(matches!(
+        other.reader_at(g.number),
+        Err(GraphError::NeedsRebuild(_))
+    ));
+}

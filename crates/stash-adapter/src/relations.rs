@@ -233,6 +233,19 @@ pub struct RunTask {
     pub run_plugin_task: cynic::Id,
 }
 
+#[derive(cynic::QueryVariables, Debug)]
+pub struct RunOperationVars {
+    pub plugin_id: cynic::Id,
+    pub args: Option<JsonMap>,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(graphql_type = "Mutation", variables = "RunOperationVars")]
+pub struct RunOperation {
+    #[arguments(plugin_id: $plugin_id, args: $args)]
+    pub run_plugin_operation: Option<crate::JsonAny>,
+}
+
 fn ids(list: &[String]) -> Option<Vec<cynic::Id>> {
     Some(list.iter().map(cynic::Id::new).collect())
 }
@@ -359,6 +372,23 @@ impl Client {
             }
         }
         Ok(())
+    }
+
+    /// Runs one of a plugin's operations, as a client does, and returns the plugin's `output`
+    /// (spec 009 T044: `query-bench fresh`).
+    pub fn run_plugin_operation(
+        &self,
+        plugin_id: &str,
+        args: Map<String, Value>,
+    ) -> Result<Value, Error> {
+        use cynic::MutationBuilder;
+        let out = self
+            .run(RunOperation::build(RunOperationVars {
+                plugin_id: cynic::Id::new(plugin_id),
+                args: Some(JsonMap(Value::Object(args))),
+            }))?
+            .run_plugin_operation;
+        Ok(out.map(|v| v.0).unwrap_or(Value::Null))
     }
 
     /// Queues one of a plugin's tasks in Stash's job queue; returns the job id.

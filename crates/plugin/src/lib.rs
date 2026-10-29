@@ -8,6 +8,7 @@ pub mod input;
 pub mod journal;
 pub mod log;
 pub mod ops;
+pub mod query;
 pub mod relations;
 
 use std::io::Read;

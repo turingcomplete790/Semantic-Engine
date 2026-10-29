@@ -4,7 +4,9 @@
 mod common;
 
 use common::build::SERVER;
-use common::update::{all_facts, differences, new_store, rebuilt_facts, Library};
+use common::update::{
+    all_facts, differences, new_store, owner_counts, rebuilt_facts, stamp_items, Library,
+};
 use engine::build::update::{update, Mode};
 use engine::build::{run, BuildOptions};
 use serde_json::json;
@@ -194,6 +196,7 @@ fn sequences() -> Vec<(&'static str, Vec<Step>)> {
 fn every_update_equals_a_full_rebuild() {
     let seqs = sequences();
     assert!(seqs.len() >= 20);
+    let known = common::query::known_queries();
     for (n, (name, steps)) in seqs.into_iter().enumerate() {
         let mut lib = Library::fixture();
         let store = new_store(&format!("eq{n}"));
@@ -230,6 +233,16 @@ fn every_update_equals_a_full_rebuild() {
                 "{name}, step {i}: the update differs from a full rebuild\n{}",
                 differences(&updated, &rebuilt)
             );
+            // The updated generation's query index answers as the store does (spec 009 T056).
+            common::query::index_agrees(&store, &known, &format!("{name}, step {i}"));
+            // The stamp's item counts follow the update (spec 009 T036), on the first five.
+            if n < 5 {
+                assert_eq!(
+                    stamp_items(&store),
+                    Some(owner_counts(&store)),
+                    "{name}, step {i}: items"
+                );
+            }
         }
     }
 }

@@ -45,6 +45,15 @@ pub const GENERATION_GRACE: Duration = Duration::from_secs(15 * 60);
 /// The store's folder under the plugin's folder.
 pub const STORE_DIR: &str = "graph";
 
+/// What [`GraphStore::describe`] finds (spec 009 research R9).
+#[derive(Debug, Clone, PartialEq)]
+pub enum Description {
+    Ready(Generation),
+    /// No store, or a store stamped but never published.
+    NotBuilt,
+    NeedsRebuild(RebuildReason),
+}
+
 /// The graph store of one Stash server.
 pub struct GraphStore {
     dir: PathBuf,
@@ -74,8 +83,25 @@ impl GraphStore {
         }
     }
 
+    /// The store in `dir`, for the server its own stamp names. Queries use it, so they never
+    /// ask Stash for the server id (spec 009 research R2): the folder is the plugin's own, and
+    /// the stamp is checked on every read as usual. A missing or unreadable stamp is the
+    /// rebuild reason it gives.
+    pub fn stamped(dir: impl Into<PathBuf>) -> Result<GraphStore, GraphError> {
+        let dir = dir.into();
+        match layout::read_stamp(&dir) {
+            Ok(Some(s)) => Ok(GraphStore::new(dir, &s.server_id)),
+            Ok(None) => Err(GraphError::NeedsRebuild(RebuildReason::Missing)),
+            Err(detail) => Err(GraphError::NeedsRebuild(RebuildReason::Damaged { detail })),
+        }
+    }
+
     pub fn dir(&self) -> &Path {
         &self.dir
+    }
+
+    pub fn server_id(&self) -> &str {
+        &self.server_id
     }
 
     fn need_server_id(&self) -> Result<(), GraphError> {
@@ -102,6 +128,48 @@ impl GraphStore {
             Inspection::NotBuilt => Err(GraphError::NotBuilt),
             Inspection::NeedsRebuild(r) => Err(GraphError::NeedsRebuild(r)),
         }
+    }
+
+    /// Opens published generation `n` read-only, while it is kept (G7), for the later pages of
+    /// one query (spec 009 research R6). The stamp is checked as for [`GraphStore::reader`];
+    /// a generation that is not kept, or not published, is [`GraphError::GenerationGone`]. It
+    /// never opens `work/`.
+    pub fn reader_at(&self, n: u64) -> Result<Reader, GraphError> {
+        self.need_server_id()?;
+        if let Some(r) = health::stamp_problem(&self.dir, &self.server_id) {
+            return Err(GraphError::NeedsRebuild(r));
+        }
+        let gone = GraphError::GenerationGone { generation: n };
+        let published = layout::read_current(&self.dir)
+            .ok()
+            .flatten()
+            .is_some_and(|current| n <= current);
+        let path = layout::generation_dir(&self.dir, n);
+        if !published || !path.is_dir() {
+            return Err(gone);
+        }
+        let generation = layout::read_generation(&self.dir, n).map_err(|_| gone.clone())?;
+        let store = oxigraph::store::Store::open_read_only(&path).map_err(|_| gone)?;
+        Ok(Reader { generation, store })
+    }
+
+    /// The record of published generation `n` while it is kept, with the stamp checked, without
+    /// opening the store: for queries answered on the generation's query index (spec 009
+    /// research R12). Not kept or not published: [`GraphError::GenerationGone`].
+    pub fn kept_generation(&self, n: u64) -> Result<Generation, GraphError> {
+        self.need_server_id()?;
+        if let Some(r) = health::stamp_problem(&self.dir, &self.server_id) {
+            return Err(GraphError::NeedsRebuild(r));
+        }
+        let gone = GraphError::GenerationGone { generation: n };
+        let published = layout::read_current(&self.dir)
+            .ok()
+            .flatten()
+            .is_some_and(|current| n <= current);
+        if !published || !layout::generation_dir(&self.dir, n).is_dir() {
+            return Err(gone);
+        }
+        layout::read_generation(&self.dir, n).map_err(|_| gone)
     }
 
     /// Takes the writer lock without waiting (FR-004). A store that needs a rebuild is refused;
@@ -152,6 +220,40 @@ impl GraphStore {
                 created_at: layout::now(),
             },
         )
+    }
+
+    /// The store's state from its small files only: the stamp, `current` and the current
+    /// generation's record (spec 009 research R9). It never opens a generation and never waits
+    /// for a writer, so `status` stays as cheap as it was. With an empty server id the stamp's
+    /// server is not checked. A missing stamp is `NotBuilt`.
+    pub fn describe(&self) -> Description {
+        let stamp = match layout::read_stamp(&self.dir) {
+            Ok(None) => return Description::NotBuilt,
+            Ok(Some(s)) => s,
+            Err(detail) => return Description::NeedsRebuild(RebuildReason::Damaged { detail }),
+        };
+        if stamp.format != STORE_FORMAT {
+            return Description::NeedsRebuild(RebuildReason::OtherFormat {
+                found: stamp.format,
+                expected: STORE_FORMAT,
+            });
+        }
+        if !self.server_id.is_empty() && stamp.server_id != self.server_id {
+            return Description::NeedsRebuild(RebuildReason::OtherServer);
+        }
+        let damaged = |detail: String| Description::NeedsRebuild(RebuildReason::Damaged { detail });
+        let n = match layout::read_current(&self.dir) {
+            Ok(None) => return Description::NotBuilt,
+            Ok(Some(n)) => n,
+            Err(detail) => return damaged(detail),
+        };
+        if !layout::generation_dir(&self.dir, n).is_dir() {
+            return damaged(format!("generation {n} is missing from snapshots/"));
+        }
+        match layout::read_generation(&self.dir, n) {
+            Ok(g) => Description::Ready(g),
+            Err(detail) => damaged(detail),
+        }
     }
 
     /// What the store holds (FR-018). It reads only small files and never waits for a writer.

@@ -5,7 +5,8 @@
 use super::map::owner_iri;
 use super::map::{map_media, map_performer, map_tag, Ctx, Mapped};
 use super::notes::{Note, NoteReason};
-use super::stamp::{BuildStamp, How};
+use super::stamp::{BuildStamp, How, Items};
+use super::update::owner_kind;
 use super::vocab::{vocabulary_facts, VOCAB_OWNER};
 use crate::graph::{Fact, GraphError, GraphStore, Health, Owned, RebuildReason, Writer};
 use semantic_vocabulary::iri::ItemIris;
@@ -266,9 +267,17 @@ pub fn run(
     let mut notes: Vec<Note> = Vec::new();
     let mut map_time = Duration::ZERO;
     let mut done = 0usize;
+    let mut items = Items::default();
     let mut mapped =
         |owner: Option<String>, m: Mapped, t: Instant, sink: &mut Batches, pct: &mut Percent| {
             map_time += t.elapsed();
+            if let Some(kind) = owner
+                .as_deref()
+                .filter(|_| !m.facts.is_empty())
+                .and_then(owner_kind)
+            {
+                items.add(kind, 1);
+            }
             notes.extend(m.notes.into_vec());
             done += 1;
             pct.set(READ_SHARE + (WRITE_END - READ_SHARE) * (done as f64 / total as f64));
@@ -296,8 +305,11 @@ pub fn run(
 
     log(LogLevel::Info, "build: publishing");
     let t = Instant::now();
-    let generation =
-        writer.publish_with(BuildStamp::new(read.start.clone(), How::Build).to_json())?;
+    let generation = writer.publish_with(
+        BuildStamp::new(read.start.clone(), How::Build)
+            .with_items(items)
+            .to_json(),
+    )?;
     let publish_ms = t.elapsed().as_millis() as u64;
     pct.set(1.0);
 
