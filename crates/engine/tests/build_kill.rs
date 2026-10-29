@@ -95,12 +95,21 @@ fn killed_builds_leave_a_whole_published_generation() {
     let _ = std::fs::remove_dir_all(dir.parent().unwrap());
     let mut current = build_into(&dir, 20, 5, &mut |_| {});
 
-    // One uninterrupted child build, to time it.
+    // One uninterrupted child build, to time it up to publishing, and in full.
     let t = Instant::now();
     let (mut child, rx) = spawn(&dir);
+    let mut to_publish = None;
+    let mut done = false;
+    for l in rx.iter() {
+        if l == "build: publishing" {
+            to_publish = Some(t.elapsed());
+        }
+        done |= l == "CHILD DONE";
+    }
     assert!(child.wait().unwrap().success());
     let full = t.elapsed();
-    assert!(rx.iter().any(|l| l == "CHILD DONE"));
+    assert!(done);
+    let to_publish = to_publish.expect("the build logs its publish");
     current = {
         let g = published(&dir);
         assert_eq!(g, current + 1);
@@ -115,8 +124,10 @@ fn killed_builds_leave_a_whole_published_generation() {
         let deadline = if at_publish {
             full * 2
         } else {
-            // Spread from 5% to 95% of a full build.
-            full.mul_f64(0.05 + 0.9 * (k - PUBLISH_KILLS) as f64 / (KILLS - PUBLISH_KILLS) as f64)
+            // Spread from 5% to 120% of the time to publishing: publishing writes the query
+            // index too, so it is a large share of the build.
+            to_publish
+                .mul_f64(0.05 + 1.15 * (k - PUBLISH_KILLS) as f64 / (KILLS - PUBLISH_KILLS) as f64)
         };
         let start = Instant::now();
         let mut saw_publish = false;
@@ -148,7 +159,7 @@ fn killed_builds_leave_a_whole_published_generation() {
         current = g;
     }
     eprintln!(
-        "full build {full:?}; {before_publish} kills before publishing, {} while or after \
+        "full build {full:?}, publishing at {to_publish:?}; {before_publish} kills before publishing, {} while or after \
          publishing ({advanced} of those completed the publish)",
         KILLS - before_publish
     );
